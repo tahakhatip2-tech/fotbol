@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
+import { User, Mail, Trophy, Activity, Wallet, ShieldCheck, Crown } from 'lucide-react';
 
 export const ProfilePage: React.FC = () => {
   const [bets, setBets] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -19,6 +21,8 @@ export const ProfilePage: React.FC = () => {
         setBets(betsRes.data);
       } catch (error) {
         console.error('Failed to fetch bets', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProfile();
@@ -34,63 +38,186 @@ export const ProfilePage: React.FC = () => {
     return selection;
   };
 
+  const getStatusBadge = (status: string, potentialPayout?: number) => {
+    if (status === 'WON') {
+      return (
+        <div className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-1.5 rounded-full font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+          <Trophy size={16} />
+          ربح +${potentialPayout}
+        </div>
+      );
+    }
+    if (status === 'LOST') {
+      return (
+        <div className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full font-bold flex items-center gap-2">
+          خسارة
+        </div>
+      );
+    }
+    return (
+      <div className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-4 py-1.5 rounded-full font-bold flex items-center gap-2">
+        <Activity size={16} />
+        قيد الانتظار
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-12 flex justify-center">
+        <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">الملف الشخصي</h1>
-
-      <div className="glass p-8 rounded-2xl mb-12 flex flex-col md:flex-row items-center gap-6 text-center md:text-right relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
-        <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center text-primary text-3xl font-bold relative z-10 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-          {user?.firstName?.[0] || 'U'}
-        </div>
-        <div className="relative z-10">
-          <h2 className="text-2xl font-bold mb-1">{user?.firstName} {user?.lastName}</h2>
-          <p className="text-muted-foreground">{user?.email}</p>
-        </div>
-      </div>
-
-      <h2 className="text-2xl font-bold mb-6">الرهانات النشطة</h2>
-      <div className="grid gap-4 mb-12">
-        {activeBets.length === 0 ? (
-           <div className="glass p-6 text-center text-muted-foreground rounded-2xl">لا توجد رهانات نشطة.</div>
-        ) : (
-          activeBets.map(bet => (
-            <div key={bet.id} className="glass p-6 rounded-2xl border border-primary/30 shadow-[0_0_15px_rgba(34,197,94,0.1)] flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-right relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative z-10">
-                <div className="font-bold text-lg mb-1">{bet.match.team1Name} ضد {bet.match.team2Name}</div>
-                <div className="text-muted-foreground text-sm">اختيارك: <span className="text-primary font-bold">{getSelectionText(bet.selection, bet.match.team1Name, bet.match.team2Name)}</span> (نسبة: {bet.oddsAtBet})</div>
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      {/* Premium Profile Header */}
+      <div className="relative mb-16 mt-8">
+        {/* Background Glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[150%] bg-gradient-to-r from-primary/10 via-amber-500/5 to-primary/10 blur-[100px] -z-10 rounded-full pointer-events-none"></div>
+        
+        <div className="glass p-1 rounded-3xl relative overflow-hidden shadow-2xl border border-white/5">
+          {/* Cover Photo Area */}
+          <div className="h-32 md:h-48 bg-gradient-to-r from-secondary/80 to-background rounded-t-[22px] relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background/90 to-transparent"></div>
+          </div>
+          
+          <div className="px-6 pb-8 md:px-10 relative">
+            <div className="flex flex-col md:flex-row gap-6 items-center md:items-end -mt-16 md:-mt-20">
+              {/* Avatar */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full group-hover:bg-primary/50 transition-all duration-500"></div>
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-background to-secondary border-4 border-background flex items-center justify-center relative z-10 shadow-2xl overflow-hidden">
+                  <span className="text-5xl font-black bg-gradient-to-br from-primary to-emerald-200 bg-clip-text text-transparent">
+                    {user?.firstName?.[0]?.toUpperCase() || 'U'}
+                  </span>
+                  {user?.role === 'ADMIN' && (
+                    <div className="absolute bottom-2 bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                      <ShieldCheck size={12} />
+                      ADMIN
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="text-center md:text-left relative z-10 bg-background/40 p-3 rounded-xl border border-border/40 w-full md:w-auto">
-                <div className="text-muted-foreground text-xs mb-1">المبلغ المراهن به</div>
-                <div className="font-bold text-xl">${bet.stake}</div>
-                <div className="text-xs text-green-500 mt-1 font-bold">عائد محتمل: ${bet.potentialPayout}</div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
 
-      <h2 className="text-2xl font-bold mb-6">سجل الرهانات السابقة</h2>
-      <div className="grid gap-4">
-        {pastBets.length === 0 ? (
-           <div className="glass p-6 text-center text-muted-foreground rounded-2xl">لا توجد رهانات سابقة.</div>
-        ) : (
-          pastBets.map(bet => (
-            <div key={bet.id} className="glass p-6 rounded-2xl border border-border/20 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-right opacity-80 hover:opacity-100 transition-opacity">
-              <div>
-                <div className="font-bold text-lg mb-1">{bet.match?.team1Name} ضد {bet.match?.team2Name}</div>
-                <div className="text-muted-foreground text-sm">اختيارك: {getSelectionText(bet.selection, bet.match?.team1Name, bet.match?.team2Name)} (نسبة: {bet.oddsAtBet})</div>
-              </div>
-              <div className="text-center md:text-left bg-background/30 p-3 rounded-xl w-full md:w-auto flex flex-col items-center md:items-end">
-                <div className="font-bold text-xl mb-2">${bet.stake}</div>
-                <div className={`text-sm font-bold px-4 py-1 rounded-full inline-block w-full md:w-auto text-center ${bet.status === 'WON' ? 'bg-green-500/20 text-green-500 border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-red-500/20 text-red-500 border border-red-500/20'}`}>
-                  {bet.status === 'WON' ? `ربح +$${bet.potentialPayout}` : 'خسارة'}
+              {/* User Info */}
+              <div className="flex-1 text-center md:text-right pb-2">
+                <div className="flex flex-col md:flex-row md:items-center gap-3 justify-center md:justify-end mb-2">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                    {user?.firstName} {user?.lastName}
+                  </h1>
+                  {user?.role === 'ADMIN' && (
+                    <Crown size={24} className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)] hidden md:block" />
+                  )}
+                </div>
+                <div className="flex items-center justify-center md:justify-end gap-2 text-muted-foreground bg-secondary/30 w-fit mx-auto md:ml-0 md:mr-0 px-4 py-1.5 rounded-full border border-border/30">
+                  <Mail size={14} />
+                  <span className="text-sm">{user?.email}</span>
                 </div>
               </div>
             </div>
-          ))
-        )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          {/* Active Bets Section */}
+          <section>
+            <div className="flex items-center gap-3 mb-6 px-2">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 text-primary shadow-[0_0_15px_rgba(34,197,94,0.15)]">
+                <Activity size={20} />
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight">الرهانات النشطة</h2>
+            </div>
+            
+            <div className="grid gap-4">
+              {activeBets.length === 0 ? (
+                <div className="glass p-8 text-center rounded-3xl border border-dashed border-border/50 bg-secondary/10">
+                  <div className="w-16 h-16 rounded-full bg-secondary/30 flex items-center justify-center mx-auto mb-4 text-muted-foreground">
+                    <Trophy size={24} />
+                  </div>
+                  <h3 className="text-lg font-medium text-foreground mb-1">لا توجد رهانات نشطة حالياً</h3>
+                  <p className="text-muted-foreground text-sm">توقع نتائج المباريات القادمة وابدأ في ربح الأرباح</p>
+                </div>
+              ) : (
+                activeBets.map(bet => (
+                  <div key={bet.id} className="glass p-6 rounded-3xl border border-primary/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)] relative overflow-hidden group hover:border-primary/40 transition-colors duration-300">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+                    
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+                      <div className="text-center md:text-right w-full">
+                        <div className="inline-flex items-center gap-2 bg-secondary/40 border border-border/40 px-3 py-1 rounded-lg text-xs font-medium text-muted-foreground mb-3">
+                          <Trophy size={12} className="text-primary" />
+                          مباراة قادمة
+                        </div>
+                        <h3 className="font-bold text-xl mb-2 text-white">{bet.match.team1Name} <span className="text-muted-foreground px-2 font-normal">ضد</span> {bet.match.team2Name}</h3>
+                        <div className="text-muted-foreground text-sm flex items-center justify-center md:justify-start gap-2">
+                          اختيارك: <span className="bg-primary/10 text-primary font-bold px-3 py-1 rounded-md border border-primary/20">{getSelectionText(bet.selection, bet.match.team1Name, bet.match.team2Name)}</span>
+                          <span className="text-xs opacity-70">(نسبة: {bet.oddsAtBet})</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-4 md:flex-col items-center md:items-end w-full md:w-auto bg-background/40 md:bg-transparent p-4 md:p-0 rounded-2xl md:rounded-none border md:border-none border-border/30">
+                        <div className="text-center md:text-right w-1/2 md:w-auto border-l md:border-l-0 border-border/30 pl-4 md:pl-0">
+                          <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wider">مبلغ الرهان</div>
+                          <div className="font-bold text-2xl">${bet.stake}</div>
+                        </div>
+                        <div className="text-center md:text-right w-1/2 md:w-auto">
+                          <div className="text-primary/70 text-xs mb-1 uppercase tracking-wider font-bold">العائد المحتمل</div>
+                          <div className="font-black text-2xl text-primary drop-shadow-[0_0_10px_rgba(34,197,94,0.3)]">${bet.potentialPayout}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+        </div>
+
+        <div>
+          {/* History Section */}
+          <section className="sticky top-28">
+            <div className="flex items-center gap-3 mb-6 px-2">
+              <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center border border-border/50 text-foreground">
+                <Wallet size={20} />
+              </div>
+              <h2 className="text-xl font-bold tracking-tight">سجل الرهانات</h2>
+            </div>
+
+            <div className="glass rounded-3xl p-2 border border-border/40 max-h-[600px] overflow-y-auto no-scrollbar">
+              {pastBets.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  لا توجد رهانات سابقة.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {pastBets.map(bet => (
+                    <div key={bet.id} className="bg-secondary/20 hover:bg-secondary/40 p-5 rounded-2xl border border-border/30 transition-colors">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="font-bold text-sm text-white/90 line-clamp-1 w-2/3">{bet.match?.team1Name} ضد {bet.match?.team2Name}</div>
+                        {getStatusBadge(bet.status, bet.potentialPayout)}
+                      </div>
+                      
+                      <div className="flex justify-between items-end">
+                        <div className="text-muted-foreground text-xs">
+                          <div className="mb-1">الاختيار: {getSelectionText(bet.selection, bet.match?.team1Name, bet.match?.team2Name)}</div>
+                          <div>الرهان: <span className="font-bold text-foreground">${bet.stake}</span></div>
+                        </div>
+                        <div className="text-xs opacity-50">
+                          النسبة: {bet.oddsAtBet}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

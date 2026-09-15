@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { Trophy, Wallet, User, Menu } from 'lucide-react';
+import { Trophy, Wallet, User, Menu, LogOut, Settings, LayoutDashboard } from 'lucide-react';
 
 export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar');
@@ -43,22 +55,47 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 {i18n.language === 'ar' ? 'English' : 'العربية'}
               </Button>
               {isLoggedIn ? (
-                <div className="flex items-center gap-2 md:gap-3">
-                  {user?.role === 'ADMIN' && (
-                    <Link to="/admin" title="لوحة الإدارة">
-                      <Button variant="ghost" className="p-2 text-primary hover:bg-primary/10 rounded-full h-10 w-10 flex items-center justify-center">
-                        <Menu size={24} />
-                      </Button>
-                    </Link>
-                  )}
-                  <Link to="/profile">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold cursor-pointer hover:bg-primary/30 transition-colors">
+                <div className="relative" ref={dropdownRef}>
+                  <button 
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center gap-2 bg-secondary/50 hover:bg-secondary/80 border border-border/50 rounded-full py-1.5 px-2 md:px-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <Menu size={20} className="text-muted-foreground ml-1" />
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold shadow-inner">
                       {user?.firstName?.[0] || 'U'}
                     </div>
-                  </Link>
-                  <Button variant="ghost" className="hidden md:inline-flex text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={handleLogout}>
-                    تسجيل خروج
-                  </Button>
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute left-0 top-full mt-3 w-56 bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50">
+                      <div className="p-3 border-b border-border/30 bg-secondary/20">
+                        <p className="font-semibold text-sm truncate">{user?.firstName} {user?.lastName}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                      </div>
+                      
+                      <div className="p-2 flex flex-col gap-1">
+                        <Link to="/profile" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors">
+                          <User size={18} className="text-primary" />
+                          حسابي
+                        </Link>
+                        
+                        {user?.role === 'ADMIN' && (
+                          <Link to="/admin" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors text-amber-500">
+                            <LayoutDashboard size={18} />
+                            لوحة الإدارة
+                          </Link>
+                        )}
+                      </div>
+                      
+                      <div className="p-2 border-t border-border/30">
+                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 text-sm font-medium transition-colors text-red-500">
+                          <LogOut size={18} />
+                          تسجيل الخروج
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>

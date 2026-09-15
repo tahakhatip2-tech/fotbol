@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { Trophy, Wallet, User } from 'lucide-react';
+import { Trophy, Wallet, User, Menu } from 'lucide-react';
 
 export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();
@@ -45,8 +45,10 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
               {isLoggedIn ? (
                 <div className="flex items-center gap-2 md:gap-3">
                   {user?.role === 'ADMIN' && (
-                    <Link to="/admin">
-                      <Button variant="outline" className="border-primary/50 text-primary hover:bg-primary/10 text-[10px] md:text-xs px-2 md:px-4">لوحة الإدارة</Button>
+                    <Link to="/admin" title="لوحة الإدارة">
+                      <Button variant="ghost" className="p-2 text-primary hover:bg-primary/10 rounded-full h-10 w-10 flex items-center justify-center">
+                        <Menu size={24} />
+                      </Button>
                     </Link>
                   )}
                   <Link to="/profile">

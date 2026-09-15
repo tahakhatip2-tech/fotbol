@@ -53,10 +53,11 @@ export const AdminLayout: React.FC = () => {
           })}
         </nav>
         <div className="mt-auto pt-6 border-t border-border/30">
-          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             العودة للموقع
           </Link>
+          <p className="text-[10px] text-muted-foreground/40 tracking-widest font-medium uppercase text-center mt-4">Developed by Taha Alkhatip</p>
         </div>
       </aside>
 

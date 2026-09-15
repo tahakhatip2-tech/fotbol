@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
-import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity } from 'lucide-react';
+import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy } from 'lucide-react';
 
 export const AdminMatchesPage: React.FC = () => {
   const [matches, setMatches] = useState<any[]>([]);

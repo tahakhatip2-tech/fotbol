@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import { Target, Search, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 export const AdminBetsPage: React.FC = () => {
   const [bets, setBets] = useState<any[]>([]);
@@ -22,63 +23,102 @@ export const AdminBetsPage: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return <span className="px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-xs font-bold">معلق (بانتظار النتيجة)</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full text-xs font-bold shadow-[0_0_10px_rgba(245,158,11,0.1)]">
+            <Clock size={14} /> معلق
+          </span>
+        );
       case 'WON':
-        return <span className="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-xs font-bold">ربح</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+            <CheckCircle size={14} /> ربح
+          </span>
+        );
       case 'LOST':
-        return <span className="px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-xs font-bold">خسارة</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-xs font-bold shadow-[0_0_10px_rgba(244,63,94,0.1)]">
+            <XCircle size={14} /> خسارة
+          </span>
+        );
       default:
-        return <span className="px-3 py-1 bg-gray-500/10 text-gray-500 rounded-full text-xs font-bold">{status}</span>;
+        return <span className="px-3 py-1 bg-gray-500/10 text-gray-400 border border-gray-500/20 rounded-full text-xs font-bold">{status}</span>;
     }
   };
 
   const getSelectionText = (selection: string) => {
-    if (selection === 'TEAM_1_WIN') return 'فوز الفريق الأول';
-    if (selection === 'TEAM_2_WIN') return 'فوز الفريق الثاني';
+    if (selection === 'TEAM_1_WIN') return 'فوز الأول';
+    if (selection === 'TEAM_2_WIN') return 'فوز الثاني';
     if (selection === 'DRAW') return 'تعادل';
     return selection;
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">سجل الرهانات العام</h2>
+    <div className="animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200 tracking-tight">سجل الرهانات العام</h1>
+          <p className="text-muted-foreground mt-2 text-sm">متابعة كافة رهانات المستخدمين على المنصة.</p>
+        </div>
       </div>
 
-      <div className="bg-card rounded-2xl p-6 border border-border shadow-sm overflow-hidden">
+      <div className="glass rounded-3xl p-2 md:p-6 border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.12)] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+
         {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">جاري التحميل...</div>
+          <div className="flex justify-center items-center h-48">
+             <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+          </div>
         ) : bets.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">لا يوجد رهانات مسجلة حتى الآن.</div>
+          <div className="text-center py-16 text-muted-foreground flex flex-col items-center">
+            <Target size={48} className="opacity-20 mb-4" />
+            <p>لا يوجد رهانات مسجلة حتى الآن.</p>
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-right">
-              <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
+          <div className="overflow-x-auto rounded-2xl border border-white/5">
+            <table className="w-full text-sm text-right min-w-[800px]">
+              <thead className="bg-secondary/40 text-muted-foreground border-b border-white/5">
                 <tr>
-                  <th className="px-6 py-4 rounded-tr-lg">المستخدم</th>
-                  <th className="px-6 py-4">المباراة</th>
-                  <th className="px-6 py-4">الخيار</th>
-                  <th className="px-6 py-4">المبلغ (الاحتمال)</th>
-                  <th className="px-6 py-4">العائد المحتمل</th>
-                  <th className="px-6 py-4 rounded-tl-lg">حالة الرهان</th>
+                  <th className="px-6 py-5 font-bold">المستخدم</th>
+                  <th className="px-6 py-5 font-bold">المباراة</th>
+                  <th className="px-6 py-5 font-bold text-center">الخيار</th>
+                  <th className="px-6 py-5 font-bold text-center">المبلغ</th>
+                  <th className="px-6 py-5 font-bold text-center">العائد المحتمل</th>
+                  <th className="px-6 py-5 font-bold text-center">الحالة</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/50">
+              <tbody className="divide-y divide-white/5 bg-black/20">
                 {bets.map((bet) => (
-                  <tr key={bet.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-6 py-4 font-bold">
-                      {bet.user?.firstName} {bet.user?.lastName}
-                      <div className="text-xs text-muted-foreground font-normal">{bet.user?.email}</div>
+                  <tr key={bet.id} className="hover:bg-white/[0.02] transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-white group-hover:text-primary transition-colors">{bet.user?.firstName} {bet.user?.lastName}</div>
+                      <div className="text-xs text-muted-foreground font-medium mt-0.5 flex items-center gap-1">
+                        <Search size={10} /> {bet.user?.email}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      {bet.match?.team1Name} ضد {bet.match?.team2Name}
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white/90">{bet.match?.team1Name}</span>
+                        <span className="text-xs text-muted-foreground bg-white/5 px-1.5 py-0.5 rounded">ضد</span>
+                        <span className="font-bold text-white/90">{bet.match?.team2Name}</span>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 text-primary font-bold">{getSelectionText(bet.selection)}</td>
-                    <td className="px-6 py-4">
-                      ${bet.stake.toFixed(2)} <span className="text-xs text-muted-foreground">(x{bet.oddsAtBet})</span>
+                    <td className="px-6 py-4 text-center">
+                      <span className="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-lg text-xs font-bold">
+                        {getSelectionText(bet.selection)}
+                      </span>
                     </td>
-                    <td className="px-6 py-4 font-bold text-green-500">${bet.potentialPayout.toFixed(2)}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
+                      <div className="font-bold text-white">${bet.stake.toFixed(2)}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5 flex items-center justify-center gap-1">
+                        <span className="opacity-70">النسبة:</span> <span className="font-bold text-amber-400">x{bet.oddsAtBet}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="font-black text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]">
+                        ${bet.potentialPayout.toFixed(2)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
                       {getStatusBadge(bet.status)}
                     </td>
                   </tr>

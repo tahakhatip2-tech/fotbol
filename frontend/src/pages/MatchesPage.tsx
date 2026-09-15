@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
 import { BetSlip } from '../components/BetSlip';
 import { getMatches } from '../api/matches';
+import { Trophy, ShieldHalf, CalendarDays, Clock, Activity } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -14,7 +15,8 @@ export const MatchesPage: React.FC = () => {
     const fetchMatches = async () => {
       try {
         const data = await getMatches();
-        setMatches(data);
+        // Only show upcoming or live matches to users
+        setMatches(data.filter((m: any) => m.status !== 'FINISHED'));
       } catch (error) {
         console.error('Failed to fetch matches:', error);
       } finally {
@@ -25,60 +27,139 @@ export const MatchesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold">{t('matches')}</h1>
-        <div className="flex gap-2 w-full md:w-auto">
-          <Button variant="outline" className="flex-1 md:flex-none text-xs md:text-sm px-2">الكل</Button>
-          <Button variant="outline" className="flex-1 md:flex-none text-xs md:text-sm px-2">مباشر</Button>
-          <Button variant="outline" className="flex-1 md:flex-none text-xs md:text-sm px-2">قادمة</Button>
+        <div>
+          <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200 tracking-tight">{t('matches')}</h1>
+          <p className="text-muted-foreground mt-2 text-sm">توقع، راهن، واربح مع أقوى المباريات العالمية.</p>
+        </div>
+        <div className="flex gap-2 w-full md:w-auto bg-white/5 p-1 rounded-xl border border-white/10">
+          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-4 bg-primary/20 text-primary">الكل</Button>
+          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-4 text-muted-foreground hover:text-white">مباشر</Button>
+          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-4 text-muted-foreground hover:text-white">قادمة</Button>
         </div>
       </div>
 
-      <div className="grid gap-6">
-        {isLoading ? (
-          <div className="text-center py-12 text-muted-foreground">جاري تحميل المباريات...</div>
-        ) : matches.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">لا توجد مباريات متاحة حالياً.</div>
-        ) : (
-          matches.map((match) => (
-          <div key={match.id} className="glass rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,197,94,0.15)] hover:border-primary/30 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="flex-1 flex justify-between items-center w-full relative z-10">
-              <div className="text-lg md:text-2xl font-black text-center w-1/3 break-words">{match.team1Name}</div>
-              <div className="text-center w-1/3 flex flex-col items-center px-1">
-                <div className="text-[10px] md:text-xs text-muted-foreground/80 font-mono tracking-wider mb-2">{new Date(match.matchDate).toLocaleDateString()}</div>
-                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-[10px] md:text-xs shadow-[0_0_15px_rgba(34,197,94,0.3)]">VS</div>
-                <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest px-2 py-1 md:px-3 bg-primary text-primary-foreground rounded-full mt-3 shadow-lg shadow-primary/30 text-center whitespace-nowrap">
-                  {match.status}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[40vh]">
+          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      ) : matches.length === 0 ? (
+        <div className="glass rounded-3xl p-16 text-center border border-white/5">
+          <div className="flex flex-col items-center justify-center text-muted-foreground">
+            <Trophy size={64} className="opacity-20 mb-6" />
+            <p className="text-xl font-bold text-white mb-2">لا توجد مباريات متاحة حالياً.</p>
+            <p className="opacity-60">عد لاحقاً لمتابعة أقوى المباريات والمراهنة عليها.</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {matches.map((match) => (
+            <div key={match.id} className="glass rounded-3xl overflow-hidden relative group border border-white/10 hover:border-primary/30 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] flex flex-col">
+              {/* Background Glow */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
+              
+              {/* Status Badge */}
+              <div className="absolute top-4 right-4 z-10">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md ${
+                  match.status === 'LIVE' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 
+                  'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                }`}>
+                  {match.status === 'LIVE' && <Activity size={12} className="animate-pulse" />}
+                  {match.status === 'LIVE' ? 'جارية الآن' : 'قادمة'}
+                </span>
+              </div>
+              
+              {/* League Badge */}
+              <div className="absolute top-4 left-4 z-10">
+                <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-amber-400 text-xs font-bold gap-1.5">
+                  <Trophy size={12} />
+                  {match.league || 'بطولة'}
+                </span>
+              </div>
+
+              {/* Teams & Score Area */}
+              <div className="pt-16 pb-6 px-6 relative z-10 flex-1">
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-white/70">
+                    <CalendarDays size={12} />
+                    <span>{new Date(match.matchDate).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' })}</span>
+                    <span className="mx-1">•</span>
+                    <Clock size={12} />
+                    <span>{new Date(match.matchDate).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2">
+                  {/* Team 1 */}
+                  <div className="flex flex-col items-center flex-1">
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
+                      {match.team1Logo ? (
+                        <img src={`http://localhost:5000${match.team1Logo}`} alt={match.team1Name} className="w-full h-full object-contain" />
+                      ) : (
+                        <ShieldHalf size={28} className="text-primary/50" />
+                      )}
+                    </div>
+                    <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team1Name}</h3>
+                  </div>
+
+                  {/* VS */}
+                  <div className="flex flex-col items-center justify-center px-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs shadow-[0_0_15px_rgba(34,197,94,0.3)] border border-primary/30">VS</div>
+                  </div>
+
+                  {/* Team 2 */}
+                  <div className="flex flex-col items-center flex-1">
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
+                      {match.team2Logo ? (
+                        <img src={`http://localhost:5000${match.team2Logo}`} alt={match.team2Name} className="w-full h-full object-contain" />
+                      ) : (
+                        <ShieldHalf size={28} className="text-blue-400/50" />
+                      )}
+                    </div>
+                    <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team2Name}</h3>
+                  </div>
                 </div>
               </div>
-              <div className="text-lg md:text-2xl font-bold text-center w-1/3 break-words">{match.team2Name}</div>
+
+              {/* Betting Odds Area */}
+              <div className="p-4 border-t border-white/5 bg-black/20 backdrop-blur-md">
+                <div className="flex items-center justify-between text-xs text-muted-foreground px-2 mb-3">
+                  <span>اختر رهانك (الاحتمالات):</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button 
+                    onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team1Name, selectionValue: 'TEAM_1_WIN', odds: match.odds?.[0]?.team1Win || 1.5 })}
+                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white/5 hover:bg-primary/20 border border-white/5 hover:border-primary/50 transition-all group/btn"
+                  >
+                    <span className="text-[10px] text-muted-foreground mb-1 group-hover/btn:text-white transition-colors">فوز 1</span>
+                    <span className="font-black text-primary text-sm">{match.odds?.[0]?.team1Win || '-'}</span>
+                  </button>
+                  <button 
+                    onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'تعادل', selectionValue: 'DRAW', odds: match.odds?.[0]?.draw || 3.0 })}
+                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-500/50 transition-all group/btn"
+                  >
+                    <span className="text-[10px] text-muted-foreground mb-1 group-hover/btn:text-white transition-colors">تعادل</span>
+                    <span className="font-black text-amber-400 text-sm">{match.odds?.[0]?.draw || '-'}</span>
+                  </button>
+                  <button 
+                    onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team2Name, selectionValue: 'TEAM_2_WIN', odds: match.odds?.[0]?.team2Win || 2.5 })}
+                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-white/5 hover:border-blue-500/50 transition-all group/btn"
+                  >
+                    <span className="text-[10px] text-muted-foreground mb-1 group-hover/btn:text-white transition-colors">فوز 2</span>
+                    <span className="font-black text-blue-400 text-sm">{match.odds?.[0]?.team2Win || '-'}</span>
+                  </button>
+                </div>
+              </div>
             </div>
-            
-            <div className="flex gap-2 w-full md:w-auto relative z-10">
-              <Button variant="outline" className="flex-1 flex flex-col h-16 py-2 bg-background/50 border-border/50 hover:border-primary hover:bg-primary/10 transition-all" onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team1Name, selectionValue: 'TEAM_1_WIN', odds: match.odds?.[0]?.team1Win || 1.0 })}>
-                <span className="text-[10px] text-muted-foreground mb-1">فوز 1</span>
-                <span className="font-black text-lg">{match.odds?.[0]?.team1Win || '-'}</span>
-              </Button>
-              <Button variant="outline" className="flex-1 flex flex-col h-16 py-2 bg-background/50 border-border/50 hover:border-primary hover:bg-primary/10 transition-all" onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'تعادل', selectionValue: 'DRAW', odds: match.odds?.[0]?.draw || 1.0 })}>
-                <span className="text-[10px] text-muted-foreground mb-1">تعادل</span>
-                <span className="font-black text-lg">{match.odds?.[0]?.draw || '-'}</span>
-              </Button>
-              <Button variant="outline" className="flex-1 flex flex-col h-16 py-2 bg-background/50 border-border/50 hover:border-primary hover:bg-primary/10 transition-all" onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team2Name, selectionValue: 'TEAM_2_WIN', odds: match.odds?.[0]?.team2Win || 1.0 })}>
-                <span className="text-[10px] text-muted-foreground mb-1">فوز 2</span>
-                <span className="font-black text-lg">{match.odds?.[0]?.team2Win || '-'}</span>
-              </Button>
-            </div>
-          </div>
-        )))}
-      </div>
+          ))}
+        </div>
+      )}
       
       <BetSlip 
         selection={selectedBet} 
         onClose={() => setSelectedBet(null)} 
         onConfirm={() => {
-          alert('تم تأكيد الرهان بنجاح!');
           setSelectedBet(null);
         }} 
       />

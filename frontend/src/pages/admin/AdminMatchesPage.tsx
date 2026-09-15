@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
-import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy } from 'lucide-react';
+import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf } from 'lucide-react';
 
 export const AdminMatchesPage: React.FC = () => {
   const [matches, setMatches] = useState<any[]>([]);
@@ -112,7 +112,7 @@ export const AdminMatchesPage: React.FC = () => {
   );
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="animate-in fade-in duration-500 pb-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200 tracking-tight">إدارة المباريات</h1>
@@ -212,87 +212,122 @@ export const AdminMatchesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Matches List */}
-      <div className="glass rounded-3xl border border-white/5 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] relative">
-        <div className="overflow-x-auto">
-          <table className="w-full text-right border-collapse min-w-[800px]">
-            <thead className="bg-secondary/40 border-b border-white/5">
-              <tr>
-                <th className="p-5 font-bold text-muted-foreground">المباراة</th>
-                <th className="p-5 font-bold text-muted-foreground">الدوري</th>
-                <th className="p-5 font-bold text-muted-foreground">التاريخ</th>
-                <th className="p-5 font-bold text-muted-foreground text-center">الحالة</th>
-                <th className="p-5 font-bold text-muted-foreground text-center">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {matches.map(match => (
-                <tr key={match.id} className="hover:bg-white/[0.02] transition-colors group">
-                  <td className="p-5">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 text-left font-bold text-white group-hover:text-primary transition-colors">{match.team1Name}</div>
-                      <div className="px-2 py-1 bg-white/5 rounded text-xs text-muted-foreground font-medium">ضد</div>
-                      <div className="flex-1 text-right font-bold text-white group-hover:text-blue-400 transition-colors">{match.team2Name}</div>
-                    </div>
-                  </td>
-                  <td className="p-5">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-sm text-muted-foreground">
-                      <Trophy size={14} className="text-amber-400" />
-                      {match.league}
-                    </span>
-                  </td>
-                  <td className="p-5">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CalendarDays size={14} />
-                      {new Date(match.matchDate).toLocaleDateString('ar-EG')}
-                      <Clock size={14} className="ml-1 opacity-50" />
-                      {new Date(match.matchDate).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}
-                    </div>
-                  </td>
-                  <td className="p-5 text-center">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                      match.status === 'FINISHED' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 
-                      match.status === 'LIVE' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 
-                      'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    }`}>
-                      {match.status === 'LIVE' && <Activity size={12} className="animate-pulse" />}
-                      {match.status === 'FINISHED' ? 'مكتملة' : match.status === 'LIVE' ? 'جارية' : 'قادمة'}
-                    </span>
-                  </td>
-                  <td className="p-5 text-center">
-                    {match.status !== 'FINISHED' && (
-                      <div className="flex gap-2 justify-center flex-wrap">
-                        <Button variant="outline" className="h-8 px-4 text-xs border-white/10 hover:bg-white/10 text-white" onClick={() => handleEditClick(match)}>تعديل</Button>
-                        <div className="w-px h-8 bg-white/10 mx-1"></div>
-                        <Button variant="outline" className="h-8 px-3 text-xs border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10" onClick={() => handleSettle(match.id, 'TEAM_1_WIN')}>فوز 1</Button>
-                        <Button variant="outline" className="h-8 px-3 text-xs border-amber-500/30 text-amber-400 hover:bg-amber-500/10" onClick={() => handleSettle(match.id, 'DRAW')}>تعادل</Button>
-                        <Button variant="outline" className="h-8 px-3 text-xs border-blue-500/30 text-blue-400 hover:bg-blue-500/10" onClick={() => handleSettle(match.id, 'TEAM_2_WIN')}>فوز 2</Button>
-                      </div>
+      {/* Matches Grid (FIFA Style Cards) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {matches.map(match => (
+          <div key={match.id} className="glass rounded-3xl overflow-hidden relative group border border-white/10 hover:border-primary/30 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] flex flex-col">
+            {/* Background Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
+            
+            {/* Status Badge */}
+            <div className="absolute top-4 right-4 z-10">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md ${
+                match.status === 'FINISHED' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 
+                match.status === 'LIVE' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 
+                'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+              }`}>
+                {match.status === 'LIVE' && <Activity size={12} className="animate-pulse" />}
+                {match.status === 'FINISHED' ? 'مكتملة' : match.status === 'LIVE' ? 'جارية الآن' : 'قادمة'}
+              </span>
+            </div>
+            
+            {/* League Badge */}
+            <div className="absolute top-4 left-4 z-10">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-amber-400" title={match.league}>
+                <Trophy size={14} />
+              </span>
+            </div>
+
+            {/* Teams & Score Area */}
+            <div className="pt-12 pb-6 px-6 relative z-10 flex-1">
+              <div className="text-center mb-6">
+                <p className="text-xs text-muted-foreground font-medium mb-1">{match.league}</p>
+                <div className="flex items-center justify-center gap-1.5 text-xs text-white/70">
+                  <CalendarDays size={12} />
+                  <span>{new Date(match.matchDate).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' })}</span>
+                  <span className="mx-1">•</span>
+                  <Clock size={12} />
+                  <span>{new Date(match.matchDate).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
+                {/* Team 1 */}
+                <div className="flex flex-col items-center flex-1">
+                  <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
+                    {match.team1Logo ? (
+                      <img src={`http://localhost:5000${match.team1Logo}`} alt={match.team1Name} className="w-full h-full object-contain" />
+                    ) : (
+                      <ShieldHalf size={28} className="text-primary/50" />
                     )}
-                    {match.status === 'FINISHED' && (
-                      <div className="inline-flex items-center gap-1.5 text-muted-foreground text-xs font-bold bg-white/5 border border-white/10 px-4 py-1.5 rounded-full">
-                        <CheckCircle size={14} className="text-emerald-400" />
-                        نتيجة: {match.result === 'TEAM_1_WIN' ? match.team1Name : match.result === 'TEAM_2_WIN' ? match.team2Name : 'التعادل'}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {matches.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="p-12 text-center">
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <Trophy size={48} className="opacity-20 mb-4" />
-                      <p>لا توجد مباريات حالياً.</p>
-                      <p className="text-sm opacity-60">قم بإضافة مباراة جديدة للبدء.</p>
+                  </div>
+                  <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team1Name}</h3>
+                </div>
+
+                {/* VS or Score */}
+                <div className="flex flex-col items-center justify-center px-2">
+                  {match.status === 'FINISHED' ? (
+                    <div className="bg-primary/20 text-primary border border-primary/30 px-3 py-1.5 rounded-xl font-black text-lg">
+                      نهاية
                     </div>
-                  </td>
-                </tr>
+                  ) : (
+                    <div className="text-xl font-black italic text-white/30 tracking-widest">VS</div>
+                  )}
+                </div>
+
+                {/* Team 2 */}
+                <div className="flex flex-col items-center flex-1">
+                  <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
+                    {match.team2Logo ? (
+                      <img src={`http://localhost:5000${match.team2Logo}`} alt={match.team2Name} className="w-full h-full object-contain" />
+                    ) : (
+                      <ShieldHalf size={28} className="text-blue-400/50" />
+                    )}
+                  </div>
+                  <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team2Name}</h3>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions / Settlement Area */}
+            <div className="p-4 border-t border-white/5 bg-black/20 backdrop-blur-md">
+              {match.status !== 'FINISHED' ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground px-2">
+                    <span>تسوية النتيجة:</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button onClick={() => handleSettle(match.id, 'TEAM_1_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-white/5 hover:border-emerald-500/30 text-emerald-400 text-xs font-bold transition-all text-center">فوز 1</button>
+                    <button onClick={() => handleSettle(match.id, 'DRAW')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-500/30 text-amber-400 text-xs font-bold transition-all text-center">تعادل</button>
+                    <button onClick={() => handleSettle(match.id, 'TEAM_2_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-white/5 hover:border-blue-500/30 text-blue-400 text-xs font-bold transition-all text-center">فوز 2</button>
+                  </div>
+                  <Button variant="outline" className="w-full h-9 text-xs border-white/10 text-white" onClick={() => handleEditClick(match)}>
+                    <Edit size={14} className="mr-1.5" /> تعديل المباراة
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center space-y-3 py-2">
+                  <div className="inline-flex items-center gap-1.5 text-emerald-400 text-sm font-bold bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-full w-full justify-center">
+                    <CheckCircle size={16} />
+                    نتيجة: {match.result === 'TEAM_1_WIN' ? match.team1Name : match.result === 'TEAM_2_WIN' ? match.team2Name : 'التعادل'}
+                  </div>
+                </div>
               )}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {matches.length === 0 && (
+        <div className="glass rounded-3xl p-16 text-center border border-white/5">
+          <div className="flex flex-col items-center justify-center text-muted-foreground">
+            <Trophy size={64} className="opacity-20 mb-6" />
+            <p className="text-xl font-bold text-white mb-2">لا توجد مباريات حالياً.</p>
+            <p className="opacity-60 mb-8">قم بإضافة مباراة جديدة للبدء واستقبال رهانات المستخدمين.</p>
+            <Button onClick={handleAddNewClick} className="shadow-[0_0_20px_rgba(34,197,94,0.2)]">إضافة أول مباراة</Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

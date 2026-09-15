@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import api, { getImageUrl } from '../../api/axios';
+import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
+import { BackendImage } from '../../components/BackendImage';
 import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf, Trash2, Loader2 } from 'lucide-react';
 
 export const AdminMatchesPage: React.FC = () => {
@@ -88,8 +89,8 @@ export const AdminMatchesPage: React.FC = () => {
     });
     setTeam1LogoFile(null);
     setTeam2LogoFile(null);
-    setTeam1LogoPreview(match.team1Logo ? getImageUrl(match.team1Logo) : null);
-    setTeam2LogoPreview(match.team2Logo ? getImageUrl(match.team2Logo) : null);
+    setTeam1LogoPreview(match.team1Logo || null);
+    setTeam2LogoPreview(match.team2Logo || null);
     setEditingMatchId(match.id);
     setShowAddForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -185,7 +186,7 @@ export const AdminMatchesPage: React.FC = () => {
                     </div>
                     {team1LogoPreview && (
                       <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
-                        <img src={team1LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                        <BackendImage src={team1LogoPreview} alt="Preview" className="w-full h-full object-contain" />
                       </div>
                     )}
                   </div>
@@ -206,7 +207,7 @@ export const AdminMatchesPage: React.FC = () => {
                     </div>
                     {team2LogoPreview && (
                       <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
-                        <img src={team2LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                        <BackendImage src={team2LogoPreview} alt="Preview" className="w-full h-full object-contain" />
                       </div>
                     )}
                   </div>
@@ -312,11 +313,7 @@ export const AdminMatchesPage: React.FC = () => {
                 {/* Team 1 */}
                 <div className="flex flex-col items-center flex-1">
                   <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
-                    {match.team1Logo ? (
-                      <img src={getImageUrl(match.team1Logo)} alt={match.team1Name} className="w-full h-full object-contain" />
-                    ) : (
-                      <ShieldHalf size={28} className="text-primary/50" />
-                    )}
+                    <BackendImage src={match.team1Logo} alt={match.team1Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-primary/50" />} />
                   </div>
                   <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team1Name}</h3>
                 </div>
@@ -335,11 +332,7 @@ export const AdminMatchesPage: React.FC = () => {
                 {/* Team 2 */}
                 <div className="flex flex-col items-center flex-1">
                   <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
-                    {match.team2Logo ? (
-                      <img src={getImageUrl(match.team2Logo)} alt={match.team2Name} className="w-full h-full object-contain" />
-                    ) : (
-                      <ShieldHalf size={28} className="text-blue-400/50" />
-                    )}
+                    <BackendImage src={match.team2Logo} alt={match.team2Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-blue-400/50" />} />
                   </div>
                   <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team2Name}</h3>
                 </div>

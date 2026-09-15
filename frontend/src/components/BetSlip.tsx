@@ -19,7 +19,6 @@ interface BetSlipProps {
 }
 
 export const BetSlip: React.FC<BetSlipProps> = ({ selection, onClose, onConfirm }) => {
-  const { t } = useTranslation();
   const [stake, setStake] = useState<number | ''>('');
   const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState('');

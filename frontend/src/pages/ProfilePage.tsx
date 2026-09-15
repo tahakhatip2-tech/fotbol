@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
 
 export const ProfilePage: React.FC = () => {
-  const { t } = useTranslation();
   const [bets, setBets] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -22,8 +19,6 @@ export const ProfilePage: React.FC = () => {
         setBets(betsRes.data);
       } catch (error) {
         console.error('Failed to fetch bets', error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchProfile();

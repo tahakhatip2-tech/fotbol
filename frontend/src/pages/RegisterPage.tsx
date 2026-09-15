@@ -30,7 +30,7 @@ export const RegisterPage: React.FC = () => {
     try {
       // Split full name into first and last name if user only typed one field, 
       // but we have two separate logical fields. Here we just take firstName as typed.
-      const res = await api.post('/auth/register', {
+      await api.post('/auth/register', {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,

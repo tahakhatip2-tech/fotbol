@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
-import { getWallet, getTransactions } from '../api/wallet';
 import api from '../api/axios';
 
 export const WalletPage: React.FC = () => {
@@ -17,7 +16,7 @@ export const WalletPage: React.FC = () => {
   
   // Deposit state
   const [depositAmount, setDepositAmount] = useState('');
-  const [depositMethod, setDepositMethod] = useState('USDT TRC-20');
+  const [depositMethod] = useState('USDT TRC-20');
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
   // Withdraw state

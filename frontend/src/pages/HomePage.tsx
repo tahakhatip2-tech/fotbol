@@ -6,7 +6,7 @@ import { Zap, ShieldCheck, Trophy, ArrowLeft, ArrowRight } from 'lucide-react';
 import { getMatches } from '../api/matches';
 
 export const HomePage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const [featuredMatches, setFeaturedMatches] = useState<any[]>([]);
   const [isLoadingMatches, setIsLoadingMatches] = useState(true);

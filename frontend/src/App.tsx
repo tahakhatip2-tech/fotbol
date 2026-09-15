@@ -16,7 +16,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { HomePage } from './pages/HomePage';
 
 function App() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   // Set RTL layout based on language
   useEffect(() => {

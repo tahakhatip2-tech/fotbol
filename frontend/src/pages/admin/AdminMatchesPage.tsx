@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import api, { getImageUrl } from '../../api/axios';
 import { Button } from '../../components/ui/Button';
-import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf } from 'lucide-react';
+import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf, Trash2, Loader2 } from 'lucide-react';
 
 export const AdminMatchesPage: React.FC = () => {
   const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     team1Name: '', team2Name: '', league: '', matchDate: '', status: 'UPCOMING',
     odds: { team1Win: 1.5, draw: 3.0, team2Win: 2.5 }
@@ -34,6 +35,8 @@ export const AdminMatchesPage: React.FC = () => {
 
   const handleAddOrEditMatch = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const data = new FormData();
       data.append('team1Name', formData.team1Name);
@@ -61,6 +64,8 @@ export const AdminMatchesPage: React.FC = () => {
       alert('✅ ' + (editingMatchId ? 'تم تعديل المباراة بنجاح!' : 'تم إضافة المباراة بنجاح!'));
     } catch (error) {
       alert('حدث خطأ أثناء حفظ المباراة (CORS Issue was bypassed but check network logs if it persists)');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -114,6 +119,17 @@ export const AdminMatchesPage: React.FC = () => {
     }
   };
 
+  const handleDelete = async (matchId: string) => {
+    if (!confirm('هل أنت متأكد من حذف هذه المباراة نهائياً؟ سيتم حذف جميع الرهانات المرتبطة بها!')) return;
+    try {
+      await api.delete(`/admin/matches/${matchId}`);
+      fetchMatches();
+      alert('✅ تم حذف المباراة بنجاح.');
+    } catch (error) {
+      alert('حدث خطأ أثناء الحذف');
+    }
+  };
+
   if (loading) return (
     <div className="flex justify-center items-center h-[60vh]">
       <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
@@ -134,114 +150,122 @@ export const AdminMatchesPage: React.FC = () => {
       </div>
 
       {showAddForm && (
-        <div className="glass p-6 md:p-10 rounded-3xl border border-primary/20 mb-10 relative overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
-          
-          <h2 className="text-2xl font-bold mb-8 flex items-center gap-2 text-white">
-            {editingMatchId ? <Edit size={24} className="text-blue-400" /> : <Plus size={24} className="text-primary" />}
-            {editingMatchId ? 'تعديل بيانات المباراة' : 'إضافة مباراة جديدة'}
-          </h2>
-          
-          <form onSubmit={handleAddOrEditMatch} className="space-y-6 relative z-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Teams Input */}
-              <div className="glass p-6 rounded-2xl border border-white/5 space-y-4">
-                <h3 className="text-lg font-bold text-primary mb-2">بيانات الفرق</h3>
-                <div>
-                  <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الأول (المضيف)</label>
-                  <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: ريال مدريد" value={formData.team1Name} onChange={e => setFormData({...formData, team1Name: e.target.value})} />
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الأول (اختياري)</label>
-                    <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => {
-                      const file = e.target.files ? e.target.files[0] : null;
-                      setTeam1LogoFile(file);
-                      if (file) setTeam1LogoPreview(URL.createObjectURL(file));
-                      else setTeam1LogoPreview(null);
-                    }} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="glass w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-[2rem] p-6 md:p-10 border border-primary/20 relative shadow-[0_15px_60px_rgb(0,0,0,0.5)] scrollbar-hide">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+            
+            <button onClick={() => { setShowAddForm(false); setEditingMatchId(null); }} className="absolute top-6 left-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-colors border border-white/10">
+              <X size={20} />
+            </button>
+
+            <h2 className="text-2xl font-bold mb-8 flex items-center gap-2 text-white">
+              {editingMatchId ? <Edit size={24} className="text-blue-400" /> : <Plus size={24} className="text-primary" />}
+              {editingMatchId ? 'تعديل بيانات المباراة' : 'إضافة مباراة جديدة'}
+            </h2>
+            
+            <form onSubmit={handleAddOrEditMatch} className="space-y-6 relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Teams Input */}
+                <div className="glass p-6 rounded-2xl border border-white/5 space-y-4">
+                  <h3 className="text-lg font-bold text-primary mb-2">بيانات الفرق</h3>
+                  <div>
+                    <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الأول (المضيف)</label>
+                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: ريال مدريد" value={formData.team1Name} onChange={e => setFormData({...formData, team1Name: e.target.value})} />
                   </div>
-                  {team1LogoPreview && (
-                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
-                      <img src={team1LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الأول (اختياري)</label>
+                      <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => {
+                        const file = e.target.files ? e.target.files[0] : null;
+                        setTeam1LogoFile(file);
+                        if (file) setTeam1LogoPreview(URL.createObjectURL(file));
+                        else setTeam1LogoPreview(null);
+                      }} />
+                    </div>
+                    {team1LogoPreview && (
+                      <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
+                        <img src={team1LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="h-px bg-white/5 my-2"></div>
+                  <div>
+                    <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الثاني (الضيف)</label>
+                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: برشلونة" value={formData.team2Name} onChange={e => setFormData({...formData, team2Name: e.target.value})} />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الثاني (اختياري)</label>
+                      <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => {
+                        const file = e.target.files ? e.target.files[0] : null;
+                        setTeam2LogoFile(file);
+                        if (file) setTeam2LogoPreview(URL.createObjectURL(file));
+                        else setTeam2LogoPreview(null);
+                      }} />
+                    </div>
+                    {team2LogoPreview && (
+                      <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
+                        <img src={team2LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+  
+                {/* Match Info Input */}
+                <div className="glass p-6 rounded-2xl border border-white/5 space-y-4">
+                  <h3 className="text-lg font-bold text-amber-400 mb-2">تفاصيل المباراة</h3>
+                  <div>
+                    <label className="block text-sm mb-1.5 text-muted-foreground">اسم البطولة / الدوري</label>
+                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="دوري أبطال أوروبا" value={formData.league} onChange={e => setFormData({...formData, league: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-1.5 text-muted-foreground">تاريخ ووقت المباراة</label>
+                    <input type="datetime-local" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required value={formData.matchDate} onChange={e => setFormData({...formData, matchDate: e.target.value})} />
+                  </div>
+                  {editingMatchId && (
+                    <div>
+                      <label className="block text-sm mb-1.5 text-muted-foreground">حالة المباراة</label>
+                      <select className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+                        <option value="UPCOMING">قادمة (UPCOMING)</option>
+                        <option value="LIVE">جارية الآن (LIVE)</option>
+                        <option value="CANCELLED">ملغاة (CANCELLED)</option>
+                      </select>
                     </div>
                   )}
-                </div>
-                <div className="h-px bg-white/5 my-2"></div>
-                <div>
-                  <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الثاني (الضيف)</label>
-                  <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: برشلونة" value={formData.team2Name} onChange={e => setFormData({...formData, team2Name: e.target.value})} />
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الثاني (اختياري)</label>
-                    <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => {
-                      const file = e.target.files ? e.target.files[0] : null;
-                      setTeam2LogoFile(file);
-                      if (file) setTeam2LogoPreview(URL.createObjectURL(file));
-                      else setTeam2LogoPreview(null);
-                    }} />
-                  </div>
-                  {team2LogoPreview && (
-                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
-                      <img src={team2LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                  
+                  <h3 className="text-lg font-bold mt-8 mb-2 text-primary">الاحتمالات (Odds)</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs mb-1 text-muted-foreground text-center line-clamp-1" title={`فوز ${formData.team1Name || 'الأول'}`}>فوز {formData.team1Name || 'الأول'}</label>
+                      <input type="number" step="0.01" className="w-full bg-background/50 border border-white/10 rounded-xl px-2 py-2 outline-none focus:border-primary text-center font-bold text-primary" required value={formData.odds.team1Win} onChange={e => setFormData({...formData, odds: {...formData.odds, team1Win: parseFloat(e.target.value)}})} />
                     </div>
+                    <div>
+                      <label className="block text-xs mb-1 text-muted-foreground text-center">تعادل</label>
+                      <input type="number" step="0.01" className="w-full bg-background/50 border border-white/10 rounded-xl px-2 py-2 outline-none focus:border-amber-500 text-center font-bold text-amber-500" required value={formData.odds.draw} onChange={e => setFormData({...formData, odds: {...formData.odds, draw: parseFloat(e.target.value)}})} />
+                    </div>
+                    <div>
+                      <label className="block text-xs mb-1 text-muted-foreground text-center line-clamp-1" title={`فوز ${formData.team2Name || 'الثاني'}`}>فوز {formData.team2Name || 'الثاني'}</label>
+                      <input type="number" step="0.01" className="w-full bg-background/50 border border-white/10 rounded-xl px-2 py-2 outline-none focus:border-blue-500 text-center font-bold text-blue-500" required value={formData.odds.team2Win} onChange={e => setFormData({...formData, odds: {...formData.odds, team2Win: parseFloat(e.target.value)}})} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/5">
+                <Button type="submit" disabled={isSubmitting} className="flex-1 h-14 text-lg shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2"><Loader2 className="animate-spin" size={20} /> جاري النشر...</span>
+                  ) : (
+                    editingMatchId ? 'حفظ التعديلات' : 'نشر المباراة'
                   )}
-                </div>
-              </div>
-
-              {/* Match Info Input */}
-              <div className="glass p-6 rounded-2xl border border-white/5 space-y-4">
-                <h3 className="text-lg font-bold text-amber-400 mb-2">تفاصيل المباراة</h3>
-                <div>
-                  <label className="block text-sm mb-1.5 text-muted-foreground">اسم البطولة / الدوري</label>
-                  <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="دوري أبطال أوروبا" value={formData.league} onChange={e => setFormData({...formData, league: e.target.value})} />
-                </div>
-                <div>
-                  <label className="block text-sm mb-1.5 text-muted-foreground">تاريخ ووقت المباراة</label>
-                  <input type="datetime-local" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required value={formData.matchDate} onChange={e => setFormData({...formData, matchDate: e.target.value})} />
-                </div>
-                {editingMatchId && (
-                  <div>
-                    <label className="block text-sm mb-1.5 text-muted-foreground">حالة المباراة</label>
-                    <select className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
-                      <option value="UPCOMING">قادمة (UPCOMING)</option>
-                      <option value="LIVE">جارية الآن (LIVE)</option>
-                      <option value="CANCELLED">ملغاة (CANCELLED)</option>
-                    </select>
-                  </div>
-                )}
-                
-                <h3 className="text-lg font-bold mt-8 mb-2 text-primary">الاحتمالات (Odds)</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs mb-1 text-muted-foreground text-center line-clamp-1" title={`فوز ${formData.team1Name || 'الأول'}`}>فوز {formData.team1Name || 'الأول'}</label>
-                    <input type="number" step="0.01" className="w-full bg-background/50 border border-white/10 rounded-xl px-2 py-2 outline-none focus:border-primary text-center font-bold text-primary" required value={formData.odds.team1Win} onChange={e => setFormData({...formData, odds: {...formData.odds, team1Win: parseFloat(e.target.value)}})} />
-                  </div>
-                  <div>
-                    <label className="block text-xs mb-1 text-muted-foreground text-center">تعادل</label>
-                    <input type="number" step="0.01" className="w-full bg-background/50 border border-white/10 rounded-xl px-2 py-2 outline-none focus:border-amber-500 text-center font-bold text-amber-500" required value={formData.odds.draw} onChange={e => setFormData({...formData, odds: {...formData.odds, draw: parseFloat(e.target.value)}})} />
-                  </div>
-                  <div>
-                    <label className="block text-xs mb-1 text-muted-foreground text-center line-clamp-1" title={`فوز ${formData.team2Name || 'الثاني'}`}>فوز {formData.team2Name || 'الثاني'}</label>
-                    <input type="number" step="0.01" className="w-full bg-background/50 border border-white/10 rounded-xl px-2 py-2 outline-none focus:border-blue-500 text-center font-bold text-blue-500" required value={formData.odds.team2Win} onChange={e => setFormData({...formData, odds: {...formData.odds, team2Win: parseFloat(e.target.value)}})} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/5">
-              <Button type="submit" className="flex-1 h-14 text-lg shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                {editingMatchId ? 'حفظ التعديلات' : 'نشر المباراة'}
-              </Button>
-              {editingMatchId && (
+                </Button>
                 <Button type="button" variant="outline" className="flex-1 h-14 text-lg" onClick={() => { setShowAddForm(false); setEditingMatchId(null); }}>
                   إلغاء
                 </Button>
-              )}
-            </div>
-          </form>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -334,9 +358,14 @@ export const AdminMatchesPage: React.FC = () => {
                     <button onClick={() => handleSettle(match.id, 'DRAW')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-500/30 text-amber-400 text-xs font-bold transition-all text-center">تعادل</button>
                     <button onClick={() => handleSettle(match.id, 'TEAM_2_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-white/5 hover:border-blue-500/30 text-blue-400 text-xs font-bold transition-all text-center">فوز 2</button>
                   </div>
-                  <Button variant="outline" className="w-full h-9 text-xs border-white/10 text-white" onClick={() => handleEditClick(match)}>
-                    <Edit size={14} className="mr-1.5" /> تعديل المباراة
-                  </Button>
+                  <div className="flex gap-2 mt-3">
+                    <Button variant="outline" className="flex-1 h-9 text-xs border-white/10 text-white" onClick={() => handleEditClick(match)}>
+                      <Edit size={14} className="mr-1.5" /> تعديل
+                    </Button>
+                    <Button variant="outline" className="flex-1 h-9 text-xs border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => handleDelete(match.id)}>
+                      <Trash2 size={14} className="mr-1.5" /> حذف
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center space-y-3 py-2">

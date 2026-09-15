@@ -321,3 +321,24 @@ export const processTransaction = async (req: Request, res: Response) => {
   }
 };
 
+// Delete a Match
+export const deleteMatch = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+
+    const match = await prisma.match.findUnique({ where: { id } });
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+
+    // Delete related records to prevent foreign key constraint errors
+    await prisma.$transaction([
+      prisma.odds.deleteMany({ where: { matchId: id } }),
+      prisma.settlement.deleteMany({ where: { matchId: id } }),
+      prisma.bet.deleteMany({ where: { matchId: id } }),
+      prisma.match.delete({ where: { id } })
+    ]);
+
+    res.json({ message: 'Match deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error deleting match' });
+  }
+};

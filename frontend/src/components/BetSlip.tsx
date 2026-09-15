@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Button } from './ui/Button';
 import { placeBet } from '../api/matches';
 

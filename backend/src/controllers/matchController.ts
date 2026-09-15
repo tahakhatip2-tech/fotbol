@@ -12,8 +12,8 @@ export const getMatches = async (req: Request, res: Response) => {
       orderBy: { matchDate: 'asc' }
     });
     res.json(matches);
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 };
 
@@ -34,7 +34,7 @@ export const getMatchById = async (req: Request, res: Response) => {
     }
     
     res.json(match);
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 };

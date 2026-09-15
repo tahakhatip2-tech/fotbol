@@ -34,3 +34,13 @@ api.interceptors.response.use((response) => response, (error) => {
   }
   return Promise.reject(error);
 });
+
+export const getImageUrl = (path: string | undefined | null) => {
+  if (!path) return '';
+  // Check if it's already an absolute URL
+  if (path.startsWith('http')) return path;
+  
+  const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000/api');
+  const rootURL = baseURL.replace(/\/api$/, '');
+  return `${rootURL}${path.startsWith('/') ? '' : '/'}${path}`;
+};

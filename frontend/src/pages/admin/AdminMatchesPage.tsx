@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../api/axios';
+import api, { getImageUrl } from '../../api/axios';
 import { Button } from '../../components/ui/Button';
 import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf } from 'lucide-react';
 
@@ -14,6 +14,8 @@ export const AdminMatchesPage: React.FC = () => {
   });
   const [team1LogoFile, setTeam1LogoFile] = useState<File | null>(null);
   const [team2LogoFile, setTeam2LogoFile] = useState<File | null>(null);
+  const [team1LogoPreview, setTeam1LogoPreview] = useState<string | null>(null);
+  const [team2LogoPreview, setTeam2LogoPreview] = useState<string | null>(null);
 
   const fetchMatches = async () => {
     try {
@@ -53,7 +55,10 @@ export const AdminMatchesPage: React.FC = () => {
       setEditingMatchId(null);
       setTeam1LogoFile(null);
       setTeam2LogoFile(null);
+      setTeam1LogoPreview(null);
+      setTeam2LogoPreview(null);
       fetchMatches();
+      alert('✅ ' + (editingMatchId ? 'تم تعديل المباراة بنجاح!' : 'تم إضافة المباراة بنجاح!'));
     } catch (error) {
       alert('حدث خطأ أثناء حفظ المباراة (CORS Issue was bypassed but check network logs if it persists)');
     }
@@ -78,6 +83,8 @@ export const AdminMatchesPage: React.FC = () => {
     });
     setTeam1LogoFile(null);
     setTeam2LogoFile(null);
+    setTeam1LogoPreview(match.team1Logo ? getImageUrl(match.team1Logo) : null);
+    setTeam2LogoPreview(match.team2Logo ? getImageUrl(match.team2Logo) : null);
     setEditingMatchId(match.id);
     setShowAddForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -91,6 +98,8 @@ export const AdminMatchesPage: React.FC = () => {
     });
     setTeam1LogoFile(null);
     setTeam2LogoFile(null);
+    setTeam1LogoPreview(null);
+    setTeam2LogoPreview(null);
     setEditingMatchId(null);
     setShowAddForm(!showAddForm);
   };
@@ -143,18 +152,42 @@ export const AdminMatchesPage: React.FC = () => {
                   <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الأول (المضيف)</label>
                   <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: ريال مدريد" value={formData.team1Name} onChange={e => setFormData({...formData, team1Name: e.target.value})} />
                 </div>
-                <div>
-                  <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الأول (اختياري)</label>
-                  <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => setTeam1LogoFile(e.target.files ? e.target.files[0] : null)} />
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الأول (اختياري)</label>
+                    <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => {
+                      const file = e.target.files ? e.target.files[0] : null;
+                      setTeam1LogoFile(file);
+                      if (file) setTeam1LogoPreview(URL.createObjectURL(file));
+                      else setTeam1LogoPreview(null);
+                    }} />
+                  </div>
+                  {team1LogoPreview && (
+                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
+                      <img src={team1LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                    </div>
+                  )}
                 </div>
                 <div className="h-px bg-white/5 my-2"></div>
                 <div>
                   <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الثاني (الضيف)</label>
                   <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: برشلونة" value={formData.team2Name} onChange={e => setFormData({...formData, team2Name: e.target.value})} />
                 </div>
-                <div>
-                  <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الثاني (اختياري)</label>
-                  <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => setTeam2LogoFile(e.target.files ? e.target.files[0] : null)} />
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm mb-1.5 text-muted-foreground">شعار الفريق الثاني (اختياري)</label>
+                    <input type="file" accept="image/*" className="w-full text-sm text-muted-foreground file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-white/10 rounded-xl bg-background/50" onChange={e => {
+                      const file = e.target.files ? e.target.files[0] : null;
+                      setTeam2LogoFile(file);
+                      if (file) setTeam2LogoPreview(URL.createObjectURL(file));
+                      else setTeam2LogoPreview(null);
+                    }} />
+                  </div>
+                  {team2LogoPreview && (
+                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-lg mt-5">
+                      <img src={team2LogoPreview} alt="Preview" className="w-full h-full object-contain" />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -256,7 +289,7 @@ export const AdminMatchesPage: React.FC = () => {
                 <div className="flex flex-col items-center flex-1">
                   <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
                     {match.team1Logo ? (
-                      <img src={`http://localhost:5000${match.team1Logo}`} alt={match.team1Name} className="w-full h-full object-contain" />
+                      <img src={getImageUrl(match.team1Logo)} alt={match.team1Name} className="w-full h-full object-contain" />
                     ) : (
                       <ShieldHalf size={28} className="text-primary/50" />
                     )}
@@ -279,7 +312,7 @@ export const AdminMatchesPage: React.FC = () => {
                 <div className="flex flex-col items-center flex-1">
                   <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
                     {match.team2Logo ? (
-                      <img src={`http://localhost:5000${match.team2Logo}`} alt={match.team2Name} className="w-full h-full object-contain" />
+                      <img src={getImageUrl(match.team2Logo)} alt={match.team2Name} className="w-full h-full object-contain" />
                     ) : (
                       <ShieldHalf size={28} className="text-blue-400/50" />
                     )}

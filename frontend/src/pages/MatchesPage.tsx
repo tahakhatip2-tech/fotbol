@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
 import { BetSlip } from '../components/BetSlip';
 import { getMatches } from '../api/matches';
+import { getImageUrl } from '../api/axios';
 import { Trophy, ShieldHalf, CalendarDays, Clock, Activity } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
@@ -95,7 +96,7 @@ export const MatchesPage: React.FC = () => {
                   <div className="flex flex-col items-center flex-1">
                     <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
                       {match.team1Logo ? (
-                        <img src={`http://localhost:5000${match.team1Logo}`} alt={match.team1Name} className="w-full h-full object-contain" />
+                        <img src={getImageUrl(match.team1Logo)} alt={match.team1Name} className="w-full h-full object-contain" />
                       ) : (
                         <ShieldHalf size={28} className="text-primary/50" />
                       )}
@@ -112,7 +113,7 @@ export const MatchesPage: React.FC = () => {
                   <div className="flex flex-col items-center flex-1">
                     <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
                       {match.team2Logo ? (
-                        <img src={`http://localhost:5000${match.team2Logo}`} alt={match.team2Name} className="w-full h-full object-contain" />
+                        <img src={getImageUrl(match.team2Logo)} alt={match.team2Name} className="w-full h-full object-contain" />
                       ) : (
                         <ShieldHalf size={28} className="text-blue-400/50" />
                       )}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { login } from '../api/auth';
+import { Eye, EyeOff } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
@@ -11,6 +12,7 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleTelegramLogin = () => {
     // In a real app, this would open the Telegram OAuth popup
@@ -58,14 +60,24 @@ export const LoginPage: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm text-muted-foreground mb-2">كلمة المرور</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors focus:bg-background"
-              placeholder="********"
-              required
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 pl-12 outline-none focus:border-primary transition-colors focus:bg-background text-left"
+                dir="ltr"
+                placeholder="********"
+                required
+              />
+              <button 
+                type="button" 
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-white transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <div className="flex justify-between items-center text-sm">
             <label className="flex items-center gap-2 cursor-pointer">

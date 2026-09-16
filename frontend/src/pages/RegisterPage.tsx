@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import api from '../api/axios';
+import { Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
@@ -17,6 +18,11 @@ export const RegisterPage: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  const isMatch = formData.confirmPassword.length > 0 && formData.password === formData.confirmPassword;
+  const isMismatch = formData.confirmPassword.length > 0 && formData.password !== formData.confirmPassword;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,25 +116,49 @@ export const RegisterPage: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm text-muted-foreground mb-2">كلمة المرور</label>
-            <input 
-              type="password" 
-              required
-              value={formData.password}
-              onChange={e => setFormData({...formData, password: e.target.value})}
-              className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors focus:bg-background"
-              placeholder="********"
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                required
+                value={formData.password}
+                onChange={e => setFormData({...formData, password: e.target.value})}
+                className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 pl-12 outline-none focus:border-primary transition-colors focus:bg-background text-left"
+                dir="ltr"
+                placeholder="********"
+              />
+              <button 
+                type="button" 
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-white transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <div>
-            <label className="block text-sm text-muted-foreground mb-2">تأكيد كلمة المرور</label>
-            <input 
-              type="password" 
-              required
-              value={formData.confirmPassword}
-              onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
-              className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors focus:bg-background"
-              placeholder="********"
-            />
+            <div className="flex justify-between mb-2">
+              <label className="block text-sm text-muted-foreground">تأكيد كلمة المرور</label>
+              {isMatch && <span className="text-xs text-emerald-400 flex items-center gap-1"><CheckCircle2 size={12} /> متطابقة</span>}
+              {isMismatch && <span className="text-xs text-red-400 flex items-center gap-1"><XCircle size={12} /> غير متطابقة</span>}
+            </div>
+            <div className="relative">
+              <input 
+                type={showConfirmPassword ? "text" : "password"} 
+                required
+                value={formData.confirmPassword}
+                onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
+                className={`w-full bg-background/50 border rounded-xl px-4 py-3 pl-12 outline-none transition-colors focus:bg-background text-left ${isMatch ? 'border-emerald-500/50 focus:border-emerald-500' : isMismatch ? 'border-red-500/50 focus:border-red-500' : 'border-border/50 focus:border-primary'}`}
+                dir="ltr"
+                placeholder="********"
+              />
+              <button 
+                type="button" 
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-white transition-colors"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           
           <Button disabled={isLoading} className="w-full mt-6 h-11 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]" type="submit">

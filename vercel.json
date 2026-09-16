@@ -1,6 +1,6 @@
 {
+  "buildCommand": "cd frontend && npm install && npm run build && cd .. && npx prisma generate --schema=./backend/prisma/schema.prisma",
   "outputDirectory": "frontend/dist",
-  "framework": "vite",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -13,7 +13,8 @@
   ],
   "functions": {
     "api/index.ts": {
-      "includeFiles": "backend/prisma/**"
+      "includeFiles": "backend/prisma/**",
+      "maxDuration": 30
     }
   }
 }

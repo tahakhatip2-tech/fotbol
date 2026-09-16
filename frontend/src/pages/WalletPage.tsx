@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
 import api from '../api/axios';
+import { HeroSection } from '../components/ui/HeroSection';
 
 export const WalletPage: React.FC = () => {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export const WalletPage: React.FC = () => {
   const fetchData = async () => {
     try {
       const res = await api.get('/wallet');
-      if (res.data.wallet) {
+      if (res.data && res.data.wallet) {
         setBalance(res.data.wallet.balance);
         setLockedBalance(res.data.wallet.lockedBalance);
       }
@@ -61,7 +62,7 @@ export const WalletPage: React.FC = () => {
       setReceiptFile(null);
       fetchData();
     } catch (err) {
-      alert('حدث خطأ أثناء إرسال الطلب');
+      alert('حدث خطأ أثناء رفع الطلب');
     }
   };
 
@@ -87,28 +88,27 @@ export const WalletPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">{t('wallet')}</h1>
+    <div className="animate-in fade-in duration-500 min-h-screen">
+      <HeroSection 
+        title={`$${balance.toFixed(2)}`}
+        subtitle="الرصيد المتاح"
+        minHeight="min-h-[45vh]"
+        badge="💳 محفظتي"
+      >
+        <div className="flex gap-4 mt-6 justify-center w-full max-w-sm mx-auto">
+          <Button size="lg" className="flex-1 shadow-[0_0_15px_rgba(34,197,94,0.4)] text-lg" onClick={() => setShowDeposit(true)}>إيداع</Button>
+          <Button size="lg" variant="outline" className="flex-1 border-slate-300 bg-white/50 text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-lg" onClick={() => setShowWithdraw(true)}>سحب</Button>
+        </div>
+      </HeroSection>
       
-      <div className="grid md:grid-cols-2 gap-6 mb-12">
-        <div className="glass p-8 rounded-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
-          <h2 className="text-lg text-muted-foreground mb-2 relative z-10">الرصيد المتاح</h2>
-          <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-green-300 relative z-10">${balance.toFixed(2)}</div>
-          <div className="flex gap-4 mt-8 relative z-10">
-            <Button className="flex-1 shadow-[0_0_15px_rgba(34,197,94,0.4)]" onClick={() => setShowDeposit(true)}>إيداع</Button>
-            <Button variant="outline" className="flex-1 bg-background/50 border-border/50 hover:border-primary" onClick={() => setShowWithdraw(true)}>سحب</Button>
+      <div className="container mx-auto px-4 py-8 -mt-8 relative z-20">
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          <div className="glass p-8 rounded-2xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/20 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+            <h2 className="text-lg text-slate-600 mb-2 relative z-10">الرصيد المعلق (في الرهانات)</h2>
+            <div className="text-4xl font-bold text-slate-400 relative z-10">${lockedBalance.toFixed(2)}</div>
           </div>
         </div>
-
-        <div className="glass p-8 rounded-2xl relative overflow-hidden">
-          <h2 className="text-lg text-muted-foreground mb-2 relative z-10">الرصيد المعلق (في الرهانات والسحوبات)</h2>
-          <div className="text-4xl font-bold text-muted-foreground relative z-10">${lockedBalance.toFixed(2)}</div>
-          <p className="text-sm text-muted-foreground/70 mt-6 relative z-10 leading-relaxed">
-            هذا الرصيد محجوز لرهانات نشطة أو عمليات سحب قيد المعالجة ولا يمكن سحبه حالياً.
-          </p>
-        </div>
-      </div>
 
       {showDeposit && (
         <div className="glass p-8 rounded-2xl mb-12 border border-border/20">
@@ -196,6 +196,7 @@ export const WalletPage: React.FC = () => {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 };

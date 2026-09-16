@@ -35,13 +35,13 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground dark">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Navbar */}
       <header className="glass sticky top-0 z-40 border-b border-border/40">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <Link to="/" className="text-3xl font-black bg-gradient-to-r from-primary to-green-300 bg-clip-text text-transparent tracking-tighter flex items-center gap-2">
             <img src="/logo.jpg" alt="Goolbet Logo" className="w-10 h-10 object-cover rounded-full border border-primary/30" />
-            <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-l from-emerald-500 to-emerald-400 drop-shadow-md">Goolbet</span>
+            <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.1)] pb-1">Goolbet</span>
           </Link>
           
           <nav className="hidden md:flex gap-6">
@@ -58,11 +58,18 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 <div className="relative" ref={dropdownRef}>
                   <button 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center gap-2 bg-secondary/50 hover:bg-secondary/80 border border-border/50 rounded-full py-1.5 px-2 md:px-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-white shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
                   >
-                    <Menu size={20} className="text-muted-foreground ml-1" />
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold shadow-inner">
-                      {user?.firstName?.[0] || 'U'}
+                    <span className="text-primary font-black text-lg">
+                      {user?.firstName?.[0]?.toUpperCase() || 'U'}
+                    </span>
+                    
+                    {/* Green Online Dot (Facebook style) */}
+                    <div className="absolute top-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                    
+                    {/* Small Hamburger Icon Badge */}
+                    <div className="absolute -bottom-1 -left-1 bg-slate-100 border border-white rounded-full p-0.5 shadow-sm">
+                      <Menu size={12} className="text-slate-700" />
                     </div>
                   </button>
                   
@@ -112,7 +119,7 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 relative z-10 pt-8 pb-24 md:pb-16">
+      <main className="flex-1 relative z-10 pb-24 md:pb-16">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background -z-10"></div>
         {children}
       </main>

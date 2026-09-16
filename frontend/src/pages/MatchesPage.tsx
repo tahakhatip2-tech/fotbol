@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import { BetSlip } from '../components/BetSlip';
 import { getMatches } from '../api/matches';
 import { BackendImage } from '../components/BackendImage';
+import { HeroSection } from '../components/ui/HeroSection';
 import { Trophy, ShieldHalf, CalendarDays, Clock, Activity } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
@@ -28,18 +29,20 @@ export const MatchesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200 tracking-tight">{t('matches')}</h1>
-          <p className="text-muted-foreground mt-2 text-sm">توقع، راهن، واربح مع أقوى المباريات العالمية.</p>
+    <div className="animate-in fade-in duration-500 min-h-screen">
+      <HeroSection 
+        title={t('matches')}
+        subtitle="توقع، راهن، واربح مع أقوى المباريات العالمية."
+        minHeight="min-h-[40vh]"
+      >
+        <div className="flex gap-2 justify-end w-full md:w-auto bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-white/60 shadow-sm mt-6">
+          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-6 bg-primary text-white rounded-xl shadow-sm">الكل</Button>
+          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-6 text-slate-600 hover:text-slate-900 rounded-xl">مباشر</Button>
+          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-6 text-slate-600 hover:text-slate-900 rounded-xl">قادمة</Button>
         </div>
-        <div className="flex gap-2 w-full md:w-auto bg-white/5 p-1 rounded-xl border border-white/10">
-          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-4 bg-primary/20 text-primary">الكل</Button>
-          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-4 text-muted-foreground hover:text-white">مباشر</Button>
-          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-4 text-muted-foreground hover:text-white">قادمة</Button>
-        </div>
-      </div>
+      </HeroSection>
+
+      <div className="container mx-auto px-4 py-12">
 
       {isLoading ? (
         <div className="flex justify-center items-center h-[40vh]">
@@ -156,6 +159,7 @@ export const MatchesPage: React.FC = () => {
           setSelectedBet(null);
         }} 
       />
+    </div>
     </div>
   );
 };

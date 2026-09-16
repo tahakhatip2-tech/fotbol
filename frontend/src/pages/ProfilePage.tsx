@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { Mail, Trophy, Activity, Wallet, ShieldCheck, Crown } from 'lucide-react';
 
+import { HeroSection } from '../components/ui/HeroSection';
+
 export const ProfilePage: React.FC = () => {
   const [bets, setBets] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
@@ -71,56 +73,32 @@ export const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      {/* Premium Profile Header */}
-      <div className="relative mb-16 mt-8">
-        {/* Background Glows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[150%] bg-gradient-to-r from-primary/10 via-amber-500/5 to-primary/10 blur-[100px] -z-10 rounded-full pointer-events-none"></div>
-        
-        <div className="glass p-1 rounded-3xl relative overflow-hidden shadow-2xl border border-white/5">
-          {/* Cover Photo Area */}
-          <div className="h-32 md:h-48 bg-gradient-to-r from-secondary/80 to-background rounded-t-[22px] relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background/90 to-transparent"></div>
+    <div className="animate-in fade-in duration-500 min-h-screen">
+      <HeroSection 
+        title={`${user?.firstName || ''} ${user?.lastName || ''}`}
+        badge="👤 حسابي الشخصي"
+        minHeight="min-h-[40vh]"
+      >
+        <div className="flex flex-col items-center gap-4 mt-4">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-4 border-white flex items-center justify-center relative shadow-xl overflow-hidden">
+            <span className="text-4xl font-black text-primary drop-shadow-sm">
+              {user?.firstName?.[0]?.toUpperCase() || 'U'}
+            </span>
+            {user?.role === 'ADMIN' && (
+              <div className="absolute bottom-1 bg-amber-500 text-black text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                <ShieldCheck size={10} />
+                ADMIN
+              </div>
+            )}
           </div>
-          
-          <div className="px-6 pb-8 md:px-10 relative">
-            <div className="flex flex-col md:flex-row gap-6 items-center md:items-end -mt-16 md:-mt-20">
-              {/* Avatar */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full group-hover:bg-primary/50 transition-all duration-500"></div>
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-background to-secondary border-4 border-background flex items-center justify-center relative z-10 shadow-2xl overflow-hidden">
-                  <span className="text-5xl font-black bg-gradient-to-br from-primary to-emerald-200 bg-clip-text text-transparent">
-                    {user?.firstName?.[0]?.toUpperCase() || 'U'}
-                  </span>
-                  {user?.role === 'ADMIN' && (
-                    <div className="absolute bottom-2 bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-[0_0_10px_rgba(245,158,11,0.5)]">
-                      <ShieldCheck size={12} />
-                      ADMIN
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* User Info */}
-              <div className="flex-1 text-center md:text-right pb-2">
-                <div className="flex flex-col md:flex-row md:items-center gap-3 justify-center md:justify-end mb-2">
-                  <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-                    {user?.firstName} {user?.lastName}
-                  </h1>
-                  {user?.role === 'ADMIN' && (
-                    <Crown size={24} className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)] hidden md:block" />
-                  )}
-                </div>
-                <div className="flex items-center justify-center md:justify-end gap-2 text-muted-foreground bg-secondary/30 w-fit mx-auto md:ml-0 md:mr-0 px-4 py-1.5 rounded-full border border-border/30">
-                  <Mail size={14} />
-                  <span className="text-sm">{user?.email}</span>
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center gap-2 text-slate-600 bg-white/50 px-5 py-2 rounded-full border border-slate-200 shadow-sm backdrop-blur-sm font-medium">
+            <Mail size={16} />
+            <span>{user?.email}</span>
           </div>
         </div>
-      </div>
+      </HeroSection>
+
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
@@ -219,6 +197,7 @@ export const ProfilePage: React.FC = () => {
           </section>
         </div>
       </div>
+    </div>
     </div>
   );
 };

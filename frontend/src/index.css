@@ -4,65 +4,61 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Facebook-like light gray background */
+    --background: 220 14% 96%;
+    --foreground: 222.2 47.4% 11.2%;
 
+    /* Pure white cards */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222.2 47.4% 11.2%;
  
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222.2 47.4% 11.2%;
  
-    --primary: 142.1 76.2% 36.3%; /* Vibrant Green */
-    --primary-foreground: 355.7 100% 97.3%;
+    /* Primary: Brand Blue */
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
  
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    /* Secondary/Accent: Brand Green */
+    --secondary: 142.1 76.2% 36.3%;
+    --secondary-foreground: 355.7 100% 97.3%;
  
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
  
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 142.1 76.2% 36.3%;
+    --accent-foreground: 355.7 100% 97.3%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 142.1 76.2% 36.3%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
  
     --radius: 0.75rem;
   }
  
   .dark {
-    --background: 222.2 84% 4.9%; /* Deep Dark Blue/Gray */
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
- 
-    --card: 222.2 84% 8%; /* Slightly lighter than background */
+    --card: 222.2 84% 8%;
     --card-foreground: 210 40% 98%;
- 
     --popover: 222.2 84% 8%;
     --popover-foreground: 210 40% 98%;
- 
-    --primary: 142.1 70.6% 45.3%; /* Bright Neon Green */
-    --primary-foreground: 144.9 80.4% 10%;
- 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
- 
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 142.1 70.6% 45.3%;
+    --secondary-foreground: 144.9 80.4% 10%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
- 
+    --accent: 142.1 70.6% 45.3%;
+    --accent-foreground: 144.9 80.4% 10%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
- 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 142.1 70.6% 45.3%;
+    --ring: 221 83% 53%;
   }
 }
  
@@ -74,13 +70,12 @@
     @apply bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground;
   }
   
-  /* Smooth transitions */
   button, a, input {
     @apply transition-all duration-300 ease-in-out;
   }
 
-  /* Glassmorphism utility */
+  /* Glassmorphism for Light Mode */
   .glass {
-    @apply bg-card/60 backdrop-blur-md border border-white/10 shadow-xl;
+    @apply bg-white/80 backdrop-blur-md border border-slate-200/50 shadow-sm;
   }
 }

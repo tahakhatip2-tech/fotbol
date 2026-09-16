@@ -2,10 +2,18 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// In Vercel serverless, /var/task is read-only. Use /tmp which is writable.
+// Locally, use the standard uploads directory.
+const uploadDir = process.env.VERCEL
+  ? '/tmp/uploads'
+  : path.join(__dirname, '../../uploads');
+
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (e) {
+  console.warn('Could not create upload dir:', (e as Error).message);
 }
 
 const storage = multer.diskStorage({

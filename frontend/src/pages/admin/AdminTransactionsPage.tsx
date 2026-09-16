@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
-import { Receipt, Check, X, CreditCard, ExternalLink, Activity } from 'lucide-react';
+import { Receipt, Check, X, CreditCard, ExternalLink } from 'lucide-react';
 
 export const AdminTransactionsPage: React.FC = () => {
   const [transactions, setTransactions] = useState<any[]>([]);

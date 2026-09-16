@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { Trophy, Wallet, User, Menu, LogOut, Settings, LayoutDashboard } from 'lucide-react';
+import { Trophy, Wallet, User, Menu, LogOut, LayoutDashboard } from 'lucide-react';
 
 export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();

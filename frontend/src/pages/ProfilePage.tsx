@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { User, Mail, Trophy, Activity, Wallet, ShieldCheck, Crown } from 'lucide-react';
+import { Mail, Trophy, Activity, Wallet, ShieldCheck, Crown } from 'lucide-react';
 
 export const ProfilePage: React.FC = () => {
   const [bets, setBets] = useState<any[]>([]);

@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import prisma from '../config/db';
 import { MatchStatus } from '@prisma/client';
+import { uploadFileToSupabase } from '../utils/supabaseStorage';
+import fs from 'fs';
 
 // Get Dashboard Stats
 export const getStats = async (req: Request, res: Response) => {
@@ -88,10 +90,21 @@ export const createMatch = async (req: Request, res: Response) => {
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     if (files && files['team1Logo']) {
-      team1Logo = `/uploads/${files['team1Logo'][0].filename}`;
+      const file = files['team1Logo'][0];
+      try {
+        team1Logo = await uploadFileToSupabase(file.path, file.filename, file.mimetype);
+      } finally {
+        // Clean up temp file
+        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+      }
     }
     if (files && files['team2Logo']) {
-      team2Logo = `/uploads/${files['team2Logo'][0].filename}`;
+      const file = files['team2Logo'][0];
+      try {
+        team2Logo = await uploadFileToSupabase(file.path, file.filename, file.mimetype);
+      } finally {
+        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+      }
     }
 
     const match = await prisma.match.create({
@@ -136,10 +149,20 @@ export const updateMatch = async (req: Request, res: Response) => {
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     if (files && files['team1Logo']) {
-      team1Logo = `/uploads/${files['team1Logo'][0].filename}`;
+      const file = files['team1Logo'][0];
+      try {
+        team1Logo = await uploadFileToSupabase(file.path, file.filename, file.mimetype);
+      } finally {
+        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+      }
     }
     if (files && files['team2Logo']) {
-      team2Logo = `/uploads/${files['team2Logo'][0].filename}`;
+      const file = files['team2Logo'][0];
+      try {
+        team2Logo = await uploadFileToSupabase(file.path, file.filename, file.mimetype);
+      } finally {
+        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+      }
     }
 
     // Check if match exists and is not finished

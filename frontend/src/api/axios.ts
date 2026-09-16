@@ -37,9 +37,10 @@ api.interceptors.response.use((response) => response, (error) => {
 
 export const getImageUrl = (path: string | undefined | null) => {
   if (!path) return '';
-  // Check if it's already an absolute URL
+  // Absolute URL (Supabase Storage, or any CDN) - use directly
   if (path.startsWith('http')) return path;
   
+  // Relative path like /uploads/filename.jpg - prepend backend root
   const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000/api');
   const rootURL = baseURL.replace(/\/api$/, '');
   return `${rootURL}${path.startsWith('/') ? '' : '/'}${path}`;

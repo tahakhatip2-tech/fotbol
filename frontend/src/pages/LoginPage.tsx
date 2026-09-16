@@ -33,9 +33,18 @@ export const LoginPage: React.FC = () => {
       navigate('/');
     } catch (err: any) {
       console.error('Login error:', err);
-      // Detailed error for debugging:
-      const detailedError = err.response?.data?.error || err.message || JSON.stringify(err);
-      setError(`خطأ: ${detailedError}`);
+      // Extract error message robustly - handle all formats from API
+      let errorMessage = 'حدث خطأ، حاول مرة أخرى';
+      if (err?.response?.data) {
+        const data = err.response.data;
+        if (typeof data === 'string') errorMessage = data;
+        else if (typeof data.error === 'string') errorMessage = data.error;
+        else if (typeof data.message === 'string') errorMessage = data.message;
+        else errorMessage = JSON.stringify(data);
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+      setError(`خطأ: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

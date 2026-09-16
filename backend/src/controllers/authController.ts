@@ -7,7 +7,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey123';
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, firstName, lastName } = req.body;
+    const { password, firstName, lastName } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
     
     // Check if user exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -37,7 +38,8 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
     
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.passwordHash) {

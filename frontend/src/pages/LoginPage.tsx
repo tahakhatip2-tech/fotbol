@@ -26,7 +26,8 @@ export const LoginPage: React.FC = () => {
     setError('');
     setIsLoading(true);
     try {
-      await login({ email, password });
+      const formattedEmail = email.trim().toLowerCase();
+      await login({ email: formattedEmail, password });
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'فشل تسجيل الدخول. يرجى التأكد من البيانات.');

@@ -28,18 +28,19 @@ export const RegisterPage: React.FC = () => {
 
     setIsLoading(true);
     try {
+      const formattedEmail = formData.email.trim().toLowerCase();
       // Split full name into first and last name if user only typed one field, 
       // but we have two separate logical fields. Here we just take firstName as typed.
       await api.post('/auth/register', {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        email: formData.email,
+        email: formattedEmail,
         password: formData.password
       });
       
       // Attempt login immediately after registration
       const loginRes = await api.post('/auth/login', {
-        email: formData.email,
+        email: formattedEmail,
         password: formData.password
       });
 

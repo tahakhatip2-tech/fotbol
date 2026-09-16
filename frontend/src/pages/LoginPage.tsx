@@ -32,7 +32,10 @@ export const LoginPage: React.FC = () => {
       await login({ email: formattedEmail, password });
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'فشل تسجيل الدخول. يرجى التأكد من البيانات.');
+      console.error('Login error:', err);
+      // Detailed error for debugging:
+      const detailedError = err.response?.data?.error || err.message || JSON.stringify(err);
+      setError(`خطأ: ${detailedError}`);
     } finally {
       setIsLoading(false);
     }

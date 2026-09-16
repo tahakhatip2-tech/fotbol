@@ -27,7 +27,7 @@ export const AdminLayout: React.FC = () => {
       {/* Mobile Header */}
       <div className="md:hidden glass border-b border-white/5 px-4 h-16 flex justify-between items-center relative z-40 shrink-0">
         <div className="flex items-center gap-2">
-          <img src="/logo.jpg" alt="Fotbol Logo" className="w-8 h-8 object-cover rounded-full border border-primary/30 shadow-[0_0_10px_rgba(34,197,94,0.3)]" />
+          <img src="/logo.jpg" alt="Goolbet Logo" className="w-8 h-8 object-cover rounded-full border border-primary/30 shadow-[0_0_10px_rgba(34,197,94,0.3)]" />
           <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200">الإدارة</h2>
         </div>
         <button 
@@ -61,7 +61,7 @@ export const AdminLayout: React.FC = () => {
           <div className="hidden md:flex items-center gap-4 mb-12">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/40 blur-lg rounded-full"></div>
-              <img src="/logo.jpg" alt="Fotbol Logo" className="w-12 h-12 object-cover rounded-full border-2 border-primary/50 relative z-10" />
+              <img src="/logo.jpg" alt="Goolbet Logo" className="w-12 h-12 object-cover rounded-full border-2 border-primary/50 relative z-10" />
             </div>
             <div>
               <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200 tracking-tight">لوحة الإدارة</h2>

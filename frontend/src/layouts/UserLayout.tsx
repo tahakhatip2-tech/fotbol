@@ -40,8 +40,8 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       <header className="glass sticky top-0 z-40 border-b border-border/40">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <Link to="/" className="text-3xl font-black bg-gradient-to-r from-primary to-green-300 bg-clip-text text-transparent tracking-tighter flex items-center gap-2">
-            <img src="/logo.jpg" alt="Fotbol Logo" className="w-10 h-10 object-cover rounded-full border border-primary/30" />
-            Fotbol
+            <img src="/logo.jpg" alt="Goolbet Logo" className="w-10 h-10 object-cover rounded-full border border-primary/30" />
+            <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-l from-emerald-500 to-emerald-400 drop-shadow-md">Goolbet</span>
           </Link>
           
           <nav className="hidden md:flex gap-6">
@@ -136,8 +136,8 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       {/* Footer */}
       <footer className="glass border-t border-border/40 mt-auto py-8 mb-16 md:mb-0 hidden md:block">
         <div className="container mx-auto px-4 text-center flex flex-col items-center gap-4">
-          <img src="/logo.jpg" alt="Fotbol Logo" className="w-12 h-12 object-cover rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)] border border-primary/20" />
-          <p className="text-muted-foreground">© 2026 Fotbol. All rights reserved.</p>
+          <img src="/logo.jpg" alt="Goolbet Logo" className="w-12 h-12 object-cover rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)] border border-primary/20" />
+          <p className="text-muted-foreground">© 2026 Goolbet. All rights reserved.</p>
           <p className="text-xs text-muted-foreground/60 tracking-widest font-medium uppercase mt-2">Developed by Taha Alkhatip</p>
         </div>
       </footer>

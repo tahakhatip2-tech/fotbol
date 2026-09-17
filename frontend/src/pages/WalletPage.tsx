@@ -93,14 +93,22 @@ export const WalletPage: React.FC = () => {
   return (
     <div className="animate-in fade-in duration-500 min-h-screen">
       <HeroSection 
-        title={`$${balance.toFixed(2)}`}
-        subtitle="الرصيد المتاح"
+        title={
+          <>
+            إدارة أموالك <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-400">بسهولة</span>
+          </>
+        }
+        subtitle="اشحن رصيدك أو اسحب أرباحك بسرعة البرق وبدون أي تعقيدات."
+        badge="أمان تام 🔒"
         minHeight="min-h-[45vh]"
-        badge="💳 محفظتي"
       >
-        <div className="flex gap-4 mt-6 justify-center w-full max-w-sm mx-auto">
-          <Button size="lg" className="flex-1 shadow-[0_0_15px_rgba(34,197,94,0.4)] text-lg" onClick={() => setShowDeposit(true)}>إيداع</Button>
-          <Button size="lg" variant="outline" className="flex-1 border-slate-300 bg-white/50 text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-lg" onClick={() => setShowWithdraw(true)}>سحب</Button>
+        <div className="mt-8 text-center bg-white/40 backdrop-blur-md p-6 rounded-3xl border border-white/60 shadow-sm inline-block min-w-[280px]">
+           <p className="text-sm font-bold text-slate-600 mb-1">الرصيد المتاح</p>
+           <h2 className="text-4xl font-black text-slate-900 drop-shadow-sm">${balance.toFixed(2)}</h2>
+           <div className="flex gap-4 mt-6 justify-center w-full max-w-sm mx-auto">
+             <Button size="lg" className="flex-1 shadow-[0_0_15px_rgba(34,197,94,0.4)] text-lg" onClick={() => setShowDeposit(true)}>إيداع</Button>
+             <Button size="lg" variant="outline" className="flex-1 border-slate-300 bg-white/50 text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-lg" onClick={() => setShowWithdraw(true)}>سحب</Button>
+           </div>
         </div>
       </HeroSection>
       

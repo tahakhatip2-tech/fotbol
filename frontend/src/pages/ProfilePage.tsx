@@ -75,12 +75,17 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="animate-in fade-in duration-500 min-h-screen">
       <HeroSection 
-        title={`${user?.firstName || ''} ${user?.lastName || ''}`}
-        badge="👤 حسابي الشخصي"
+        title={
+          <>
+            مرحباً بك في <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">عالم Goolbet</span>
+          </>
+        }
+        subtitle="تابع سجل رهاناتك، تحكم في إعداداتك، وابقَ على اطلاع دائم."
+        badge="الملف الشخصي 👤"
         minHeight="min-h-[40vh]"
       >
-        <div className="flex flex-col items-center gap-4 mt-4">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-4 border-white flex items-center justify-center relative shadow-xl overflow-hidden">
+        <div className="flex flex-col items-center gap-4 mt-6 bg-white/40 backdrop-blur-md p-6 rounded-3xl border border-white/60 shadow-sm inline-block min-w-[280px]">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-4 border-white flex items-center justify-center relative shadow-md overflow-hidden mx-auto">
             <span className="text-4xl font-black text-primary drop-shadow-sm">
               {user?.firstName?.[0]?.toUpperCase() || 'U'}
             </span>
@@ -91,9 +96,13 @@ export const ProfilePage: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2 text-slate-600 bg-white/50 px-5 py-2 rounded-full border border-slate-200 shadow-sm backdrop-blur-sm font-medium">
-            <Mail size={16} />
-            <span>{user?.email}</span>
+          
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-slate-900 mb-1">{user?.firstName || ''} {user?.lastName || ''}</h2>
+            <div className="flex items-center justify-center gap-2 text-slate-600 bg-white/60 px-4 py-1.5 rounded-full border border-slate-200 shadow-sm text-sm font-medium">
+              <Mail size={14} />
+              <span>{user?.email}</span>
+            </div>
           </div>
         </div>
       </HeroSection>

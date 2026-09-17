@@ -31,8 +31,13 @@ export const MatchesPage: React.FC = () => {
   return (
     <div className="animate-in fade-in duration-500 min-h-screen">
       <HeroSection 
-        title={t('matches')}
-        subtitle="توقع، راهن، واربح مع أقوى المباريات العالمية."
+        title={
+          <>
+            تابع أقوى <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-green-500">المباريات</span>
+          </>
+        }
+        subtitle="استعرض أحدث المباريات، حلل الاحتمالات، وضع رهانك الرابح الآن."
+        badge="مباريات اليوم ⚽"
         minHeight="min-h-[40vh]"
       >
         <div className="flex gap-2 justify-end w-full md:w-auto bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-white/60 shadow-sm mt-6">

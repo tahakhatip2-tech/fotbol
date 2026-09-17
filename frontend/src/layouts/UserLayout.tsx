@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { DynamicPageHero } from '../components/ui/DynamicPageHero';
 import { Trophy, Wallet, User, Menu, LogOut, LayoutDashboard } from 'lucide-react';
 
 export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -122,7 +121,6 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       {/* Main Content */}
       <main className="flex-1 relative z-10 pb-24 md:pb-16">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background -z-10"></div>
-        <DynamicPageHero />
         {children}
       </main>
 

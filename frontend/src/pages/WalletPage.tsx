@@ -5,7 +5,6 @@ import api from '../api/axios';
 import { HeroSection } from '../components/ui/HeroSection';
 
 export const WalletPage: React.FC = () => {
-  const { t } = useTranslation();
   const [balance, setBalance] = useState(0.00);
   const [lockedBalance, setLockedBalance] = useState(0.00);
   const [bonusBalance, setBonusBalance] = useState(0.00);

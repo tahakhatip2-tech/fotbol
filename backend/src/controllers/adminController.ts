@@ -451,7 +451,7 @@ export const createLeague = async (req: Request, res: Response) => {
 // Delete a league
 export const deleteLeague = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     await prisma.league.delete({ where: { id } });
     res.json({ message: 'League deleted successfully' });
   } catch (error) {

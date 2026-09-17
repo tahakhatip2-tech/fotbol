@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Mail, Trophy, Activity, Wallet, ShieldCheck, Crown } from 'lucide-react';
+import { Mail, Trophy, Activity, Wallet, ShieldCheck } from 'lucide-react';
 
 import { HeroSection } from '../components/ui/HeroSection';
 

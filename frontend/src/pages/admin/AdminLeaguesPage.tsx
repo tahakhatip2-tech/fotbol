@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, Plus, Trash2, ShieldCheck, Flag } from 'lucide-react';
+import { Trophy, Plus, Trash2, Flag } from 'lucide-react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
 

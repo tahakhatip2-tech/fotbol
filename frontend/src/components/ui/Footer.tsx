@@ -93,7 +93,7 @@ export const Footer: React.FC = () => {
           
           {/* Developer Signature */}
           <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100 shadow-sm">
-            <span className="text-slate-500">تم التطوير بكل ❤️ بواسطة:</span>
+            <span className="text-slate-500">تم التطوير بواسطة:</span>
             <a 
               href="https://github.com/tahakhatip2-tech" 
               target="_blank" 

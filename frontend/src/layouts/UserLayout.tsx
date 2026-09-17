@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
+import { Footer } from '../components/ui/Footer';
 import { Trophy, Wallet, User, Menu, LogOut, LayoutDashboard } from 'lucide-react';
 
 export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -140,14 +141,7 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         </Link>
       </nav>
 
-      {/* Footer */}
-      <footer className="glass border-t border-border/40 mt-auto py-8 mb-16 md:mb-0 hidden md:block">
-        <div className="container mx-auto px-4 text-center flex flex-col items-center gap-4">
-          <img src="/logo.jpg" alt="Goolbet Logo" className="w-12 h-12 object-cover rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)] border border-primary/20" />
-          <p className="text-muted-foreground">© 2026 Goolbet. All rights reserved.</p>
-          <p className="text-xs text-muted-foreground/60 tracking-widest font-medium uppercase mt-2">Developed by Taha Alkhatip</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { Button } from '../components/ui/Button';
 import { BetSlip } from '../components/BetSlip';
 import { getMatches } from '../api/matches';
@@ -8,7 +8,6 @@ import { HeroSection } from '../components/ui/HeroSection';
 import { Trophy, ShieldHalf, CalendarDays, Clock, Activity } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
-  const { t } = useTranslation();
   const [selectedBet, setSelectedBet] = useState<any | null>(null);
   const [matches, setMatches] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);

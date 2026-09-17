@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
 import { BackendImage } from '../../components/BackendImage';
+import { HeroSection } from '../../components/ui/HeroSection';
 import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf, Trash2, Loader2 } from 'lucide-react';
 
 export const AdminMatchesPage: React.FC = () => {
@@ -139,16 +140,26 @@ export const AdminMatchesPage: React.FC = () => {
 
   return (
     <div className="animate-in fade-in duration-500 pb-10">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200 tracking-tight">إدارة المباريات</h1>
-          <p className="text-muted-foreground mt-2 text-sm">أضف، عدل، أو سوّي المباريات والرهانات.</p>
+      <HeroSection 
+        title={
+          <>
+            إدارة <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-400">المباريات</span>
+          </>
+        }
+        subtitle="أضف، عدل، أو سوّي المباريات والرهانات."
+        badge="لوحة الإدارة ⚙️"
+        minHeight="min-h-[30vh]"
+      >
+        <div className="mt-8 flex justify-center">
+          <Button onClick={handleAddNewClick} className="flex items-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+            {showAddForm && !editingMatchId ? <X size={20} /> : <Plus size={20} />}
+            {showAddForm && !editingMatchId ? 'إلغاء الإضافة' : 'مباراة جديدة'}
+          </Button>
         </div>
-        <Button onClick={handleAddNewClick} className="flex items-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-          {showAddForm && !editingMatchId ? <X size={20} /> : <Plus size={20} />}
-          {showAddForm && !editingMatchId ? 'إلغاء الإضافة' : 'مباراة جديدة'}
-        </Button>
-      </div>
+      </HeroSection>
+
+      <div className="container mx-auto px-4 -mt-12 relative z-20">
+
 
       {showAddForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">

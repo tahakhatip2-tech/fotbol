@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getStats, createMatch, updateMatch, deleteMatch, settleMatch, getPendingTransactions, processTransaction, getMatchBets, getUsers, getAllBets } from '../controllers/adminController';
+import { getStats, createMatch, updateMatch, deleteMatch, settleMatch, getPendingTransactions, processTransaction, getMatchBets, getUsers, getAllBets, manageBonus, getLeagues, createLeague, deleteLeague } from '../controllers/adminController';
 import { authenticate, requireRole } from '../middlewares/authMiddleware';
 import { upload } from '../middlewares/uploadMiddleware';
 
@@ -20,6 +20,12 @@ router.get('/transactions', getPendingTransactions);
 router.put('/transactions/:id/process', processTransaction);
 
 router.get('/users', getUsers);
+router.post('/users/:id/bonus', manageBonus);
 router.get('/bets', getAllBets);
+
+// Leagues
+router.get('/leagues', getLeagues);
+router.post('/leagues', createLeague);
+router.delete('/leagues/:id', deleteLeague);
 
 export default router;

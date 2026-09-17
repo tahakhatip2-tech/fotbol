@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Trophy, Users, Receipt, Target, ArrowRight, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Trophy, Users, Receipt, Target, ArrowRight, Menu, X, Gift } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
   const location = useLocation();
@@ -16,7 +16,9 @@ export const AdminLayout: React.FC = () => {
     { name: 'المباريات', path: '/admin/matches', icon: Trophy },
     { name: 'المستخدمين', path: '/admin/users', icon: Users },
     { name: 'المعاملات المالية', path: '/admin/transactions', icon: Receipt },
-    { name: 'الرهانات', path: '/admin/bets', icon: Target }
+    { name: 'الرهانات', path: '/admin/bets', icon: Target },
+    { name: 'إدارة البونص', path: '/admin/bonus', icon: Gift },
+    { name: 'الدوريات', path: '/admin/leagues', icon: Trophy }
   ];
 
   return (

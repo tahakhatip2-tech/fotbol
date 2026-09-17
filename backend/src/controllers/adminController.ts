@@ -49,7 +49,7 @@ export const getUsers = async (req: Request, res: Response) => {
         role: true,
         isActive: true,
         createdAt: true,
-        wallet: { select: { balance: true, lockedBalance: true } }
+        wallet: { select: { balance: true, lockedBalance: true, bonusBalance: true, lockedBonusBalance: true } }
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -363,5 +363,99 @@ export const deleteMatch = async (req: Request, res: Response) => {
     res.json({ message: 'Match deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Server error deleting match' });
+  }
+};
+
+// Manage Bonus Balance
+export const manageBonus = async (req: Request, res: Response) => {
+  try {
+    const { id: userId } = req.params as { id: string };
+    const { action, amount } = req.body; // action: 'ADD' or 'DEDUCT'
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Amount must be greater than 0' });
+    }
+
+    const wallet = await prisma.wallet.findUnique({ where: { userId } });
+    if (!wallet) {
+      return res.status(404).json({ error: 'User wallet not found' });
+    }
+
+    if (action === 'DEDUCT' && wallet.bonusBalance < amount) {
+      return res.status(400).json({ error: 'Insufficient bonus balance to deduct' });
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // Update wallet
+      await tx.wallet.update({
+        where: { userId },
+        data: {
+          bonusBalance: action === 'ADD' ? { increment: amount } : { decrement: amount }
+        }
+      });
+
+      // Create transaction log
+      await tx.walletTransaction.create({
+        data: {
+          userId,
+          type: action === 'ADD' ? 'DEPOSIT' : 'WITHDRAWAL', // Re-use existing enums
+          amount: action === 'ADD' ? amount : -amount,
+          status: 'COMPLETED',
+          details: `Bonus ${action === 'ADD' ? 'Granted' : 'Deducted'} by Admin`
+        }
+      });
+    });
+
+    res.json({ message: `Bonus ${action === 'ADD' ? 'added' : 'deducted'} successfully` });
+  } catch (error) {
+    console.error('Error managing bonus:', error);
+    res.status(500).json({ error: 'Server error managing bonus' });
+  }
+};
+
+// --- Leagues Management ---
+
+// Get all leagues
+export const getLeagues = async (req: Request, res: Response) => {
+  try {
+    const leagues = await prisma.league.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(leagues);
+  } catch (error) {
+    console.error('Error fetching leagues:', error);
+    res.status(500).json({ error: 'Server error fetching leagues' });
+  }
+};
+
+// Create a league
+export const createLeague = async (req: Request, res: Response) => {
+  try {
+    const { name, logo, country } = req.body;
+    if (!name) return res.status(400).json({ error: 'League name is required' });
+
+    // Check if league exists
+    const existing = await prisma.league.findUnique({ where: { name } });
+    if (existing) return res.status(400).json({ error: 'League with this name already exists' });
+
+    const league = await prisma.league.create({
+      data: { name, logo, country }
+    });
+    res.status(201).json(league);
+  } catch (error) {
+    console.error('Error creating league:', error);
+    res.status(500).json({ error: 'Server error creating league' });
+  }
+};
+
+// Delete a league
+export const deleteLeague = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await prisma.league.delete({ where: { id } });
+    res.json({ message: 'League deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting league:', error);
+    res.status(500).json({ error: 'Server error deleting league' });
   }
 };

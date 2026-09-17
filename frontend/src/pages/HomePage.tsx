@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
 import { Zap, ShieldCheck, Trophy, ArrowLeft, ArrowRight } from 'lucide-react';
 import { getMatches } from '../api/matches';
-import { HeroSection } from '../components/ui/HeroSection';
 
 export const HomePage: React.FC = () => {
   const { i18n } = useTranslation();
@@ -33,42 +32,6 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <HeroSection
-        title={
-          <>
-            توقع. راهن. <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-              اربح بثقة تامة.
-            </span>
-          </>
-        }
-        subtitle="استمتع بتجربة مراهنة لا مثيل لها مع احتمالات فورية، وعوائد سريعة بمجرد انتهاء المباراة."
-        backgroundImage="/hero-img.jpg"
-        badge="🏆 المنصة الأولى للرهانات الرياضية"
-      >
-        <div className="flex flex-row gap-2 justify-center items-center w-full">
-          <Button size="default" className="flex-1 h-10 px-2 md:h-12 md:px-8 text-[11px] md:text-base font-bold shadow-md hover:-translate-y-1 transition-all bg-primary text-white" onClick={() => navigate('/matches')}>
-            ابدأ الرهان
-          </Button>
-          <Button variant="outline" size="default" className="flex-1 h-10 px-2 md:h-12 md:px-8 text-[11px] md:text-base font-bold border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors" onClick={() => navigate('/register')}>
-            إنشاء حساب
-          </Button>
-        </div>
-        
-        {/* Trust Indicators */}
-        <div className="mt-4 pt-4 border-t border-slate-200/50 flex items-center justify-center gap-4 text-xs text-slate-600 font-medium w-full">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-secondary" />
-            <span>تشفير آمن 100%</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-amber-500" />
-            <span>دفع فوري</span>
-          </div>
-        </div>
-      </HeroSection>
-
       {/* Features Section */}
       <section className="py-12 md:py-16 relative z-10 bg-white border-y border-slate-200 shadow-sm">
         <div className="container mx-auto px-4">

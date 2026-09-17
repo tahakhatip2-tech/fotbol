@@ -8,6 +8,8 @@ export const WalletPage: React.FC = () => {
   const { t } = useTranslation();
   const [balance, setBalance] = useState(0.00);
   const [lockedBalance, setLockedBalance] = useState(0.00);
+  const [bonusBalance, setBonusBalance] = useState(0.00);
+  const [lockedBonusBalance, setLockedBonusBalance] = useState(0.00);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,6 +32,8 @@ export const WalletPage: React.FC = () => {
       if (res.data && res.data.wallet) {
         setBalance(res.data.wallet.balance);
         setLockedBalance(res.data.wallet.lockedBalance);
+        setBonusBalance(res.data.wallet.bonusBalance || 0);
+        setLockedBonusBalance(res.data.wallet.lockedBonusBalance || 0);
       }
       setTransactions(res.data.transactions || []);
     } catch (error) {
@@ -102,11 +106,23 @@ export const WalletPage: React.FC = () => {
       </HeroSection>
       
       <div className="container mx-auto px-4 py-8 -mt-8 relative z-20">
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          <div className="glass p-8 rounded-2xl relative overflow-hidden group">
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="glass p-6 md:p-8 rounded-2xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/20 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
-            <h2 className="text-lg text-slate-600 mb-2 relative z-10">الرصيد المعلق (في الرهانات)</h2>
-            <div className="text-4xl font-bold text-slate-400 relative z-10">${lockedBalance.toFixed(2)}</div>
+            <h2 className="text-sm md:text-lg text-slate-600 mb-2 relative z-10">الرصيد المعلق (في الرهانات)</h2>
+            <div className="text-2xl md:text-4xl font-bold text-slate-400 relative z-10">${lockedBalance.toFixed(2)}</div>
+          </div>
+          
+          <div className="glass p-6 md:p-8 rounded-2xl relative overflow-hidden group border border-blue-500/20 bg-blue-50/50">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+            <h2 className="text-sm md:text-lg text-blue-600 mb-2 relative z-10 font-bold">رصيد البونص 🎁</h2>
+            <div className="text-2xl md:text-4xl font-bold text-blue-600 relative z-10">${bonusBalance.toFixed(2)}</div>
+          </div>
+
+          <div className="glass p-6 md:p-8 rounded-2xl relative overflow-hidden group border border-slate-200/50">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+            <h2 className="text-sm md:text-lg text-slate-500 mb-2 relative z-10">البونص المعلق</h2>
+            <div className="text-2xl md:text-4xl font-bold text-slate-400 relative z-10">${lockedBonusBalance.toFixed(2)}</div>
           </div>
         </div>
 

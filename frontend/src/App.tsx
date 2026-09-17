@@ -10,6 +10,8 @@ import { AdminMatchesPage } from './pages/admin/AdminMatchesPage';
 import { AdminTransactionsPage } from './pages/admin/AdminTransactionsPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminBetsPage } from './pages/admin/AdminBetsPage';
+import { AdminBonusPage } from './pages/admin/AdminBonusPage';
+import { AdminLeaguesPage } from './pages/admin/AdminLeaguesPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -33,6 +35,8 @@ function App() {
         <Route path="users" element={<AdminUsersPage />} />
         <Route path="transactions" element={<AdminTransactionsPage />} />
         <Route path="bets" element={<AdminBetsPage />} />
+        <Route path="bonus" element={<AdminBonusPage />} />
+        <Route path="leagues" element={<AdminLeaguesPage />} />
       </Route>
       <Route path="/*" element={
         <UserLayout>

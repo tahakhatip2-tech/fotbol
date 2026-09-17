@@ -7,7 +7,7 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { matchId, selection, stake } = req.body;
+    const { matchId, selection, stake, useBonus } = req.body;
 
     if (stake <= 0) {
       return res.status(400).json({ error: 'Stake must be greater than 0' });
@@ -17,8 +17,16 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
     const result = await prisma.$transaction(async (tx) => {
       // 1. Validate user balance
       const wallet = await tx.wallet.findUnique({ where: { userId } });
-      if (!wallet || wallet.balance < stake) {
-        throw new Error('Insufficient balance');
+      if (!wallet) throw new Error('Wallet not found');
+
+      if (useBonus) {
+        if (wallet.bonusBalance < stake) {
+          throw new Error('Insufficient bonus balance');
+        }
+      } else {
+        if (wallet.balance < stake) {
+          throw new Error('Insufficient balance');
+        }
       }
 
       // 2. Validate match status and start time
@@ -45,13 +53,23 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
       const potentialPayout = stake * oddsAtBet;
 
       // 4. Deduct stake and lock balance
-      await tx.wallet.update({
-        where: { userId },
-        data: {
-          balance: { decrement: stake },
-          lockedBalance: { increment: stake }
-        }
-      });
+      if (useBonus) {
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            bonusBalance: { decrement: stake },
+            lockedBonusBalance: { increment: stake }
+          }
+        });
+      } else {
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            balance: { decrement: stake },
+            lockedBalance: { increment: stake }
+          }
+        });
+      }
 
       // 5. Create transaction record
       await tx.walletTransaction.create({
@@ -60,7 +78,7 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
           type: 'BET_PLACED',
           amount: -stake,
           status: 'COMPLETED',
-          details: `Bet placed on match ${matchId}`
+          details: useBonus ? `Bonus bet placed on match ${matchId}` : `Bet placed on match ${matchId}`
         }
       });
 
@@ -73,6 +91,7 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
           stake,
           oddsAtBet,
           potentialPayout,
+          isBonus: useBonus || false,
           status: 'PENDING'
         }
       });

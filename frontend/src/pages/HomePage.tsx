@@ -114,7 +114,7 @@ export const HomePage: React.FC = () => {
           ) : featuredMatches.length === 0 ? (
             <div className="bg-white p-12 text-center rounded-2xl shadow-sm border border-slate-200 text-slate-500 font-medium">لا توجد مباريات بارزة حالياً.</div>
           ) : (
-            <div className="grid lg:grid-cols-3 gap-5">
+            <div className="grid lg:grid-cols-3 gap-2">
               {featuredMatches.map(match => (
                 <div key={match.id} className="bg-white rounded-2xl p-5 relative overflow-hidden group hover:border-primary/40 transition-colors shadow-sm border border-slate-200">
                   <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">

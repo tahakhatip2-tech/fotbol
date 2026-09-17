@@ -61,7 +61,7 @@ export const MatchesPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {matches.map((match) => (
             <div key={match.id} className="glass rounded-3xl overflow-hidden relative group border border-slate-200 hover:border-primary/50 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] flex flex-col bg-white/40">
               {/* Background Glow */}

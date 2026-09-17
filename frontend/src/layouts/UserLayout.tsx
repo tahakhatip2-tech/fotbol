@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Footer } from '../components/ui/Footer';
-import { Trophy, Wallet, User, Menu, LogOut, LayoutDashboard } from 'lucide-react';
+import { Trophy, Wallet, User, Menu, LogOut, LayoutDashboard, Home } from 'lucide-react';
 
 export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();
@@ -127,6 +127,10 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
       {/* Bottom Navigation (Mobile) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-border/40 z-50 flex justify-around items-center h-16 pb-safe bg-background/80 backdrop-blur-md">
+        <Link to="/" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+          <Home size={20} className={location.pathname === '/' ? 'stroke-primary fill-primary/20' : ''} />
+          <span className="text-[10px] font-medium">الرئيسية</span>
+        </Link>
         <Link to="/matches" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/matches' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
           <Trophy size={20} className={location.pathname === '/matches' ? 'stroke-primary fill-primary/20' : ''} />
           <span className="text-[10px] font-medium">{t('matches')}</span>

@@ -5,6 +5,8 @@ import { Button } from '../components/ui/Button';
 import { Zap, ShieldCheck, Trophy, ArrowLeft, ArrowRight } from 'lucide-react';
 import { getMatches } from '../api/matches';
 
+import { HeroSection } from '../components/ui/HeroSection';
+
 export const HomePage: React.FC = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
@@ -32,6 +34,23 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <HeroSection 
+        title={
+          <>
+            توقع. راهن. <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-green-500">اربح</span>
+          </>
+        }
+        subtitle="المنصة الأولى للمراهنات الرياضية. استمتع بأفضل الاحتمالات وأسرع عمليات السحب والإيداع."
+        badge="Goolbet عالم"
+        minHeight="min-h-[45vh]"
+      >
+        <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center items-center w-full max-w-md mx-auto">
+          <Button size="lg" className="w-full sm:w-auto shadow-[0_0_15px_rgba(34,197,94,0.4)] text-lg px-8" onClick={() => navigate('/matches')}>
+            ابدأ المراهنة الآن
+          </Button>
+        </div>
+      </HeroSection>
+
       {/* Features Section */}
       <section className="py-12 md:py-16 relative z-10 bg-white border-y border-slate-200 shadow-sm">
         <div className="container mx-auto px-4">

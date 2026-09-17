@@ -57,14 +57,14 @@ export const MatchesPage: React.FC = () => {
         <div className="glass rounded-3xl p-16 text-center border border-white/5">
           <div className="flex flex-col items-center justify-center text-muted-foreground">
             <Trophy size={64} className="opacity-20 mb-6" />
-            <p className="text-xl font-bold text-white mb-2">لا توجد مباريات متاحة حالياً.</p>
-            <p className="opacity-60">عد لاحقاً لمتابعة أقوى المباريات والمراهنة عليها.</p>
+            <p className="text-xl font-bold text-slate-900 mb-2">لا توجد مباريات متاحة حالياً.</p>
+            <p className="text-slate-500">عد لاحقاً لمتابعة أقوى المباريات والمراهنة عليها.</p>
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {matches.map((match) => (
-            <div key={match.id} className="glass rounded-3xl overflow-hidden relative group border border-white/10 hover:border-primary/30 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] flex flex-col">
+            <div key={match.id} className="glass rounded-3xl overflow-hidden relative group border border-slate-200 hover:border-primary/50 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] flex flex-col bg-white/40">
               {/* Background Glow */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
               
@@ -81,7 +81,7 @@ export const MatchesPage: React.FC = () => {
               
               {/* League Badge */}
               <div className="absolute top-4 left-4 z-10">
-                <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-amber-400 text-xs font-bold gap-1.5">
+                <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-white/80 backdrop-blur-md border border-slate-200 text-amber-600 text-xs font-bold gap-1.5 shadow-sm">
                   <Trophy size={12} />
                   {match.league || 'بطولة'}
                 </span>
@@ -90,7 +90,7 @@ export const MatchesPage: React.FC = () => {
               {/* Teams & Score Area */}
               <div className="pt-16 pb-6 px-6 relative z-10 flex-1">
                 <div className="text-center mb-6">
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-white/70">
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 font-medium">
                     <CalendarDays size={12} />
                     <span>{new Date(match.matchDate).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' })}</span>
                     <span className="mx-1">•</span>
@@ -102,10 +102,10 @@ export const MatchesPage: React.FC = () => {
                 <div className="flex items-center justify-between gap-2">
                   {/* Team 1 */}
                   <div className="flex flex-col items-center flex-1">
-                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
-                      <BackendImage src={match.team1Logo} alt={match.team1Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-primary/50" />} />
+                    <div className="w-16 h-16 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-md mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
+                      <BackendImage src={match.team1Logo} alt={match.team1Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-slate-300" />} />
                     </div>
-                    <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team1Name}</h3>
+                    <h3 className="font-bold text-sm text-center text-slate-900 line-clamp-2">{match.team1Name}</h3>
                   </div>
 
                   {/* VS */}
@@ -115,40 +115,40 @@ export const MatchesPage: React.FC = () => {
 
                   {/* Team 2 */}
                   <div className="flex flex-col items-center flex-1">
-                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
-                      <BackendImage src={match.team2Logo} alt={match.team2Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-blue-400/50" />} />
+                    <div className="w-16 h-16 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-md mb-3 p-2 overflow-hidden relative group-hover:scale-110 transition-transform duration-300">
+                      <BackendImage src={match.team2Logo} alt={match.team2Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-slate-300" />} />
                     </div>
-                    <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team2Name}</h3>
+                    <h3 className="font-bold text-sm text-center text-slate-900 line-clamp-2">{match.team2Name}</h3>
                   </div>
                 </div>
               </div>
 
               {/* Betting Odds Area */}
-              <div className="p-4 border-t border-white/5 bg-black/20 backdrop-blur-md">
-                <div className="flex items-center justify-between text-xs text-muted-foreground px-2 mb-3">
+              <div className="p-4 border-t border-slate-200 bg-white/60 backdrop-blur-md">
+                <div className="flex items-center justify-between text-xs text-slate-500 font-medium px-2 mb-3">
                   <span>اختر رهانك (الاحتمالات):</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <button 
                     onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team1Name, selectionValue: 'TEAM_1_WIN', odds: match.odds?.[0]?.team1Win || 1.5 })}
-                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white/5 hover:bg-primary/20 border border-white/5 hover:border-primary/50 transition-all group/btn"
+                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white hover:bg-primary/10 border border-slate-200 hover:border-primary/30 shadow-sm transition-all group/btn"
                   >
-                    <span className="text-[10px] text-muted-foreground mb-1 group-hover/btn:text-white transition-colors">فوز 1</span>
+                    <span className="text-[10px] text-slate-400 font-bold mb-1 group-hover/btn:text-slate-600 transition-colors">فوز 1</span>
                     <span className="font-black text-primary text-sm">{match.odds?.[0]?.team1Win || '-'}</span>
                   </button>
                   <button 
                     onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'تعادل', selectionValue: 'DRAW', odds: match.odds?.[0]?.draw || 3.0 })}
-                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-500/50 transition-all group/btn"
+                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white hover:bg-amber-500/10 border border-slate-200 hover:border-amber-500/30 shadow-sm transition-all group/btn"
                   >
-                    <span className="text-[10px] text-muted-foreground mb-1 group-hover/btn:text-white transition-colors">تعادل</span>
-                    <span className="font-black text-amber-400 text-sm">{match.odds?.[0]?.draw || '-'}</span>
+                    <span className="text-[10px] text-slate-400 font-bold mb-1 group-hover/btn:text-slate-600 transition-colors">تعادل</span>
+                    <span className="font-black text-amber-500 text-sm">{match.odds?.[0]?.draw || '-'}</span>
                   </button>
                   <button 
                     onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team2Name, selectionValue: 'TEAM_2_WIN', odds: match.odds?.[0]?.team2Win || 2.5 })}
-                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-white/5 hover:border-blue-500/50 transition-all group/btn"
+                    className="flex flex-col items-center py-2.5 px-1 rounded-xl bg-white hover:bg-blue-500/10 border border-slate-200 hover:border-blue-500/30 shadow-sm transition-all group/btn"
                   >
-                    <span className="text-[10px] text-muted-foreground mb-1 group-hover/btn:text-white transition-colors">فوز 2</span>
-                    <span className="font-black text-blue-400 text-sm">{match.odds?.[0]?.team2Win || '-'}</span>
+                    <span className="text-[10px] text-slate-400 font-bold mb-1 group-hover/btn:text-slate-600 transition-colors">فوز 2</span>
+                    <span className="font-black text-blue-500 text-sm">{match.odds?.[0]?.team2Win || '-'}</span>
                   </button>
                 </div>
               </div>

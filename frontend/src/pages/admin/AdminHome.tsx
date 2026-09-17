@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { Users, Target, Trophy, Activity, ArrowUpRight } from 'lucide-react';
+import { HeroSection } from '../../components/ui/HeroSection';
 
 export const AdminHome: React.FC = () => {
   const [stats, setStats] = useState({ usersCount: 0, betsCount: 0, activeMatches: 0 });
@@ -28,14 +29,19 @@ export const AdminHome: React.FC = () => {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary to-emerald-200 tracking-tight">نظرة عامة</h1>
-          <p className="text-muted-foreground mt-2">إحصائيات المنصة وأحدث النشاطات</p>
-        </div>
-      </div>
+      <HeroSection 
+        title={
+          <>
+            نظرة <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-400">عامة</span>
+          </>
+        }
+        subtitle="إحصائيات المنصة وأحدث النشاطات"
+        badge="لوحة الإدارة ⚙️"
+        minHeight="min-h-[30vh]"
+      />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div className="container mx-auto px-4 -mt-12 relative z-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {/* Users Card */}
         <div className="glass p-6 rounded-3xl border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.12)] relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300">
           <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full blur-[50px] group-hover:bg-blue-500/20 transition-colors"></div>
@@ -106,6 +112,8 @@ export const AdminHome: React.FC = () => {
            <div className="flex-1 flex items-center justify-center border-2 border-dashed border-border/30 rounded-2xl bg-secondary/10">
               <p className="text-muted-foreground text-sm">لا توجد نشاطات حديثة لعرضها في الوقت الحالي.</p>
            </div>
+        </div>
+      </div>
         </div>
       </div>
     </div>

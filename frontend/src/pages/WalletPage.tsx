@@ -3,6 +3,54 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '../components/ui/Button';
 import api from '../api/axios';
 import { HeroSection } from '../components/ui/HeroSection';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
+const TransactionCard = ({ tx }: { tx: any }) => {
+  const [expanded, setExpanded] = useState(false);
+  
+  return (
+    <div className="glass p-4 rounded-xl mb-3 border border-border/40 transition-all">
+       <div className="flex justify-between items-center cursor-pointer" onClick={() => setExpanded(!expanded)}>
+         <div className="flex items-center gap-3">
+           <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${tx.amount > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+             {tx.amount > 0 ? '↓' : '↑'}
+           </div>
+           <div>
+              <p className="font-bold text-slate-800">
+                {tx.type === 'DEPOSIT' ? 'إيداع رصيد' : tx.type === 'WITHDRAWAL' ? 'سحب رصيد' : tx.type === 'BET_PLACED' ? 'رهان' : 'ربح رهان'}
+              </p>
+              <p className="text-xs text-muted-foreground">{new Date(tx.createdAt).toLocaleDateString()}</p>
+           </div>
+         </div>
+         <div className="text-left flex items-center gap-3">
+            <p className={`font-bold font-mono text-lg ${tx.amount > 0 ? 'text-green-500' : 'text-slate-800'}`}>
+              {tx.amount > 0 ? '+' : ''}{tx.amount}$
+            </p>
+            {expanded ? <ChevronUp size={18} className="text-slate-400" /> : <ChevronDown size={18} className="text-slate-400" />}
+         </div>
+       </div>
+       
+       {expanded && (
+         <div className="mt-4 pt-4 border-t border-slate-100 space-y-3 text-sm animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-medium">الحالة:</span>
+              <span className={`px-2 py-1 rounded-md text-xs font-bold ${tx.status === 'COMPLETED' ? 'bg-green-500/10 text-green-600' : tx.status === 'FAILED' ? 'bg-red-500/10 text-red-600' : 'bg-yellow-500/10 text-yellow-600'}`}>
+                {tx.status === 'COMPLETED' ? 'مكتمل' : tx.status === 'FAILED' ? 'فشل' : 'قيد المراجعة'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-medium">التاريخ والوقت:</span>
+              <span className="font-mono text-slate-700">{new Date(tx.createdAt).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-medium">رقم المعاملة:</span>
+              <span className="font-mono text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded-md">{tx.id}</span>
+            </div>
+         </div>
+       )}
+    </div>
+  );
+};
 
 export const WalletPage: React.FC = () => {
   const [balance, setBalance] = useState(0.00);
@@ -182,42 +230,16 @@ export const WalletPage: React.FC = () => {
       )}
 
       <h2 className="text-2xl font-bold mb-6">سجل المعاملات</h2>
-      <div className="glass rounded-2xl overflow-x-auto">
-        <table className="w-full text-right min-w-[500px]">
-          <thead className="bg-background/40 backdrop-blur-md border-b border-border/40 text-muted-foreground text-sm font-medium">
-            <tr>
-              <th className="p-4 whitespace-nowrap">النوع</th>
-              <th className="p-4 whitespace-nowrap">المبلغ</th>
-              <th className="p-4 whitespace-nowrap">التاريخ</th>
-              <th className="p-4 whitespace-nowrap">الحالة</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={4} className="p-4 text-center text-muted-foreground">جاري التحميل...</td>
-              </tr>
-            ) : transactions.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="p-4 text-center text-muted-foreground">لا توجد معاملات سابقة.</td>
-              </tr>
-            ) : (
-            transactions.map(tx => (
-              <tr key={tx.id} className="border-b border-border/40 hover:bg-card/20 last:border-0">
-                <td className="p-4 font-medium whitespace-nowrap">{tx.type === 'DEPOSIT' ? 'إيداع' : tx.type === 'WITHDRAWAL' ? 'سحب' : tx.type === 'BET_PLACED' ? 'رهان' : 'ربح رهان'}</td>
-                <td className={`p-4 font-bold font-mono whitespace-nowrap ${tx.amount > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {tx.amount > 0 ? '+' : ''}{tx.amount}
-                </td>
-                <td className="p-4 text-sm whitespace-nowrap">{new Date(tx.createdAt).toLocaleDateString()}</td>
-                <td className="p-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${tx.status === 'COMPLETED' ? 'bg-green-500/20 text-green-400' : tx.status === 'FAILED' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                    {tx.status}
-                  </span>
-                </td>
-              </tr>
-            )))}
-          </tbody>
-        </table>
+      <div className="space-y-3 mb-8">
+        {isLoading ? (
+          <div className="p-8 text-center text-muted-foreground glass rounded-xl">جاري التحميل...</div>
+        ) : transactions.length === 0 ? (
+          <div className="p-8 text-center text-muted-foreground glass rounded-xl">لا توجد معاملات سابقة.</div>
+        ) : (
+          transactions.map(tx => (
+            <TransactionCard key={tx.id} tx={tx} />
+          ))
+        )}
       </div>
     </div>
     </div>

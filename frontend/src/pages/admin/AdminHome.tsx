@@ -113,7 +113,6 @@ export const AdminHome: React.FC = () => {
               <p className="text-muted-foreground text-sm">لا توجد نشاطات حديثة لعرضها في الوقت الحالي.</p>
            </div>
         </div>
-      </div>
         </div>
       </div>
     </div>

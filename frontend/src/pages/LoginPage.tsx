@@ -51,11 +51,24 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background -z-10"></div>
-      <div className="glass w-full max-w-md p-10 rounded-3xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-        <h1 className="text-3xl font-black text-center mb-8 bg-gradient-to-r from-primary to-green-300 bg-clip-text text-transparent">{t('login')}</h1>
+    <div 
+      className="min-h-screen flex items-center justify-center px-4 relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: 'url(/auth-bg.jpg)' }}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-0"></div>
+      
+      <div className="glass w-full max-w-md p-10 rounded-3xl relative z-10 overflow-hidden border border-white/20 shadow-2xl bg-white/10 backdrop-blur-md">
+        
+        {/* App Logo & Name at the top */}
+        <div className="flex flex-col items-center justify-center mb-8">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-blue-500 p-1 mb-3 shadow-[0_0_20px_rgba(34,197,94,0.4)]">
+            <img src="/logo.jpg" alt="Goolbet Logo" className="w-full h-full object-cover rounded-full border-2 border-white/80" />
+          </div>
+          <h1 className="text-3xl font-black text-center text-white drop-shadow-md">
+            Gool<span className="text-primary">bet</span>
+          </h1>
+          <p className="text-white/80 text-sm mt-1">{t('login')}</p>
+        </div>
         
         <form className="space-y-4 mb-6" onSubmit={handleSubmit}>
           {error && <div className="bg-red-500/10 text-red-500 p-3 rounded-md text-sm">{error}</div>}
@@ -123,6 +136,12 @@ export const LoginPage: React.FC = () => {
         <p className="text-center text-sm text-muted-foreground mt-6">
           ليس لديك حساب؟ <a href="/register" className="text-primary hover:underline">سجل الآن</a>
         </p>
+        {/* Footer with App Name and Version */}
+        <div className="mt-8 text-center border-t border-white/10 pt-4">
+          <p className="text-white/60 text-xs font-bold tracking-widest">
+            Goolbet v1.0
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -394,6 +394,7 @@ export const AdminMatchesPage: React.FC = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

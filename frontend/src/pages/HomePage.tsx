@@ -116,37 +116,37 @@ export const HomePage: React.FC = () => {
           ) : (
             <div className="grid lg:grid-cols-3 gap-2">
               {featuredMatches.map(match => (
-                <div key={match.id} className="bg-white rounded-2xl p-5 relative overflow-hidden group hover:border-primary/40 transition-colors shadow-sm border border-slate-200">
-                  <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
-                    <span className="text-[11px] font-semibold text-slate-500">{new Date(match.matchDate).toLocaleDateString()}</span>
+                <div key={match.id} className="bg-white rounded-2xl p-3 relative overflow-hidden group hover:border-primary/40 transition-colors shadow-sm border border-slate-200">
+                  <div className="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
+                    <span className="text-[10px] font-semibold text-slate-500">{new Date(match.matchDate).toLocaleDateString()}</span>
                     <span className="text-[10px] font-bold tracking-widest px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md">
                       {match.status}
                     </span>
                   </div>
                   
-                  <div className="flex justify-between items-center gap-2 mb-6">
+                  <div className="flex justify-between items-center gap-1 mb-4">
                     <div className="text-center flex-1">
                       {match.team1Logo ? (
-                         <img src={match.team1Logo.startsWith('http') ? match.team1Logo : `http://localhost:5000${match.team1Logo}`} alt={match.team1Name} className="w-14 h-14 mx-auto mb-2 object-contain drop-shadow-sm" />
+                         <img src={match.team1Logo.startsWith('http') ? match.team1Logo : `http://localhost:5000${match.team1Logo}`} alt={match.team1Name} className="w-10 h-10 mx-auto mb-1 object-contain drop-shadow-sm" />
                       ) : (
-                         <div className="w-14 h-14 mx-auto mb-2 bg-slate-100 rounded-full flex items-center justify-center text-xl font-black text-slate-600">{match.team1Name[0]}</div>
+                         <div className="w-10 h-10 mx-auto mb-1 bg-slate-100 rounded-full flex items-center justify-center text-lg font-black text-slate-600">{match.team1Name[0]}</div>
                       )}
-                      <div className="font-bold text-sm text-slate-800 line-clamp-1">{match.team1Name}</div>
+                      <div className="font-bold text-xs text-slate-800 line-clamp-1">{match.team1Name}</div>
                     </div>
                     
-                    <div className="text-slate-300 font-black text-lg italic bg-slate-50 w-8 h-8 flex items-center justify-center rounded-full shrink-0">VS</div>
+                    <div className="text-slate-300 font-black text-sm italic bg-slate-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0">VS</div>
                     
                     <div className="text-center flex-1">
                       {match.team2Logo ? (
-                         <img src={match.team2Logo.startsWith('http') ? match.team2Logo : `http://localhost:5000${match.team2Logo}`} alt={match.team2Name} className="w-14 h-14 mx-auto mb-2 object-contain drop-shadow-sm" />
+                         <img src={match.team2Logo.startsWith('http') ? match.team2Logo : `http://localhost:5000${match.team2Logo}`} alt={match.team2Name} className="w-10 h-10 mx-auto mb-1 object-contain drop-shadow-sm" />
                       ) : (
-                         <div className="w-14 h-14 mx-auto mb-2 bg-slate-100 rounded-full flex items-center justify-center text-xl font-black text-slate-600">{match.team2Name[0]}</div>
+                         <div className="w-10 h-10 mx-auto mb-1 bg-slate-100 rounded-full flex items-center justify-center text-lg font-black text-slate-600">{match.team2Name[0]}</div>
                       )}
-                      <div className="font-bold text-sm text-slate-800 line-clamp-1">{match.team2Name}</div>
+                      <div className="font-bold text-xs text-slate-800 line-clamp-1">{match.team2Name}</div>
                     </div>
                   </div>
                   
-                  <Button className="w-full h-10 bg-primary text-white hover:bg-primary/90 text-sm font-bold rounded-xl shadow-none" onClick={() => navigate('/matches')}>راهن الآن</Button>
+                  <Button className="w-full h-8 bg-primary text-white hover:bg-primary/90 text-xs font-bold rounded-lg shadow-none" onClick={() => navigate('/matches')}>راهن الآن</Button>
                 </div>
               ))}
             </div>

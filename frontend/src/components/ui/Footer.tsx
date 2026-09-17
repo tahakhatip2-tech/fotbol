@@ -17,8 +17,8 @@ export const Footer: React.FC = () => {
           {/* Brand & Description */}
           <div className="md:col-span-2 space-y-4">
             <Link to="/" className="inline-flex items-center gap-2 group mx-auto md:mx-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-                <Trophy size={20} className="fill-current" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary p-[2px] shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+                <img src="/logo.jpg" alt="Goolbet Logo" className="w-full h-full object-cover rounded-[10px]" />
               </div>
               <span className="text-2xl font-black tracking-tight text-slate-800">
                 Gool<span className="text-primary">bet</span>

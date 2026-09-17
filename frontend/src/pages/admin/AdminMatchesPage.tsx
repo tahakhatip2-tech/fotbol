@@ -284,7 +284,7 @@ export const AdminMatchesPage: React.FC = () => {
       {/* Matches Grid (FIFA Style Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {matches.map(match => (
-          <div key={match.id} className="glass rounded-3xl overflow-hidden relative group border border-white/10 hover:border-primary/30 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] flex flex-col">
+          <div key={match.id} className="bg-blue-900/40 backdrop-blur-md rounded-3xl overflow-hidden relative group border border-orange-500/50 hover:border-orange-400 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(249,115,22,0.15)] flex flex-col">
             {/* Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
             
@@ -394,7 +394,7 @@ export const AdminMatchesPage: React.FC = () => {
           </div>
         </div>
       )}
-      </div>
+    </div>
     </div>
   );
 };

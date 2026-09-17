@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { Button } from '../components/ui/Button';
 import api from '../api/axios';
 import { HeroSection } from '../components/ui/HeroSection';

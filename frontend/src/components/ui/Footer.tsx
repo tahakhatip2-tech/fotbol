@@ -59,9 +59,9 @@ export const Footer: React.FC = () => {
             <h3 className="font-bold text-slate-900 text-lg">الدعم الفني</h3>
             <ul className="space-y-3">
               <li>
-                <a href="mailto:support@goolbet.com" className="text-slate-500 hover:text-primary transition-colors text-sm flex items-center justify-center md:justify-start gap-2">
+                <a href="mailto:support@Goolbet.com" className="text-slate-500 hover:text-primary transition-colors text-sm flex items-center justify-center md:justify-start gap-2">
                   <Mail size={16} />
-                  support@goolbet.com
+                  support@Goolbet.com
                 </a>
               </li>
               <li>

@@ -128,7 +128,7 @@ export const LoginPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors focus:bg-background"
-              placeholder="example@fotbol.com"
+              placeholder="example@Goolbet.com"
               required
             />
           </div>

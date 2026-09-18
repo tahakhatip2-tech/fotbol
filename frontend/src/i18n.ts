@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      "welcome": "Welcome to Fotbol",
+      "welcome": "Welcome to Goolbet",
       "matches": "Matches",
       "wallet": "Wallet",
       "login": "Login",

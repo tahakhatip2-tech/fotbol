@@ -63,7 +63,7 @@ export const BackendImage: React.FC<BackendImageProps> = ({ src, alt, className,
   if (!src || !imgData) {
     return (
       <div className={`flex items-center justify-center ${className}`}>
-        {fallbackIcon || <ShieldHalf size={28} className="text-muted-foreground/50" />}
+        {fallbackIcon || <ShieldHalf size={28} className="text-muted-foreground" />}
       </div>
     );
   }

@@ -55,7 +55,7 @@ export const AdminLayout: React.FC = () => {
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background -z-20 pointer-events-none"></div>
 
       {/* Navbar */}
-      <header className="glass sticky top-0 z-40 border-b border-border/40">
+      <header className="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-sm">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <Link to="/admin" className="text-3xl font-black bg-gradient-to-l from-primary to-emerald-200 bg-clip-text text-transparent tracking-tighter flex items-center gap-2">
             <img src="/logo.jpg" alt="Goolbet Logo" className="w-10 h-10 object-cover rounded-full border border-primary/30" />
@@ -106,7 +106,16 @@ export const AdminLayout: React.FC = () => {
                     </div>
                     
                     <div className="p-2 flex flex-col gap-1">
-                      <Link to="/" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors">
+                      <Link to="/admin/bonus" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors text-slate-700">
+                        <Gift size={18} className="text-primary" />
+                        البونص
+                      </Link>
+                      <Link to="/admin/leagues" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors text-slate-700">
+                        <Trophy size={18} className="text-primary" />
+                        الدوريات
+                      </Link>
+                      <div className="h-px bg-border/50 my-1"></div>
+                      <Link to="/" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors text-slate-700">
                         <ArrowRight size={18} className="text-primary" />
                         العودة للموقع
                       </Link>
@@ -133,52 +142,30 @@ export const AdminLayout: React.FC = () => {
       </main>
 
       {/* Bottom Navigation (Mobile) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 glass border-t border-border/40 z-50 flex justify-around items-center h-16 pb-safe bg-background/80 backdrop-blur-md">
-        <Link to="/admin" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 flex justify-between items-center h-16 px-2 pb-safe">
+        <Link to="/admin/users" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/users' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Users size={20} className={location.pathname === '/admin/users' ? 'stroke-blue-600 fill-blue-600/20' : ''} />
+          <span className="text-[10px] font-medium">المستخدمين</span>
+        </Link>
+        <Link to="/admin/transactions" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/transactions' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Receipt size={20} className={location.pathname === '/admin/transactions' ? 'stroke-blue-600 fill-blue-600/20' : ''} />
+          <span className="text-[10px] font-medium">المعاملات</span>
+        </Link>
+        
+        {/* Center Item (Home) */}
+        <Link to="/admin" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin' ? 'text-primary' : 'text-slate-400 hover:text-slate-600'}`}>
           <LayoutDashboard size={20} className={location.pathname === '/admin' ? 'stroke-primary fill-primary/20' : ''} />
           <span className="text-[10px] font-medium">الرئيسية</span>
         </Link>
-        <Link to="/admin/matches" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/matches' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-          <Trophy size={20} className={location.pathname === '/admin/matches' ? 'stroke-primary fill-primary/20' : ''} />
+
+        <Link to="/admin/bets" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/bets' ? 'text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Target size={20} className={location.pathname === '/admin/bets' ? 'stroke-emerald-600 fill-emerald-600/20' : ''} />
+          <span className="text-[10px] font-medium">الرهانات</span>
+        </Link>
+        <Link to="/admin/matches" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/matches' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Trophy size={20} className={location.pathname === '/admin/matches' ? 'stroke-blue-600 fill-blue-600/20' : ''} />
           <span className="text-[10px] font-medium">المباريات</span>
         </Link>
-        <Link to="/admin/users" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/users' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-          <Users size={20} className={location.pathname === '/admin/users' ? 'stroke-primary fill-primary/20' : ''} />
-          <span className="text-[10px] font-medium">المستخدمين</span>
-        </Link>
-        
-        {/* More Menu Toggle */}
-        <div className="relative flex flex-col items-center justify-center w-full h-full" ref={moreMenuRef}>
-          <button 
-            onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-            className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${isMoreMenuOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            <MoreHorizontal size={20} className={isMoreMenuOpen ? 'stroke-primary fill-primary/20' : ''} />
-            <span className="text-[10px] font-medium">المزيد</span>
-          </button>
-
-          {/* More Menu Dropdown */}
-          {isMoreMenuOpen && (
-            <div className="absolute bottom-full mb-2 right-0 bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 w-48 py-2">
-               <Link to="/admin/transactions" onClick={() => setIsMoreMenuOpen(false)} className={`flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 text-sm font-medium transition-colors ${location.pathname === '/admin/transactions' ? 'text-primary bg-primary/5' : 'text-muted-foreground'}`}>
-                 <Receipt size={18} />
-                 المعاملات
-               </Link>
-               <Link to="/admin/bets" onClick={() => setIsMoreMenuOpen(false)} className={`flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 text-sm font-medium transition-colors ${location.pathname === '/admin/bets' ? 'text-primary bg-primary/5' : 'text-muted-foreground'}`}>
-                 <Target size={18} />
-                 الرهانات
-               </Link>
-               <Link to="/admin/bonus" onClick={() => setIsMoreMenuOpen(false)} className={`flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 text-sm font-medium transition-colors ${location.pathname === '/admin/bonus' ? 'text-primary bg-primary/5' : 'text-muted-foreground'}`}>
-                 <Gift size={18} />
-                 البونص
-               </Link>
-               <Link to="/admin/leagues" onClick={() => setIsMoreMenuOpen(false)} className={`flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 text-sm font-medium transition-colors ${location.pathname === '/admin/leagues' ? 'text-primary bg-primary/5' : 'text-muted-foreground'}`}>
-                 <Trophy size={18} />
-                 الدوريات
-               </Link>
-            </div>
-          )}
-        </div>
       </nav>
 
       <Footer />

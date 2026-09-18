@@ -83,10 +83,10 @@ export const RegisterPage: React.FC = () => {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-blue-500 p-1 mb-3 shadow-[0_0_20px_rgba(34,197,94,0.4)]">
             <img src="/logo.jpg" alt="Goolbet Logo" className="w-full h-full object-cover rounded-full border-2 border-white/80" />
           </div>
-          <h1 className="text-3xl font-black text-center text-white drop-shadow-md">
+          <h1 className="text-3xl font-black text-center text-slate-900 drop-shadow-md">
             Gool<span className="text-primary">bet</span>
           </h1>
-          <p className="text-white/80 text-sm mt-1">تسجيل حساب جديد</p>
+          <p className="text-slate-900/80 text-sm mt-1">تسجيل حساب جديد</p>
         </div>
         
         {error && <div className="bg-red-500/10 text-red-500 p-3 rounded-lg text-sm mb-6 text-center">{error}</div>}
@@ -141,7 +141,7 @@ export const RegisterPage: React.FC = () => {
               />
               <button 
                 type="button" 
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-white transition-colors"
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-slate-900 transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -166,7 +166,7 @@ export const RegisterPage: React.FC = () => {
               />
               <button 
                 type="button" 
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-white transition-colors"
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-slate-900 transition-colors"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -187,7 +187,7 @@ export const RegisterPage: React.FC = () => {
         {/* Telegram Login Widget */}
         <Button 
           variant="outline" 
-          className="w-full h-11 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
+          className="w-full h-11 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-slate-900 transition-colors"
           onClick={handleTelegramLogin}
           type="button"
         >
@@ -200,7 +200,7 @@ export const RegisterPage: React.FC = () => {
         </p>
         {/* Footer with App Name and Version */}
         <div className="mt-8 text-center border-t border-white/10 pt-4">
-          <p className="text-white/60 text-xs font-bold tracking-widest">
+          <p className="text-slate-900/60 text-xs font-bold tracking-widest">
             Goolbet v1.0
           </p>
         </div>

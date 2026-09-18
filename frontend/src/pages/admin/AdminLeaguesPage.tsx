@@ -61,7 +61,7 @@ export const AdminLeaguesPage: React.FC = () => {
     <div className="animate-in fade-in duration-500 max-w-5xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
           <Trophy className="text-primary" size={32} />
           إدارة الدوريات
         </h1>
@@ -69,8 +69,8 @@ export const AdminLeaguesPage: React.FC = () => {
       </div>
 
       {/* Add League Form */}
-      <div className="glass rounded-2xl p-4 sm:p-6 border border-white/5">
-        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+      <div className="glass rounded-2xl p-4 sm:p-6 border border-slate-200">
+        <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
           <Plus className="text-primary" size={20} /> إضافة دوري جديد
         </h2>
         <form onSubmit={handleAddLeague} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
@@ -115,7 +115,7 @@ export const AdminLeaguesPage: React.FC = () => {
       </div>
 
       {/* Leagues List */}
-      <div className="glass rounded-2xl overflow-hidden border border-white/5">
+      <div className="glass rounded-2xl overflow-hidden border border-slate-200">
         <table className="w-full text-right table-fixed">
           <thead className="bg-background/40 backdrop-blur-md border-b border-border/40 text-muted-foreground text-[11px] sm:text-xs md:text-sm font-medium">
             <tr>
@@ -146,7 +146,7 @@ export const AdminLeaguesPage: React.FC = () => {
                       </div>
                     )}
                   </td>
-                  <td className="px-2 py-3 md:p-4 font-bold text-white text-[11px] sm:text-sm truncate">
+                  <td className="px-2 py-3 md:p-4 font-bold text-slate-900 text-[11px] sm:text-sm truncate">
                     {league.name}
                   </td>
                   <td className="px-2 py-3 md:p-4 text-center text-muted-foreground text-[10px] sm:text-xs truncate">

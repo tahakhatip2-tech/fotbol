@@ -42,7 +42,7 @@ export const HomePage: React.FC = () => {
         }
         subtitle="المنصة الأولى للمراهنات الرياضية. استمتع بأفضل الاحتمالات وأسرع عمليات السحب والإيداع."
         badge="Goolbet عالم"
-        minHeight="min-h-[45vh]"
+        minHeight="min-h-[40vh]"
       >
         <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center items-center w-full max-w-md mx-auto">
           <Button size="lg" className="w-full sm:w-auto shadow-[0_0_15px_rgba(34,197,94,0.4)] text-lg px-8" onClick={() => navigate('/matches')}>
@@ -146,7 +146,7 @@ export const HomePage: React.FC = () => {
                     </div>
                   </div>
                   
-                  <Button className="w-full h-8 bg-primary text-white hover:bg-primary/90 text-xs font-bold rounded-lg shadow-none" onClick={() => navigate('/matches')}>راهن الآن</Button>
+                  <Button className="w-full h-8 bg-primary text-slate-900 hover:bg-primary/90 text-xs font-bold rounded-lg shadow-none" onClick={() => navigate('/matches')}>راهن الآن</Button>
                 </div>
               ))}
             </div>

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../config/db';
+import { AuthRequest } from '../middlewares/authMiddleware';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey123';
 
@@ -65,5 +66,33 @@ export const login = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(500).json({ error: 'Server error', details: error.message });
+  }
+};
+
+export const getMe = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
   }
 };

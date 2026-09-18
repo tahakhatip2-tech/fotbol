@@ -10,10 +10,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     let baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50';
     
     const variants = {
-      default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
-      destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
-      outline: 'border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground',
-      ghost: 'hover:bg-accent hover:text-accent-foreground',
+      default: 'border-2 border-blue-500 bg-transparent text-blue-500 font-bold shadow-sm hover:bg-blue-500/10 hover:text-blue-600',
+      destructive: 'border-2 border-rose-500 bg-transparent text-rose-500 font-bold shadow-sm hover:bg-rose-500/10 hover:text-rose-600',
+      outline: 'border-2 border-blue-500 bg-transparent text-blue-500 font-bold shadow-sm hover:bg-blue-500/10 hover:text-blue-600',
+      ghost: 'hover:bg-blue-500/10 hover:text-blue-600 text-blue-500 font-bold',
     };
 
     const sizes = {

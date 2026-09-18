@@ -38,7 +38,7 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Navbar */}
-      <header className="glass sticky top-0 z-40 border-b border-border/40">
+      <header className="bg-white sticky top-0 z-40 border-b border-slate-200 shadow-sm">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <Link to="/" className="text-3xl font-black bg-gradient-to-r from-primary to-green-300 bg-clip-text text-transparent tracking-tighter flex items-center gap-2">
             <img src="/logo.jpg" alt="Goolbet Logo" className="w-10 h-10 object-cover rounded-full border border-primary/30" />
@@ -46,6 +46,7 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           </Link>
           
           <nav className="hidden md:flex gap-6">
+            <Link to="/" className="hover:text-primary transition-colors">الرئيسية</Link>
             <Link to="/matches" className="hover:text-primary transition-colors">{t('matches')}</Link>
             <Link to="/wallet" className="hover:text-primary transition-colors">{t('wallet')}</Link>
             <Link to="/profile" className="hover:text-primary transition-colors">حسابي</Link>
@@ -126,8 +127,8 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       </main>
 
       {/* Bottom Navigation (Mobile) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-border/40 z-50 flex justify-around items-center h-16 pb-safe bg-background/80 backdrop-blur-md">
-        <Link to="/" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 flex justify-around items-center h-16 pb-safe">
+        <Link to="/" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/' ? 'text-blue-500' : 'text-slate-500 hover:text-slate-900'}`}>
           <Home size={20} className={location.pathname === '/' ? 'stroke-primary fill-primary/20' : ''} />
           <span className="text-[10px] font-medium">الرئيسية</span>
         </Link>
@@ -139,8 +140,8 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           <Wallet size={20} className={location.pathname === '/wallet' ? 'stroke-primary fill-primary/20' : ''} />
           <span className="text-[10px] font-medium">{t('wallet')}</span>
         </Link>
-        <Link to="/profile" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/profile' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-          <User size={20} className={location.pathname === '/profile' ? 'stroke-primary fill-primary/20' : ''} />
+        <Link to="/profile" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/profile' ? 'text-blue-500' : 'text-slate-500 hover:text-slate-900'}`}>
+          <User size={20} className={location.pathname === '/profile' ? 'stroke-blue-500 fill-blue-500/20' : ''} />
           <span className="text-[10px] font-medium">حسابي</span>
         </Link>
       </nav>

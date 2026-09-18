@@ -7,6 +7,7 @@ import { HeroSection } from '../components/ui/HeroSection';
 export const ProfilePage: React.FC = () => {
   const [bets, setBets] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [wallet, setWallet] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +24,13 @@ export const ProfilePage: React.FC = () => {
         setBets(betsRes.data);
       } catch (error) {
         console.error('Failed to fetch bets', error);
+      }
+
+      try {
+        const walletRes = await api.get('/wallet');
+        setWallet(walletRes.data);
+      } catch (error) {
+        console.error('Failed to fetch wallet', error);
       } finally {
         setLoading(false);
       }
@@ -32,6 +40,7 @@ export const ProfilePage: React.FC = () => {
 
   const activeBets = bets.filter(b => b.status === 'PENDING');
   const pastBets = bets.filter(b => b.status !== 'PENDING');
+  const wonBets = bets.filter(b => b.status === 'WON');
 
   const getSelectionText = (selection: string, team1Name: string, team2Name: string) => {
     if (selection === 'TEAM_1_WIN') return `فوز ${team1Name}`;
@@ -82,32 +91,40 @@ export const ProfilePage: React.FC = () => {
         }
         subtitle="تابع سجل رهاناتك، تحكم في إعداداتك، وابقَ على اطلاع دائم."
         badge="الملف الشخصي 👤"
-        minHeight="min-h-[40vh]"
+        minHeight="min-h-[30vh]"
       >
-        <div className="flex flex-col items-center gap-4 mt-6 bg-white/40 backdrop-blur-md p-6 rounded-3xl border border-white/60 shadow-sm inline-block min-w-[280px]">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-4 border-white flex items-center justify-center relative shadow-md overflow-hidden mx-auto">
-            <span className="text-4xl font-black text-primary drop-shadow-sm">
-              {user?.firstName?.[0]?.toUpperCase() || 'U'}
-            </span>
-            {user?.role === 'ADMIN' && (
-              <div className="absolute bottom-1 bg-amber-500 text-black text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-[0_0_10px_rgba(245,158,11,0.5)]">
-                <ShieldCheck size={10} />
-                ADMIN
-              </div>
-            )}
+        <div className="mt-8 grid grid-cols-4 gap-2 md:gap-4 max-w-2xl mx-auto">
+          {/* Total Bets Card */}
+          <div className="bg-white/50 backdrop-blur-sm border border-slate-200 shadow-sm rounded-2xl p-3 flex flex-col items-center justify-center text-center hover:bg-white/70 transition-all cursor-pointer">
+            <Activity size={20} className="text-blue-500 mb-1" />
+            <span className="text-[10px] md:text-xs text-slate-500 font-bold mb-1">الرهانات</span>
+            <span className="text-lg md:text-xl font-black text-slate-900">{bets.length}</span>
           </div>
           
-          <div className="text-center">
-            <h2 className="text-xl font-bold text-slate-900 mb-1">{user?.firstName || ''} {user?.lastName || ''}</h2>
-            <div className="flex items-center justify-center gap-2 text-slate-600 bg-white/60 px-4 py-1.5 rounded-full border border-slate-200 shadow-sm text-sm font-medium">
-              <Mail size={14} />
-              <span>{user?.email}</span>
-            </div>
+          {/* Won Bets Card */}
+          <div className="bg-white/50 backdrop-blur-sm border border-slate-200 shadow-sm rounded-2xl p-3 flex flex-col items-center justify-center text-center hover:bg-white/70 transition-all cursor-pointer">
+            <Trophy size={20} className="text-green-500 mb-1" />
+            <span className="text-[10px] md:text-xs text-slate-500 font-bold mb-1">فوز</span>
+            <span className="text-lg md:text-xl font-black text-slate-900">{wonBets.length}</span>
+          </div>
+
+          {/* Real Balance Card */}
+          <div className="bg-white/50 backdrop-blur-sm border border-slate-200 shadow-sm rounded-2xl p-3 flex flex-col items-center justify-center text-center hover:bg-white/70 transition-all cursor-pointer">
+            <Wallet size={20} className="text-slate-700 mb-1" />
+            <span className="text-[10px] md:text-xs text-slate-500 font-bold mb-1">الرصيد</span>
+            <span className="text-lg md:text-xl font-black text-slate-900">${wallet?.balance?.toFixed(1) || '0.0'}</span>
+          </div>
+
+          {/* Bonus Balance Card */}
+          <div className="bg-white/50 backdrop-blur-sm border border-slate-200 shadow-sm rounded-2xl p-3 flex flex-col items-center justify-center text-center hover:bg-white/70 transition-all cursor-pointer">
+            <span className="text-xl mb-1">🎁</span>
+            <span className="text-[10px] md:text-xs text-slate-500 font-bold mb-1">بونص</span>
+            <span className="text-lg md:text-xl font-black text-slate-900">${wallet?.bonusBalance?.toFixed(1) || '0.0'}</span>
           </div>
         </div>
       </HeroSection>
 
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="container mx-auto px-4 mt-2 mb-8 max-w-5xl relative z-20">
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
@@ -122,11 +139,11 @@ export const ProfilePage: React.FC = () => {
             
             <div className="grid gap-4">
               {activeBets.length === 0 ? (
-                <div className="glass p-8 text-center rounded-3xl border border-dashed border-border/50 bg-secondary/10">
-                  <div className="w-16 h-16 rounded-full bg-secondary/30 flex items-center justify-center mx-auto mb-4 text-muted-foreground">
+                <div className="glass p-8 text-center rounded-3xl border border-dashed border-blue-500/50 bg-white">
+                  <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-4 text-blue-500">
                     <Trophy size={24} />
                   </div>
-                  <h3 className="text-lg font-medium text-foreground mb-1">لا توجد رهانات نشطة حالياً</h3>
+                  <h3 className="text-lg font-medium text-slate-900 mb-1">لا توجد رهانات نشطة حالياً</h3>
                   <p className="text-muted-foreground text-sm">توقع نتائج المباريات القادمة وابدأ في ربح الأرباح</p>
                 </div>
               ) : (
@@ -136,18 +153,18 @@ export const ProfilePage: React.FC = () => {
                     
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
                       <div className="text-center md:text-right w-full">
-                        <div className="inline-flex items-center gap-2 bg-secondary/40 border border-border/40 px-3 py-1 rounded-lg text-xs font-medium text-muted-foreground mb-3">
-                          <Trophy size={12} className="text-primary" />
+                        <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-lg text-xs font-medium text-blue-500 mb-3">
+                          <Trophy size={12} className="text-blue-500" />
                           مباراة قادمة
                         </div>
-                        <h3 className="font-bold text-xl mb-2 text-white">{bet.match.team1Name} <span className="text-muted-foreground px-2 font-normal">ضد</span> {bet.match.team2Name}</h3>
+                        <h3 className="font-bold text-xl mb-2 text-slate-900">{bet.match.team1Name} <span className="text-muted-foreground px-2 font-normal">ضد</span> {bet.match.team2Name}</h3>
                         <div className="text-muted-foreground text-sm flex items-center justify-center md:justify-start gap-2">
                           اختيارك: <span className="bg-primary/10 text-primary font-bold px-3 py-1 rounded-md border border-primary/20">{getSelectionText(bet.selection, bet.match.team1Name, bet.match.team2Name)}</span>
                           <span className="text-xs opacity-70">(نسبة: {bet.oddsAtBet})</span>
                         </div>
                       </div>
                       
-                      <div className="flex gap-4 md:flex-col items-center md:items-end w-full md:w-auto bg-background/40 md:bg-transparent p-4 md:p-0 rounded-2xl md:rounded-none border md:border-none border-border/30">
+                      <div className="flex gap-4 md:flex-col items-center md:items-end w-full md:w-auto bg-slate-50 md:bg-transparent p-4 md:p-0 rounded-2xl md:rounded-none border md:border-none border-blue-500/20">
                         <div className="text-center md:text-right w-1/2 md:w-auto border-l md:border-l-0 border-border/30 pl-4 md:pl-0">
                           <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wider">مبلغ الرهان</div>
                           <div className="font-bold text-2xl">${bet.stake}</div>
@@ -169,10 +186,10 @@ export const ProfilePage: React.FC = () => {
           {/* History Section */}
           <section className="sticky top-28">
             <div className="flex items-center gap-3 mb-6 px-2">
-              <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center border border-border/50 text-foreground">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-500">
                 <Wallet size={20} />
               </div>
-              <h2 className="text-xl font-bold tracking-tight">سجل الرهانات</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900">سجل الرهانات</h2>
             </div>
 
             <div className="glass rounded-3xl p-2 border border-border/40 max-h-[600px] overflow-y-auto no-scrollbar">
@@ -183,9 +200,9 @@ export const ProfilePage: React.FC = () => {
               ) : (
                 <div className="flex flex-col gap-2">
                   {pastBets.map(bet => (
-                    <div key={bet.id} className="bg-secondary/20 hover:bg-secondary/40 p-5 rounded-2xl border border-border/30 transition-colors">
+                    <div key={bet.id} className="bg-white hover:bg-slate-50 p-5 rounded-2xl border border-blue-500/50 shadow-sm transition-colors">
                       <div className="flex justify-between items-start mb-3">
-                        <div className="font-bold text-sm text-white/90 line-clamp-1 w-2/3">{bet.match?.team1Name} ضد {bet.match?.team2Name}</div>
+                        <div className="font-bold text-sm text-slate-900/90 line-clamp-1 w-2/3">{bet.match?.team1Name} ضد {bet.match?.team2Name}</div>
                         {getStatusBadge(bet.status, bet.potentialPayout)}
                       </div>
                       

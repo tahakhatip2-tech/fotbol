@@ -148,7 +148,7 @@ export const AdminMatchesPage: React.FC = () => {
         }
         subtitle="أضف، عدل، أو سوّي المباريات والرهانات."
         badge="لوحة الإدارة ⚙️"
-        minHeight="min-h-[30vh]"
+        minHeight="min-h-[40vh]"
       >
         <div className="mt-8 flex justify-center">
           <Button onClick={handleAddNewClick} className="flex items-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
@@ -158,7 +158,7 @@ export const AdminMatchesPage: React.FC = () => {
         </div>
       </HeroSection>
 
-      <div className="container mx-auto px-4 -mt-12 relative z-20">
+      <div className="container mx-auto px-4 mt-2 relative z-20">
 
 
       {showAddForm && (
@@ -167,11 +167,11 @@ export const AdminMatchesPage: React.FC = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
             
-            <button onClick={() => { setShowAddForm(false); setEditingMatchId(null); }} className="absolute top-6 left-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-colors border border-white/10">
+            <button onClick={() => { setShowAddForm(false); setEditingMatchId(null); }} className="absolute top-6 left-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-slate-900 transition-colors border border-white/10">
               <X size={20} />
             </button>
 
-            <h2 className="text-2xl font-bold mb-8 flex items-center gap-2 text-white">
+            <h2 className="text-2xl font-bold mb-8 flex items-center gap-2 text-slate-900">
               {editingMatchId ? <Edit size={24} className="text-blue-400" /> : <Plus size={24} className="text-primary" />}
               {editingMatchId ? 'تعديل بيانات المباراة' : 'إضافة مباراة جديدة'}
             </h2>
@@ -179,11 +179,11 @@ export const AdminMatchesPage: React.FC = () => {
             <form onSubmit={handleAddOrEditMatch} className="space-y-6 relative z-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Teams Input */}
-                <div className="glass p-6 rounded-2xl border border-white/5 space-y-4">
+                <div className="glass p-6 rounded-2xl border border-slate-200 space-y-4">
                   <h3 className="text-lg font-bold text-primary mb-2">بيانات الفرق</h3>
                   <div>
                     <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الأول (المضيف)</label>
-                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: ريال مدريد" value={formData.team1Name} onChange={e => setFormData({...formData, team1Name: e.target.value})} />
+                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900" required placeholder="مثال: ريال مدريد" value={formData.team1Name} onChange={e => setFormData({...formData, team1Name: e.target.value})} />
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
@@ -204,7 +204,7 @@ export const AdminMatchesPage: React.FC = () => {
                   <div className="h-px bg-white/5 my-2"></div>
                   <div>
                     <label className="block text-sm mb-1.5 text-muted-foreground">الفريق الثاني (الضيف)</label>
-                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="مثال: برشلونة" value={formData.team2Name} onChange={e => setFormData({...formData, team2Name: e.target.value})} />
+                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900" required placeholder="مثال: برشلونة" value={formData.team2Name} onChange={e => setFormData({...formData, team2Name: e.target.value})} />
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
@@ -225,20 +225,20 @@ export const AdminMatchesPage: React.FC = () => {
                 </div>
   
                 {/* Match Info Input */}
-                <div className="glass p-6 rounded-2xl border border-white/5 space-y-4">
+                <div className="glass p-6 rounded-2xl border border-slate-200 space-y-4">
                   <h3 className="text-lg font-bold text-amber-400 mb-2">تفاصيل المباراة</h3>
                   <div>
                     <label className="block text-sm mb-1.5 text-muted-foreground">اسم البطولة / الدوري</label>
-                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required placeholder="دوري أبطال أوروبا" value={formData.league} onChange={e => setFormData({...formData, league: e.target.value})} />
+                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900" required placeholder="دوري أبطال أوروبا" value={formData.league} onChange={e => setFormData({...formData, league: e.target.value})} />
                   </div>
                   <div>
                     <label className="block text-sm mb-1.5 text-muted-foreground">تاريخ ووقت المباراة</label>
-                    <input type="datetime-local" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" required value={formData.matchDate} onChange={e => setFormData({...formData, matchDate: e.target.value})} />
+                    <input type="datetime-local" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900" required value={formData.matchDate} onChange={e => setFormData({...formData, matchDate: e.target.value})} />
                   </div>
                   {editingMatchId && (
                     <div>
                       <label className="block text-sm mb-1.5 text-muted-foreground">حالة المباراة</label>
-                      <select className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-white" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+                      <select className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
                         <option value="UPCOMING">قادمة (UPCOMING)</option>
                         <option value="LIVE">جارية الآن (LIVE)</option>
                         <option value="CANCELLED">ملغاة (CANCELLED)</option>
@@ -264,7 +264,7 @@ export const AdminMatchesPage: React.FC = () => {
                 </div>
               </div>
   
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/5">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-200">
                 <Button type="submit" disabled={isSubmitting} className="flex-1 h-14 text-lg shadow-[0_0_20px_rgba(34,197,94,0.3)]">
                   {isSubmitting ? (
                     <span className="flex items-center gap-2"><Loader2 className="animate-spin" size={20} /> جاري النشر...</span>
@@ -284,7 +284,7 @@ export const AdminMatchesPage: React.FC = () => {
       {/* Matches Grid (FIFA Style Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {matches.map(match => (
-          <div key={match.id} className="bg-blue-900/40 backdrop-blur-md rounded-3xl overflow-hidden relative group border border-orange-500/50 hover:border-orange-400 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(249,115,22,0.15)] flex flex-col">
+          <div key={match.id} className="bg-white rounded-3xl overflow-hidden relative group border border-blue-500/50 hover:border-blue-400 transition-all duration-300 shadow-xl hover:shadow-[0_8px_30px_rgba(249,115,22,0.15)] flex flex-col">
             {/* Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
             
@@ -311,7 +311,7 @@ export const AdminMatchesPage: React.FC = () => {
             <div className="pt-12 pb-6 px-6 relative z-10 flex-1">
               <div className="text-center mb-6">
                 <p className="text-xs text-muted-foreground font-medium mb-1">{match.league}</p>
-                <div className="flex items-center justify-center gap-1.5 text-xs text-white/70">
+                <div className="flex items-center justify-center gap-1.5 text-xs text-slate-900/70">
                   <CalendarDays size={12} />
                   <span>{new Date(match.matchDate).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' })}</span>
                   <span className="mx-1">•</span>
@@ -326,7 +326,7 @@ export const AdminMatchesPage: React.FC = () => {
                   <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
                     <BackendImage src={match.team1Logo} alt={match.team1Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-primary/50" />} />
                   </div>
-                  <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team1Name}</h3>
+                  <h3 className="font-bold text-sm text-center text-slate-900 line-clamp-2">{match.team1Name}</h3>
                 </div>
 
                 {/* VS or Score */}
@@ -336,7 +336,7 @@ export const AdminMatchesPage: React.FC = () => {
                       نهاية
                     </div>
                   ) : (
-                    <div className="text-xl font-black italic text-white/30 tracking-widest">VS</div>
+                    <div className="text-xl font-black italic text-slate-900/30 tracking-widest">VS</div>
                   )}
                 </div>
 
@@ -345,25 +345,25 @@ export const AdminMatchesPage: React.FC = () => {
                   <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mb-3 p-2 overflow-hidden">
                     <BackendImage src={match.team2Logo} alt={match.team2Name} className="w-full h-full object-contain" fallbackIcon={<ShieldHalf size={28} className="text-blue-400/50" />} />
                   </div>
-                  <h3 className="font-bold text-sm text-center text-white line-clamp-2">{match.team2Name}</h3>
+                  <h3 className="font-bold text-sm text-center text-slate-900 line-clamp-2">{match.team2Name}</h3>
                 </div>
               </div>
             </div>
 
             {/* Actions / Settlement Area */}
-            <div className="p-4 border-t border-white/5 bg-black/20 backdrop-blur-md">
+            <div className="p-4 border-t border-slate-200 bg-white backdrop-blur-md">
               {match.status !== 'FINISHED' ? (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs text-muted-foreground px-2">
                     <span>تسوية النتيجة:</span>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <button onClick={() => handleSettle(match.id, 'TEAM_1_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-white/5 hover:border-emerald-500/30 text-emerald-400 text-xs font-bold transition-all text-center">فوز 1</button>
-                    <button onClick={() => handleSettle(match.id, 'DRAW')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-500/30 text-amber-400 text-xs font-bold transition-all text-center">تعادل</button>
-                    <button onClick={() => handleSettle(match.id, 'TEAM_2_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-white/5 hover:border-blue-500/30 text-blue-400 text-xs font-bold transition-all text-center">فوز 2</button>
+                    <button onClick={() => handleSettle(match.id, 'TEAM_1_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-slate-200 hover:border-emerald-500/30 text-emerald-400 text-xs font-bold transition-all text-center">فوز 1</button>
+                    <button onClick={() => handleSettle(match.id, 'DRAW')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-slate-200 hover:border-amber-500/30 text-amber-400 text-xs font-bold transition-all text-center">تعادل</button>
+                    <button onClick={() => handleSettle(match.id, 'TEAM_2_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-slate-200 hover:border-blue-500/30 text-blue-400 text-xs font-bold transition-all text-center">فوز 2</button>
                   </div>
                   <div className="flex gap-2 mt-3">
-                    <Button variant="outline" className="flex-1 h-9 text-xs border-white/10 text-white" onClick={() => handleEditClick(match)}>
+                    <Button variant="outline" className="flex-1 h-9 text-xs border-white/10 text-slate-900" onClick={() => handleEditClick(match)}>
                       <Edit size={14} className="mr-1.5" /> تعديل
                     </Button>
                     <Button variant="outline" className="flex-1 h-9 text-xs border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => handleDelete(match.id)}>
@@ -385,10 +385,10 @@ export const AdminMatchesPage: React.FC = () => {
       </div>
 
       {matches.length === 0 && (
-        <div className="glass rounded-3xl p-16 text-center border border-white/5">
+        <div className="glass rounded-3xl p-16 text-center border border-slate-200">
           <div className="flex flex-col items-center justify-center text-muted-foreground">
             <Trophy size={64} className="opacity-20 mb-6" />
-            <p className="text-xl font-bold text-white mb-2">لا توجد مباريات حالياً.</p>
+            <p className="text-xl font-bold text-slate-900 mb-2">لا توجد مباريات حالياً.</p>
             <p className="opacity-60 mb-8">قم بإضافة مباراة جديدة للبدء واستقبال رهانات المستخدمين.</p>
             <Button onClick={handleAddNewClick} className="shadow-[0_0_20px_rgba(34,197,94,0.2)]">إضافة أول مباراة</Button>
           </div>

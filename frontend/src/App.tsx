@@ -20,11 +20,12 @@ import { HomePage } from './pages/HomePage';
 function App() {
   const { i18n } = useTranslation();
 
-  // Set RTL layout based on language
+  // Set RTL layout and document title based on language
   useEffect(() => {
     const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.dir = dir;
     document.documentElement.lang = i18n.language;
+    document.title = "Goolbet | منصة المراهنات الرياضية الأولى";
   }, [i18n.language]);
 
   return (

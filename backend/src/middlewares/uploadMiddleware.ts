@@ -6,7 +6,7 @@ import fs from 'fs';
 // Locally, use the standard uploads directory.
 const uploadDir = process.env.VERCEL
   ? '/tmp/uploads'
-  : path.join(__dirname, '../../uploads');
+  : path.join(process.cwd(), 'uploads');
 
 try {
   if (!fs.existsSync(uploadDir)) {

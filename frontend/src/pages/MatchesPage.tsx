@@ -39,21 +39,21 @@ export const MatchesPage: React.FC = () => {
         badge="مباريات اليوم ⚽"
         minHeight="min-h-[40vh]"
       >
-        <div className="flex gap-2 justify-end w-full md:w-auto bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-white/60 shadow-sm mt-6">
-          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-6 bg-primary text-white rounded-xl shadow-sm">الكل</Button>
-          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-6 text-slate-600 hover:text-slate-900 rounded-xl">مباشر</Button>
-          <Button variant="ghost" className="flex-1 md:flex-none text-xs md:text-sm px-6 text-slate-600 hover:text-slate-900 rounded-xl">قادمة</Button>
+        <div className="flex gap-2 justify-center mt-6 max-w-sm mx-auto">
+          <Button variant="outline" className="text-sm px-6 rounded-xl border-blue-500 text-blue-600 bg-blue-50/50 hover:bg-blue-100/50 hover:text-blue-700 shadow-sm font-bold">الكل</Button>
+          <Button variant="outline" className="text-sm px-6 rounded-xl border-slate-300 text-slate-600 bg-white/50 backdrop-blur-sm hover:bg-slate-100 hover:text-slate-900">مباشر</Button>
+          <Button variant="outline" className="text-sm px-6 rounded-xl border-slate-300 text-slate-600 bg-white/50 backdrop-blur-sm hover:bg-slate-100 hover:text-slate-900">قادمة</Button>
         </div>
       </HeroSection>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-1 pb-12">
 
       {isLoading ? (
         <div className="flex justify-center items-center h-[40vh]">
           <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
         </div>
       ) : matches.length === 0 ? (
-        <div className="glass rounded-3xl p-16 text-center border border-white/5">
+        <div className="glass rounded-3xl p-16 text-center border border-slate-200">
           <div className="flex flex-col items-center justify-center text-muted-foreground">
             <Trophy size={64} className="opacity-20 mb-6" />
             <p className="text-xl font-bold text-slate-900 mb-2">لا توجد مباريات متاحة حالياً.</p>

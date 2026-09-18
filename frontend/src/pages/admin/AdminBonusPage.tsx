@@ -80,7 +80,7 @@ export const AdminBonusPage: React.FC = () => {
     <div className="animate-in fade-in duration-500 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
             <Gift className="text-primary" size={32} />
             إدارة البونص
           </h1>
@@ -99,7 +99,7 @@ export const AdminBonusPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden border border-white/5">
+      <div className="glass rounded-2xl overflow-hidden border border-slate-200">
         <table className="w-full text-right table-fixed">
           <thead className="bg-background/40 backdrop-blur-md border-b border-border/40 text-muted-foreground text-[10px] sm:text-xs md:text-sm font-medium">
             <tr>
@@ -122,7 +122,7 @@ export const AdminBonusPage: React.FC = () => {
               filteredUsers.map(user => (
                 <tr key={user.id} className="border-b border-border/20 hover:bg-white/5 transition-colors">
                   <td className="px-2 py-3 md:p-4 overflow-hidden">
-                    <div className="font-bold text-white text-[11px] sm:text-xs md:text-sm truncate w-full">{user.firstName} {user.lastName}</div>
+                    <div className="font-bold text-slate-900 text-[11px] sm:text-xs md:text-sm truncate w-full">{user.firstName} {user.lastName}</div>
                     <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 truncate w-full">{user.email}</div>
                   </td>
                   <td className="px-1 py-3 md:p-4 font-mono font-bold text-[10px] sm:text-xs md:text-sm text-center md:text-right">${user.wallet?.balance?.toFixed(2) || '0.00'}</td>
@@ -131,7 +131,7 @@ export const AdminBonusPage: React.FC = () => {
                     <Button 
                       size="sm" 
                       onClick={() => openModal(user)} 
-                      className="bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_10px_rgba(37,99,235,0.3)] border-0 h-6 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-9 md:px-4 md:text-sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-slate-900 shadow-[0_0_10px_rgba(37,99,235,0.3)] border-0 h-6 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-9 md:px-4 md:text-sm"
                     >
                       إدارة
                     </Button>
@@ -148,8 +148,8 @@ export const AdminBonusPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
           <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-muted p-4 flex justify-between items-center border-b border-border">
-              <h3 className="font-bold text-lg text-white">إدارة بونص: {selectedUser.firstName}</h3>
-              <button onClick={closeModal} className="text-muted-foreground hover:text-white p-1"><X size={20}/></button>
+              <h3 className="font-bold text-lg text-slate-900">إدارة بونص: {selectedUser.firstName}</h3>
+              <button onClick={closeModal} className="text-muted-foreground hover:text-slate-900 p-1"><X size={20}/></button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6">
@@ -165,7 +165,7 @@ export const AdminBonusPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActionType('DEDUCT')}
-                  className={`flex-1 py-2 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${actionType === 'DEDUCT' ? 'bg-red-500 text-white shadow-md' : 'text-muted-foreground hover:bg-white/5'}`}
+                  className={`flex-1 py-2 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${actionType === 'DEDUCT' ? 'bg-red-500 text-slate-900 shadow-md' : 'text-muted-foreground hover:bg-white/5'}`}
                 >
                   <Minus size={16} />
                   خصم بونص

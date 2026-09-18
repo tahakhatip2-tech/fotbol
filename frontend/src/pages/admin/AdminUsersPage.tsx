@@ -31,10 +31,10 @@ export const AdminUsersPage: React.FC = () => {
         }
         subtitle="متابعة حسابات المستخدمين وأرصدتهم."
         badge="لوحة الإدارة ⚙️"
-        minHeight="min-h-[30vh]"
+        minHeight="min-h-[40vh]"
       />
 
-      <div className="container mx-auto px-4 -mt-12 relative z-20">
+      <div className="container mx-auto px-4 mt-2 relative z-20">
         {isLoading ? (
           <div className="flex justify-center items-center h-48 glass rounded-3xl">
              <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
@@ -47,7 +47,7 @@ export const AdminUsersPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {users.map((user) => (
-              <div key={user.id} className="glass rounded-3xl p-5 border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/30 transition-all duration-300 relative overflow-hidden group">
+              <div key={user.id} className="glass rounded-3xl p-5 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/30 transition-all duration-300 relative overflow-hidden group">
                 {/* Background Glow */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[40px] group-hover:bg-primary/10 transition-colors -z-10 pointer-events-none"></div>
                 
@@ -69,7 +69,7 @@ export const AdminUsersPage: React.FC = () => {
                     {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
                   </div>
                   <div className="overflow-hidden">
-                    <h3 className="font-bold text-white text-lg truncate group-hover:text-primary transition-colors">
+                    <h3 className="font-bold text-slate-900 text-lg truncate group-hover:text-primary transition-colors">
                       {user.firstName} {user.lastName}
                     </h3>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 truncate">
@@ -98,7 +98,7 @@ export const AdminUsersPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="text-[11px] text-muted-foreground/50 border-t border-white/5 pt-3 relative z-10 text-center">
+                <div className="text-[11px] text-muted-foreground border-t border-slate-200 pt-3 relative z-10 text-center">
                   انضم في: {new Date(user.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </div>
               </div>

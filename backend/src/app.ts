@@ -22,7 +22,9 @@ app.use(express.json());
 // Serve uploads directory (only in local/non-serverless environments)
 // In Vercel, static files are served from /tmp and don't persist between requests
 if (!process.env.VERCEL) {
-  app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+  // Works for both ts-node (src/) and compiled (dist/src/) contexts
+  const uploadsPath = path.join(process.cwd(), 'uploads');
+  app.use('/uploads', express.static(uploadsPath));
 }
 
 app.use('/api/auth', authRoutes);

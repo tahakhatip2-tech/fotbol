@@ -148,9 +148,9 @@ export const WalletPage: React.FC = () => {
         }
         subtitle="اشحن رصيدك أو اسحب أرباحك بسرعة البرق وبدون أي تعقيدات."
         badge="أمان تام 🔒"
-        minHeight="min-h-[45vh]"
+        minHeight="min-h-[40vh]"
       >
-        <div className="mt-8 text-center bg-white/40 backdrop-blur-md p-6 rounded-3xl border border-white/60 shadow-sm inline-block min-w-[280px]">
+        <div className="mt-8 text-center p-6 inline-block min-w-[280px]">
            <p className="text-sm font-bold text-slate-600 mb-1">الرصيد المتاح</p>
            <h2 className="text-4xl font-black text-slate-900 drop-shadow-sm">${balance.toFixed(2)}</h2>
            <div className="flex gap-4 mt-6 justify-center w-full max-w-sm mx-auto">
@@ -160,24 +160,24 @@ export const WalletPage: React.FC = () => {
         </div>
       </HeroSection>
       
-      <div className="container mx-auto px-4 py-8 -mt-8 relative z-20">
+      <div className="container mx-auto px-4 py-8 mt-2 relative z-20">
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="glass p-6 md:p-8 rounded-2xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/20 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+          <div className="bg-white/40 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/60 shadow-sm relative overflow-hidden group hover:shadow-md hover:bg-white/50 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-400/10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
             <h2 className="text-sm md:text-lg text-slate-600 mb-2 relative z-10">الرصيد المعلق (في الرهانات)</h2>
-            <div className="text-2xl md:text-4xl font-bold text-slate-400 relative z-10">${lockedBalance.toFixed(2)}</div>
+            <div className="text-2xl md:text-4xl font-bold text-slate-700 relative z-10">${lockedBalance.toFixed(2)}</div>
           </div>
           
-          <div className="glass p-6 md:p-8 rounded-2xl relative overflow-hidden group border border-blue-500/20 bg-blue-50/50">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+          <div className="bg-white/40 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-blue-300/50 shadow-sm relative overflow-hidden group hover:shadow-md hover:bg-blue-50/60 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/15 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
             <h2 className="text-sm md:text-lg text-blue-600 mb-2 relative z-10 font-bold">رصيد البونص 🎁</h2>
             <div className="text-2xl md:text-4xl font-bold text-blue-600 relative z-10">${bonusBalance.toFixed(2)}</div>
           </div>
 
-          <div className="glass p-6 md:p-8 rounded-2xl relative overflow-hidden group border border-slate-200/50">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+          <div className="bg-white/40 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/60 shadow-sm relative overflow-hidden group hover:shadow-md hover:bg-white/50 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-400/10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
             <h2 className="text-sm md:text-lg text-slate-500 mb-2 relative z-10">البونص المعلق</h2>
-            <div className="text-2xl md:text-4xl font-bold text-slate-400 relative z-10">${lockedBonusBalance.toFixed(2)}</div>
+            <div className="text-2xl md:text-4xl font-bold text-slate-600 relative z-10">${lockedBonusBalance.toFixed(2)}</div>
           </div>
         </div>
 

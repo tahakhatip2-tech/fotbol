@@ -15,7 +15,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   backgroundImage = '/hero-img.jpg',
   children,
   badge,
-  minHeight = 'min-h-[20vh] md:min-h-[30vh]',
+  minHeight = 'min-h-[40vh]',
 }) => {
   return (
     <section className={`relative flex items-center justify-center ${minHeight} py-3 md:py-5 overflow-hidden mb-4 bg-slate-50 border-b border-slate-200/50`}>

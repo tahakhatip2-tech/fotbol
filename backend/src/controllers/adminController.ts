@@ -79,7 +79,7 @@ export const getAllBets = async (req: Request, res: Response) => {
 // Create a Match
 export const createMatch = async (req: Request, res: Response) => {
   try {
-    let { team1Name, team1Logo, team2Name, team2Logo, league, matchDate, status, description, odds } = req.body;
+    let { team1Name, team1Logo, team2Name, team2Logo, league, matchDate, status, description, odds, team1Score, team2Score } = req.body;
     
     // Parse odds if sent as a JSON string from form-data
     if (typeof odds === 'string') {
@@ -113,6 +113,8 @@ export const createMatch = async (req: Request, res: Response) => {
         team1Logo: team1Logo as string | undefined,
         team2Name: team2Name as string,
         team2Logo: team2Logo as string | undefined,
+        team1Score: team1Score ? parseInt(team1Score, 10) : 0,
+        team2Score: team2Score ? parseInt(team2Score, 10) : 0,
         league: league as string,
         matchDate: new Date(matchDate as string),
         status: status as MatchStatus,
@@ -138,7 +140,7 @@ export const createMatch = async (req: Request, res: Response) => {
 export const updateMatch = async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
-    let { team1Name, team1Logo, team2Name, team2Logo, league, matchDate, status, description, odds } = req.body;
+    let { team1Name, team1Logo, team2Name, team2Logo, league, matchDate, status, description, odds, team1Score, team2Score } = req.body;
 
     // Parse odds if sent as a JSON string from form-data
     if (typeof odds === 'string') {
@@ -177,6 +179,8 @@ export const updateMatch = async (req: Request, res: Response) => {
         team1Logo: team1Logo as string | undefined,
         team2Name: team2Name as string,
         team2Logo: team2Logo as string | undefined,
+        team1Score: team1Score !== undefined ? parseInt(team1Score, 10) : undefined,
+        team2Score: team2Score !== undefined ? parseInt(team2Score, 10) : undefined,
         league: league as string,
         matchDate: new Date(matchDate as string),
         status: status as MatchStatus,
@@ -201,11 +205,79 @@ export const updateMatch = async (req: Request, res: Response) => {
   }
 };
 
+// Start a Match (UPCOMING → LIVE)
+export const startMatch = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+
+    const match = await prisma.match.findUnique({ where: { id } });
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (match.status !== 'UPCOMING' && match.status !== 'DRAFT') {
+      return res.status(400).json({ error: 'Match must be UPCOMING or DRAFT to start' });
+    }
+
+    const updated = await prisma.match.update({
+      where: { id },
+      data: {
+        status: 'LIVE',
+        matchPhase: 'FIRST_HALF',
+        startedAt: new Date(),
+        liveUpdate: 'انطلقت المباراة!'
+      }
+    });
+
+    res.json({ message: 'Match started successfully', match: updated });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error starting match' });
+  }
+};
+
+// Update Live Match (scores, phase, live text, extra time, penalties)
+export const updateLiveMatch = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+    const {
+      team1Score,
+      team2Score,
+      matchPhase,
+      liveUpdate,
+      isKnockout,
+      extraTimeTeam1,
+      extraTimeTeam2,
+      penaltiesTeam1,
+      penaltiesTeam2,
+      status
+    } = req.body;
+
+    const match = await prisma.match.findUnique({ where: { id } });
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+    if (match.status === 'FINISHED') {
+      return res.status(400).json({ error: 'Cannot update a finished match' });
+    }
+
+    const updateData: any = {};
+    if (team1Score !== undefined) updateData.team1Score = parseInt(team1Score, 10);
+    if (team2Score !== undefined) updateData.team2Score = parseInt(team2Score, 10);
+    if (matchPhase !== undefined) updateData.matchPhase = matchPhase;
+    if (liveUpdate !== undefined) updateData.liveUpdate = liveUpdate;
+    if (isKnockout !== undefined) updateData.isKnockout = isKnockout;
+    if (extraTimeTeam1 !== undefined) updateData.extraTimeTeam1 = parseInt(extraTimeTeam1, 10);
+    if (extraTimeTeam2 !== undefined) updateData.extraTimeTeam2 = parseInt(extraTimeTeam2, 10);
+    if (penaltiesTeam1 !== undefined) updateData.penaltiesTeam1 = parseInt(penaltiesTeam1, 10);
+    if (penaltiesTeam2 !== undefined) updateData.penaltiesTeam2 = parseInt(penaltiesTeam2, 10);
+    if (status !== undefined) updateData.status = status;
+
+    const updated = await prisma.match.update({ where: { id }, data: updateData });
+    res.json({ message: 'Match updated successfully', match: updated });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error updating live match' });
+  }
+};
+
 // Settle Match (determine outcome and pay bets)
 export const settleMatch = async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
-    const { result } = req.body; // 'TEAM_1_WIN', 'DRAW', 'TEAM_2_WIN'
 
     const match = await prisma.match.findUnique({
       where: { id },
@@ -215,37 +287,82 @@ export const settleMatch = async (req: Request, res: Response) => {
     if (!match) return res.status(404).json({ error: 'Match not found' });
     if (match.status === 'FINISHED') return res.status(400).json({ error: 'Match already finished' });
 
+    // --- Determine final result for bet settlement ---
+    // For knockout matches with a draw at 90 min, use extra time / penalties to find winner
+    // But bets are ALWAYS settled on 90-minute result for DRAW bets,
+    // and on the final winner for WIN bets.
+    
+    const t1 = match.team1Score;
+    const t2 = match.team2Score;
+    let resultAt90: 'TEAM_1_WIN' | 'DRAW' | 'TEAM_2_WIN';
+
+    if (t1 > t2) resultAt90 = 'TEAM_1_WIN';
+    else if (t2 > t1) resultAt90 = 'TEAM_2_WIN';
+    else resultAt90 = 'DRAW';
+
+    // Determine the final outcome for the match record
+    // (used for display/history, not for bet settlement)
+    let finalResult: 'TEAM_1_WIN' | 'DRAW' | 'TEAM_2_WIN' = resultAt90;
+
+    if (match.isKnockout && resultAt90 === 'DRAW') {
+      // Check extra time scores
+      const et1 = (match.team1Score + match.extraTimeTeam1);
+      const et2 = (match.team2Score + match.extraTimeTeam2);
+
+      if (et1 > et2) {
+        finalResult = 'TEAM_1_WIN';
+      } else if (et2 > et1) {
+        finalResult = 'TEAM_2_WIN';
+      } else {
+        // Still draw after extra time → use penalties
+        const p1 = match.penaltiesTeam1;
+        const p2 = match.penaltiesTeam2;
+        if (p1 > p2) finalResult = 'TEAM_1_WIN';
+        else if (p2 > p1) finalResult = 'TEAM_2_WIN';
+        else finalResult = 'DRAW'; // Should not happen in real football
+      }
+    }
+
+    // Bets placed as TEAM_1_WIN or TEAM_2_WIN are settled on resultAt90
+    // Exception: if isKnockout and resultAt90 is DRAW,
+    // then WIN bets use finalResult, and DRAW bets lose.
+    const getBetResult = (selection: string): boolean => {
+      if (!match.isKnockout) {
+        return selection === resultAt90;
+      }
+      // Knockout: DRAW bets always lose (no draw allowed in knockout)
+      // WIN bets are settled against finalResult
+      if (selection === 'DRAW') return resultAt90 === 'DRAW' && finalResult === 'DRAW';
+      return selection === finalResult;
+    };
+
     // Transaction for settlement
     await prisma.$transaction(async (tx) => {
       // 1. Update Match status and result
       await tx.match.update({
         where: { id },
-        data: { status: 'FINISHED', result }
+        data: {
+          status: 'FINISHED',
+          result: finalResult,
+          resultAt90,
+          endedAt: new Date(),
+          liveUpdate: 'انتهت المباراة!'
+        }
       });
 
       // 2. Process all pending bets
       for (const bet of match.bets) {
-        const isWin = bet.selection === result;
-        
+        const isWin = getBetResult(bet.selection);
+
         if (isWin) {
-          // Update bet to WON and create Settlement
           await tx.bet.update({ where: { id: bet.id }, data: { status: 'WON' } });
           await tx.settlement.create({
-            data: {
-              matchId: match.id,
-              betId: bet.id,
-              amount: bet.potentialPayout,
-              isWin: true
-            }
+            data: { matchId: match.id, betId: bet.id, amount: bet.potentialPayout, isWin: true }
           });
-          
-          // Add funds to user wallet
           await tx.wallet.update({
             where: { userId: bet.userId },
             data: { balance: { increment: bet.potentialPayout } }
           });
-          
-          // Create WalletTransaction
           await tx.walletTransaction.create({
             data: {
               userId: bet.userId,
@@ -255,21 +372,15 @@ export const settleMatch = async (req: Request, res: Response) => {
             }
           });
         } else {
-          // Update bet to LOST
           await tx.bet.update({ where: { id: bet.id }, data: { status: 'LOST' } });
           await tx.settlement.create({
-            data: {
-              matchId: match.id,
-              betId: bet.id,
-              amount: 0,
-              isWin: false
-            }
+            data: { matchId: match.id, betId: bet.id, amount: 0, isWin: false }
           });
         }
       }
     });
 
-    res.json({ message: 'Match settled successfully' });
+    res.json({ message: 'Match settled successfully', resultAt90, finalResult });
   } catch (error) {
     res.status(500).json({ error: 'Server error settling match' });
   }
@@ -431,7 +542,15 @@ export const getLeagues = async (req: Request, res: Response) => {
 // Create a league
 export const createLeague = async (req: Request, res: Response) => {
   try {
-    const { name, logo, country } = req.body;
+    const { name, country } = req.body;
+    let logo = req.body.logo;
+    
+    if (req.file) {
+      // Build full URL based on req
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      logo = `${baseUrl}/uploads/${req.file.filename}`;
+    }
+
     if (!name) return res.status(400).json({ error: 'League name is required' });
 
     // Check if league exists
@@ -459,3 +578,18 @@ export const deleteLeague = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error deleting league' });
   }
 };
+e x p o r t   c o n s t   t o g g l e U s e r S t a t u s   =   a s y n c   ( r e q :   R e q u e s t ,   r e s :   R e s p o n s e )   = >   { 
+     t r y   { 
+         c o n s t   {   i d   }   =   r e q . p a r a m s   a s   {   i d :   s t r i n g   } ; 
+         c o n s t   u s e r   =   a w a i t   p r i s m a . u s e r . f i n d U n i q u e ( {   w h e r e :   {   i d   }   } ) ; 
+         i f   ( ! u s e r )   r e t u r n   r e s . s t a t u s ( 4 0 4 ) . j s o n ( {   e r r o r :   ' U s e r   n o t   f o u n d '   } ) ; 
+         c o n s t   u p d a t e d U s e r   =   a w a i t   p r i s m a . u s e r . u p d a t e ( { 
+             w h e r e :   {   i d   } , 
+             d a t a :   {   i s A c t i v e :   ! u s e r . i s A c t i v e   } 
+         } ) ; 
+         r e s . j s o n ( u p d a t e d U s e r ) ; 
+     }   c a t c h   ( e r r o r )   { 
+         r e s . s t a t u s ( 5 0 0 ) . j s o n ( {   e r r o r :   ' S e r v e r   e r r o r   t o g g l i n g   u s e r   s t a t u s '   } ) ; 
+     } 
+ } ;  
+ 

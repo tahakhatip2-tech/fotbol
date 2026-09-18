@@ -2,34 +2,83 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { login } from '../api/auth';
+import { login, telegramLogin } from '../api/auth';
 import { Eye, EyeOff } from 'lucide-react';
+import { TelegramLoginWidget } from '../components/TelegramLoginWidget';
+import type { TelegramUser } from '../components/TelegramLoginWidget';
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(localStorage.getItem('rememberedEmail') || '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(!!localStorage.getItem('rememberedEmail'));
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleTelegramLogin = () => {
-    // In a real app, this would open the Telegram OAuth popup
-    alert('لإكمال تسجيل الدخول عبر تيليجرام، يجب أولاً ربط (Bot Token) من @BotFather في الإعدادات. سيتم محاكاتها الآن.');
-    setTimeout(() => {
-      localStorage.setItem('token', 'mock_telegram_jwt_token');
+  const handleTelegramAuth = async (user: TelegramUser) => {
+    setError('');
+    setIsLoading(true);
+    try {
+      await telegramLogin(user);
       navigate('/');
-    }, 1500);
+    } catch (err: any) {
+      console.error('Telegram login error:', err);
+      setError(err.response?.data?.error || 'حدث خطأ أثناء تسجيل الدخول عبر تيليجرام');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Keep the mock button for testing when no bot name is provided
+  const handleMockTelegramLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      // Send a mock user to the backend to test the fallback mock logic
+      await telegramLogin({
+        id: Math.floor(Math.random() * 100000),
+        first_name: 'Test',
+        last_name: 'User',
+        username: 'test_telegram_user',
+        auth_date: Math.floor(Date.now() / 1000),
+        hash: 'mock'
+      });
+      navigate('/');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Error in mock login');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('يرجى إدخال بريد إلكتروني صحيح.');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const formattedEmail = email.trim().toLowerCase();
       await login({ email: formattedEmail, password });
+      
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', formattedEmail);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
       navigate('/');
     } catch (err: any) {
       console.error('Login error:', err);
@@ -106,8 +155,13 @@ export const LoginPage: React.FC = () => {
           </div>
           <div className="flex justify-between items-center text-sm">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="rounded border-border" />
-              <span className="text-muted-foreground">تذكرني</span>
+              <input 
+                type="checkbox" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="rounded border-border accent-primary w-4 h-4" 
+              />
+              <span className="text-muted-foreground select-none">تذكرني</span>
             </label>
             <a href="#" className="text-primary hover:underline">نسيت كلمة المرور؟</a>
           </div>
@@ -123,14 +177,23 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Telegram Login Widget */}
+        <div className="mb-4">
+          <TelegramLoginWidget 
+            botName="your_bot_username_here" // Replace with actual bot username
+            onAuth={handleTelegramAuth}
+          />
+        </div>
+        
+        {/* Mock Telegram Login Button (For testing before bot is ready) */}
         <Button 
           variant="outline" 
           className="w-full h-11 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-slate-900 transition-colors"
-          onClick={handleTelegramLogin}
+          onClick={handleMockTelegramLogin}
           type="button"
+          disabled={isLoading}
         >
           <svg className="w-5 h-5 mr-2 ml-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.686c.223-.195-.054-.285-.346-.09l-6.4 4.024-2.76-.86c-.6-.185-.613-.6.125-.89l10.736-4.133c.5-.186.953.106.825.99z"/></svg>
-          المتابعة باستخدام تيليجرام
+          تسجيل دخول وهمي (للتجربة)
         </Button>
 
         <p className="text-center text-sm text-muted-foreground mt-6">

@@ -28,8 +28,17 @@ export const RegisterPage: React.FC = () => {
     e.preventDefault();
     setError('');
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      return setError('يرجى إدخال بريد إلكتروني صحيح.');
+    }
+
+    if (formData.password.length < 6) {
+      return setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      return setError('كلمتا المرور غير متطابقتين');
+      return setError('كلمتا المرور غير متطابقتين.');
     }
 
     setIsLoading(true);

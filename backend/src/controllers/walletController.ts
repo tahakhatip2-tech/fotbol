@@ -41,6 +41,11 @@ export const requestWithdrawal = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'Amount and wallet address are required' });
     }
 
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.isActive) {
+      return res.status(403).json({ error: 'عذراً، حسابك موقوف مؤقتاً. يرجى التواصل مع الدعم.' });
+    }
+
     // Check balance
     const wallet = await prisma.wallet.findUnique({ where: { userId } });
     if (!wallet || wallet.balance < amount) {

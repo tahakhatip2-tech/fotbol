@@ -3,16 +3,20 @@ import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
 import { BackendImage } from '../../components/BackendImage';
 import { HeroSection } from '../../components/ui/HeroSection';
-import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf, Trash2, Loader2 } from 'lucide-react';
+import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf, Trash2, Loader2, PlayCircle, Settings } from 'lucide-react';
+import { LiveControlPanel } from '../../components/LiveControlPanel';
 
 export const AdminMatchesPage: React.FC = () => {
   const [matches, setMatches] = useState<any[]>([]);
+  const [leagues, setLeagues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
+  const [liveControlMatch, setLiveControlMatch] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     team1Name: '', team2Name: '', league: '', matchDate: '', status: 'UPCOMING',
+    team1Score: 0, team2Score: 0,
     odds: { team1Win: 1.5, draw: 3.0, team2Win: 2.5 }
   });
   const [team1LogoFile, setTeam1LogoFile] = useState<File | null>(null);
@@ -31,8 +35,18 @@ export const AdminMatchesPage: React.FC = () => {
     }
   };
 
+  const fetchLeagues = async () => {
+    try {
+      const res = await api.get('/admin/leagues');
+      setLeagues(res.data);
+    } catch (error) {
+      console.error('Error fetching leagues', error);
+    }
+  };
+
   useEffect(() => {
     fetchMatches();
+    fetchLeagues();
   }, []);
 
   const handleAddOrEditMatch = async (e: React.FormEvent) => {
@@ -46,6 +60,8 @@ export const AdminMatchesPage: React.FC = () => {
       data.append('league', formData.league);
       data.append('matchDate', formData.matchDate);
       data.append('status', formData.status);
+      data.append('team1Score', formData.team1Score.toString());
+      data.append('team2Score', formData.team2Score.toString());
       data.append('odds', JSON.stringify(formData.odds));
       
       if (team1LogoFile) data.append('team1Logo', team1LogoFile);
@@ -82,6 +98,8 @@ export const AdminMatchesPage: React.FC = () => {
       league: match.league,
       matchDate: dateStr,
       status: match.status,
+      team1Score: match.team1Score || 0,
+      team2Score: match.team2Score || 0,
       odds: {
         team1Win: match.odds[0]?.team1Win || 1.5,
         draw: match.odds[0]?.draw || 3.0,
@@ -101,6 +119,7 @@ export const AdminMatchesPage: React.FC = () => {
     setFormData({
       team1Name: '', team2Name: '',
       league: '', matchDate: '', status: 'UPCOMING',
+      team1Score: 0, team2Score: 0,
       odds: { team1Win: 1.5, draw: 3.0, team2Win: 2.5 }
     });
     setTeam1LogoFile(null);
@@ -112,12 +131,38 @@ export const AdminMatchesPage: React.FC = () => {
   };
 
   const handleSettle = async (matchId: string, result: string) => {
-    if (!confirm('هل أنت متأكد من تسوية هذه المباراة؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    if (!window.confirm('هل أنت متأكد من تسوية هذه المباراة؟ لا يمكن التراجع عن هذا الإجراء وسيتم توزيع الأرباح.')) return;
     try {
       await api.put(`/admin/matches/${matchId}/settle`, { result });
       fetchMatches();
+      alert('✅ تم تسوية المباراة وتوزيع الأرباح!');
     } catch (error) {
-      alert('حدث خطأ أثناء تسوية المباراة');
+      alert('❌ حدث خطأ أثناء التسوية');
+    }
+  };
+
+  const handleEndMatch = (match: any) => {
+    if (!window.confirm('هل أنت متأكد من إنهاء المباراة الآن وتوزيع الأرباح بناءً على النتيجة الحالية؟')) return;
+    
+    // Call the API directly without the second confirm (backend will use resultAt90/extra time automatically now)
+    api.put(`/admin/matches/${match.id}/settle`, {})
+      .then(() => {
+        fetchMatches();
+        alert('✅ تم إنهاء المباراة وتسويتها بنجاح!');
+      })
+      .catch(() => {
+        alert('❌ حدث خطأ أثناء التسوية');
+      });
+  };
+
+  const handleStartMatch = async (matchId: string) => {
+    if (!confirm('هل أنت متأكد من بدء هذه المباراة الآن؟ ستتحول إلى البث المباشر.')) return;
+    try {
+      await api.put(`/admin/matches/${matchId}/start`);
+      fetchMatches();
+      alert('✅ بدأت المباراة بنجاح.');
+    } catch (error) {
+      alert('حدث خطأ أثناء بدء المباراة');
     }
   };
 
@@ -140,6 +185,14 @@ export const AdminMatchesPage: React.FC = () => {
 
   return (
     <div className="animate-in fade-in duration-500 pb-10">
+      {liveControlMatch && (
+        <LiveControlPanel 
+          match={liveControlMatch} 
+          onClose={() => setLiveControlMatch(null)} 
+          onUpdate={fetchMatches} 
+        />
+      )}
+      
       <HeroSection 
         title={
           <>
@@ -162,8 +215,8 @@ export const AdminMatchesPage: React.FC = () => {
 
 
       {showAddForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="glass w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-[2rem] p-6 md:p-10 border border-primary/20 relative shadow-[0_15px_60px_rgb(0,0,0,0.5)] scrollbar-hide">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pb-20 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="glass w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-[2rem] p-6 pb-12 md:p-10 border border-primary/20 relative shadow-[0_15px_60px_rgb(0,0,0,0.5)] scrollbar-hide">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
             
@@ -229,7 +282,23 @@ export const AdminMatchesPage: React.FC = () => {
                   <h3 className="text-lg font-bold text-amber-400 mb-2">تفاصيل المباراة</h3>
                   <div>
                     <label className="block text-sm mb-1.5 text-muted-foreground">اسم البطولة / الدوري</label>
-                    <input type="text" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900" required placeholder="دوري أبطال أوروبا" value={formData.league} onChange={e => setFormData({...formData, league: e.target.value})} />
+                    <input 
+                      type="text" 
+                      list="leaguesList"
+                      className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900" 
+                      required 
+                      placeholder="اختر أو ابحث عن دوري..." 
+                      value={formData.league} 
+                      onChange={e => setFormData({...formData, league: e.target.value})} 
+                      autoComplete="off"
+                    />
+                    <datalist id="leaguesList">
+                      {leagues.map((l) => (
+                        <option key={l.id} value={l.name}>
+                          {l.country ? `${l.name} (${l.country})` : l.name}
+                        </option>
+                      ))}
+                    </datalist>
                   </div>
                   <div>
                     <label className="block text-sm mb-1.5 text-muted-foreground">تاريخ ووقت المباراة</label>
@@ -243,6 +312,18 @@ export const AdminMatchesPage: React.FC = () => {
                         <option value="LIVE">جارية الآن (LIVE)</option>
                         <option value="CANCELLED">ملغاة (CANCELLED)</option>
                       </select>
+                    </div>
+                  )}
+                  {editingMatchId && (
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <label className="block text-sm mb-1.5 text-muted-foreground">أهداف الفريق الأول</label>
+                        <input type="number" min="0" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900 text-center text-lg font-bold" required value={formData.team1Score} onChange={e => setFormData({...formData, team1Score: parseInt(e.target.value) || 0})} />
+                      </div>
+                      <div>
+                        <label className="block text-sm mb-1.5 text-muted-foreground">أهداف الفريق الثاني</label>
+                        <input type="number" min="0" className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors text-slate-900 text-center text-lg font-bold" required value={formData.team2Score} onChange={e => setFormData({...formData, team2Score: parseInt(e.target.value) || 0})} />
+                      </div>
                     </div>
                   )}
                   
@@ -335,6 +416,12 @@ export const AdminMatchesPage: React.FC = () => {
                     <div className="bg-primary/20 text-primary border border-primary/30 px-3 py-1.5 rounded-xl font-black text-lg">
                       نهاية
                     </div>
+                  ) : match.status === 'LIVE' ? (
+                    <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+                      <span className="font-bold text-lg text-slate-900">{match.team1Score || 0}</span>
+                      <span className="text-slate-400 font-bold">-</span>
+                      <span className="font-bold text-lg text-slate-900">{match.team2Score || 0}</span>
+                    </div>
                   ) : (
                     <div className="text-xl font-black italic text-slate-900/30 tracking-widest">VS</div>
                   )}
@@ -354,14 +441,33 @@ export const AdminMatchesPage: React.FC = () => {
             <div className="p-4 border-t border-slate-200 bg-white backdrop-blur-md">
               {match.status !== 'FINISHED' ? (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground px-2">
-                    <span>تسوية النتيجة:</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button onClick={() => handleSettle(match.id, 'TEAM_1_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-slate-200 hover:border-emerald-500/30 text-emerald-400 text-xs font-bold transition-all text-center">فوز 1</button>
-                    <button onClick={() => handleSettle(match.id, 'DRAW')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-slate-200 hover:border-amber-500/30 text-amber-400 text-xs font-bold transition-all text-center">تعادل</button>
-                    <button onClick={() => handleSettle(match.id, 'TEAM_2_WIN')} className="py-2 px-1 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-slate-200 hover:border-blue-500/30 text-blue-400 text-xs font-bold transition-all text-center">فوز 2</button>
-                  </div>
+                  {(match.status === 'UPCOMING' || match.status === 'DRAFT') && (
+                    <button 
+                      onClick={() => handleStartMatch(match.id)} 
+                      className="w-full py-3 px-4 rounded-xl bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-600 font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
+                    >
+                      <PlayCircle size={18} />
+                      بدء المباراة
+                    </button>
+                  )}
+                  {match.status === 'LIVE' && (
+                    <div className="flex flex-col gap-2">
+                      <button 
+                        onClick={() => setLiveControlMatch(match)} 
+                        className="w-full py-3 px-4 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-600 font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
+                      >
+                        <Settings size={18} />
+                        لوحة التحكم الحي
+                      </button>
+                      <button 
+                        onClick={() => handleEndMatch(match)} 
+                        className="w-full py-3 px-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-600 font-bold transition-all flex items-center justify-center gap-2 shadow-sm mt-1"
+                      >
+                        <CheckCircle size={18} />
+                        إنهاء المباراة
+                      </button>
+                    </div>
+                  )}
                   <div className="flex gap-2 mt-3">
                     <Button variant="outline" className="flex-1 h-9 text-xs border-white/10 text-slate-900" onClick={() => handleEditClick(match)}>
                       <Edit size={14} className="mr-1.5" /> تعديل

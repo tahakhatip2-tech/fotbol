@@ -2,6 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, Plus, Trash2, Flag } from 'lucide-react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
+import { HeroSection } from '../../components/ui/HeroSection';
+
+const LeagueCard: React.FC<{ league: any; onDelete: (id: string) => void }> = ({ league, onDelete }) => {
+  return (
+    <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        {league.logo ? (
+          <img src={league.logo} alt={league.name} className="w-10 h-10 object-contain rounded-full border border-slate-100 p-1" />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500 shrink-0">
+            <Trophy size={16} />
+          </div>
+        )}
+        <div>
+          <div className="font-bold text-slate-800 text-sm">{league.name}</div>
+          {league.country && (
+            <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1 mt-0.5">
+              <Flag size={10} /> {league.country}
+            </div>
+          )}
+        </div>
+      </div>
+      <button 
+        onClick={() => onDelete(league.id)}
+        className="w-8 h-8 rounded-full bg-rose-50 text-rose-500 border border-rose-100 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-colors shrink-0"
+        title="حذف"
+      >
+        <Trash2 size={14} />
+      </button>
+    </div>
+  );
+};
 
 export const AdminLeaguesPage: React.FC = () => {
   const [leagues, setLeagues] = useState<any[]>([]);
@@ -10,8 +42,9 @@ export const AdminLeaguesPage: React.FC = () => {
   // Form State
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
-  const [logo, setLogo] = useState('');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchLeagues = async () => {
     setIsLoading(true);
@@ -35,10 +68,19 @@ export const AdminLeaguesPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await api.post('/admin/leagues', { name, logo, country });
+      const formData = new FormData();
+      formData.append('name', name);
+      if (country) formData.append('country', country);
+      if (logoFile) formData.append('logo', logoFile);
+
+      await api.post('/admin/leagues', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
       setName('');
       setCountry('');
-      setLogo('');
+      setLogoFile(null);
+      setIsModalOpen(false);
       fetchLeagues();
     } catch (error: any) {
       alert(error.response?.data?.error || 'حدث خطأ أثناء الإضافة');
@@ -48,7 +90,7 @@ export const AdminLeaguesPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذا الدوري؟')) return;
+    if (!window.confirm('هل أنت متأكد من حذف هذا الدوري؟ ستبقى المباريات المرتبطة به ولكن بدون دوري.')) return;
     try {
       await api.delete(`/admin/leagues/${id}`);
       fetchLeagues();
@@ -58,118 +100,166 @@ export const AdminLeaguesPage: React.FC = () => {
   };
 
   return (
-    <div className="animate-in fade-in duration-500 max-w-5xl mx-auto space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-          <Trophy className="text-primary" size={32} />
-          إدارة الدوريات
-        </h1>
-        <p className="text-muted-foreground mt-2">أضف واحذف الدوريات المتاحة في النظام</p>
-      </div>
+    <div className="animate-in fade-in duration-500 max-w-5xl mx-auto space-y-6">
+      <HeroSection 
+        title="إدارة الدوريات"
+        subtitle="أضف واحذف الدوريات والبطولات المتاحة في المنصة."
+      >
+        <div className="flex justify-center mt-4">
+          <button 
+            onClick={() => setIsModalOpen(true)} 
+            className="flex items-center gap-2 bg-white/40 backdrop-blur-md border border-blue-400/50 text-blue-800 hover:bg-white/60 transition-all rounded-xl shadow-sm px-6 py-2.5 font-bold"
+          >
+            <Plus size={18} className="text-blue-600" />
+            <span>إضافة دوري جديد</span>
+          </button>
+        </div>
+      </HeroSection>
 
-      {/* Add League Form */}
-      <div className="glass rounded-2xl p-4 sm:p-6 border border-slate-200">
-        <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-          <Plus className="text-primary" size={20} /> إضافة دوري جديد
-        </h2>
-        <form onSubmit={handleAddLeague} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
-          <div className="col-span-1 sm:col-span-2 md:col-span-1">
-            <label className="block text-sm text-muted-foreground mb-1">اسم الدوري *</label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl py-2 px-3 outline-none focus:border-primary text-sm"
-              placeholder="مثال: الدوري الإنجليزي"
-            />
+      {/* Add League Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 left-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"
+            >
+              ✕
+            </button>
+            
+            <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Plus size={20} />
+              </div>
+              إضافة دوري جديد
+            </h2>
+            
+            <form onSubmit={handleAddLeague} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-500 mb-1.5">اسم الدوري *</label>
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-blue-500 focus:bg-white text-sm transition-all"
+                  placeholder="مثال: الدوري الإنجليزي"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-500 mb-1.5">البلد (اختياري)</label>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 outline-none focus:border-blue-500 focus:bg-white text-sm transition-all"
+                  placeholder="مثال: إنجلترا"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-500 mb-1.5">شعار الدوري (صورة من الجهاز)</label>
+                <div className="flex items-center gap-4">
+                  {logoFile && (
+                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-100 shadow-sm shrink-0">
+                      <img src={URL.createObjectURL(logoFile)} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 outline-none focus:border-blue-500 focus:bg-white text-sm transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                </div>
+              </div>
+              <div className="pt-2">
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting || !name} 
+                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all text-base flex justify-center items-center"
+                >
+                  {isSubmitting ? 'جاري الإضافة...' : 'إضافة الدوري'}
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="col-span-1">
-            <label className="block text-sm text-muted-foreground mb-1">البلد (اختياري)</label>
-            <input
-              type="text"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl py-2 px-3 outline-none focus:border-primary text-sm"
-              placeholder="مثال: إنجلترا"
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block text-sm text-muted-foreground mb-1">رابط الشعار (اختياري)</label>
-            <input
-              type="url"
-              value={logo}
-              onChange={(e) => setLogo(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl py-2 px-3 outline-none focus:border-primary text-sm text-left"
-              placeholder="https://..."
-              dir="ltr"
-            />
-          </div>
-          <div className="col-span-1 sm:col-span-2 md:col-span-1">
-            <Button type="submit" disabled={isSubmitting || !name} className="w-full h-10">
-              {isSubmitting ? 'جاري الإضافة...' : 'إضافة'}
-            </Button>
-          </div>
-        </form>
-      </div>
+        </div>
+      )}
+
 
       {/* Leagues List */}
-      <div className="glass rounded-2xl overflow-hidden border border-slate-200">
-        <table className="w-full text-right table-fixed">
-          <thead className="bg-background/40 backdrop-blur-md border-b border-border/40 text-muted-foreground text-[11px] sm:text-xs md:text-sm font-medium">
-            <tr>
-              <th className="px-2 py-3 md:p-4 w-[20%] text-center">الشعار</th>
-              <th className="px-2 py-3 md:p-4 w-[45%]">الدوري</th>
-              <th className="px-2 py-3 md:p-4 w-[20%] text-center">البلد</th>
-              <th className="px-2 py-3 md:p-4 w-[15%] text-center">إجراء</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={4} className="p-4 md:p-8 text-center text-muted-foreground text-xs md:text-sm">جاري التحميل...</td>
-              </tr>
-            ) : leagues.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="p-4 md:p-8 text-center text-muted-foreground text-xs md:text-sm">لا توجد دوريات مضافة حالياً.</td>
-              </tr>
-            ) : (
-              leagues.map((league) => (
-                <tr key={league.id} className="border-b border-border/20 hover:bg-white/5 transition-colors">
-                  <td className="px-2 py-3 md:p-4 text-center">
-                    {league.logo ? (
-                      <img src={league.logo} alt={league.name} className="w-6 h-6 md:w-8 md:h-8 object-contain mx-auto rounded-full bg-white/10 p-0.5" />
-                    ) : (
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-background border border-border flex items-center justify-center mx-auto text-muted-foreground">
-                        <Trophy size={12} />
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-2 py-3 md:p-4 font-bold text-slate-900 text-[11px] sm:text-sm truncate">
-                    {league.name}
-                  </td>
-                  <td className="px-2 py-3 md:p-4 text-center text-muted-foreground text-[10px] sm:text-xs truncate">
-                    {league.country ? (
-                      <span className="flex items-center justify-center gap-1">
-                        <Flag size={10} className="hidden sm:block" /> {league.country}
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td className="px-2 py-3 md:p-4 text-center">
-                    <button 
-                      onClick={() => handleDelete(league.id)}
-                      className="p-1.5 md:p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
-                      title="حذف"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      <div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-48">
+            <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-600 rounded-full animate-spin"></div>
+          </div>
+        ) : leagues.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-3xl border border-slate-100 flex flex-col items-center">
+            <Trophy size={48} className="text-slate-200 mb-4" />
+            <p className="text-slate-400 font-medium">لا توجد دوريات مضافة حالياً.</p>
+          </div>
+        ) : (
+          <>
+            {/* Mobile View: Cards */}
+            <div className="md:hidden space-y-3">
+              {leagues.map((league) => (
+                <LeagueCard key={league.id} league={league} onDelete={handleDelete} />
+              ))}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-right">
+                  <thead className="bg-slate-50 text-slate-500 border-b border-slate-100">
+                    <tr>
+                      <th className="px-6 py-4 font-bold text-center w-24">الشعار</th>
+                      <th className="px-6 py-4 font-bold">الدوري</th>
+                      <th className="px-6 py-4 font-bold">البلد</th>
+                      <th className="px-6 py-4 font-bold text-center w-24">إجراء</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {leagues.map((league) => (
+                      <tr key={league.id} className="hover:bg-blue-50/50 transition-colors group">
+                        <td className="px-6 py-4 text-center">
+                          {league.logo ? (
+                            <img src={league.logo} alt={league.name} className="w-10 h-10 object-contain mx-auto rounded-full border border-slate-100 p-1 bg-white shadow-sm" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto text-blue-500">
+                              <Trophy size={16} />
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">{league.name}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {league.country ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-600 border border-slate-100 rounded-lg text-xs font-bold">
+                              <Flag size={12} className="text-slate-400" /> {league.country}
+                            </span>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <button 
+                            onClick={() => handleDelete(league.id)}
+                            className="w-9 h-9 mx-auto rounded-xl bg-rose-50 text-rose-500 border border-rose-100 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-colors"
+                            title="حذف"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

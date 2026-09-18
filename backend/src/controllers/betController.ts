@@ -13,6 +13,11 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'Stake must be greater than 0' });
     }
 
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.isActive) {
+      return res.status(403).json({ error: 'عذراً، حسابك موقوف مؤقتاً. يرجى التواصل مع الدعم.' });
+    }
+
     // Use a transaction to ensure atomic bet placement
     const result = await prisma.$transaction(async (tx) => {
       // 1. Validate user balance

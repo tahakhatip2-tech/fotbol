@@ -1,25 +1,71 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
-import { Users, Mail, Wallet, Clock, UserCheck, UserX } from 'lucide-react';
+import { Users, Mail, Wallet, Clock, UserCheck, UserX, DollarSign, X } from 'lucide-react';
 import { HeroSection } from '../../components/ui/HeroSection';
+import { Button } from '../../components/ui/Button';
 
 export const AdminUsersPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Wallet Modal State
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [walletAmount, setWalletAmount] = useState<string>('');
+  const [walletType, setWalletType] = useState<'DEPOSIT' | 'WITHDRAW'>('DEPOSIT');
+  const [isWalletLoading, setIsWalletLoading] = useState(false);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await api.get('/admin/users');
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Failed to fetch users', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await api.get('/admin/users');
-        setUsers(response.data);
-      } catch (error) {
-        console.error('Failed to fetch users', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchUsers();
   }, []);
+
+  const toggleStatus = async (userId: string, currentStatus: boolean) => {
+    if (!window.confirm(`هل أنت متأكد أنك تريد ${currentStatus ? 'إيقاف' : 'تنشيط'} هذا المستخدم؟`)) return;
+    try {
+      await api.put(`/admin/users/${userId}/toggle-status`);
+      fetchUsers();
+    } catch (error) {
+      console.error('Failed to toggle status:', error);
+      alert('حدث خطأ أثناء تغيير حالة المستخدم');
+    }
+  };
+
+  const handleOpenWalletModal = (user: any) => {
+    setSelectedUser(user);
+    setWalletAmount('');
+    setWalletType('DEPOSIT');
+    setIsWalletModalOpen(true);
+  };
+
+  const handleWalletSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUser || !walletAmount) return;
+    setIsWalletLoading(true);
+    try {
+      await api.post(`/admin/users/${selectedUser.id}/wallet`, {
+        amount: Number(walletAmount),
+        type: walletType
+      });
+      setIsWalletModalOpen(false);
+      fetchUsers();
+    } catch (error: any) {
+      console.error('Failed to manage wallet:', error);
+      alert(error.response?.data?.error || 'حدث خطأ أثناء تعديل الرصيد');
+    } finally {
+      setIsWalletLoading(false);
+    }
+  };
 
   return (
     <div className="animate-in fade-in duration-500 pb-10">
@@ -98,14 +144,110 @@ export const AdminUsersPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="text-[11px] text-muted-foreground border-t border-slate-200 pt-3 relative z-10 text-center">
-                  انضم في: {new Date(user.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}
+                <div className="flex items-center justify-between border-t border-slate-200 pt-3 relative z-10">
+                  <div className="text-[11px] text-muted-foreground">
+                    انضم: {new Date(user.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleOpenWalletModal(user)}
+                      className="flex-1 text-[11px] font-bold px-3 py-1.5 rounded-full transition-colors bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center gap-1"
+                    >
+                      <DollarSign size={12} /> تعديل الرصيد
+                    </button>
+                    <button
+                      onClick={() => toggleStatus(user.id, user.isActive)}
+                      className={`flex-1 text-[11px] font-bold px-3 py-1.5 rounded-full transition-colors ${
+                        user.isActive 
+                          ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' 
+                          : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                      }`}
+                    >
+                      {user.isActive ? 'إيقاف الحساب' : 'تنشيط الحساب'}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Wallet Modal */}
+      {isWalletModalOpen && selectedUser && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/40 z-[90] backdrop-blur-sm transition-opacity" 
+            onClick={() => setIsWalletModalOpen(false)}
+          />
+          <div className="fixed inset-0 flex items-center justify-center z-[100] px-4 pointer-events-none">
+            <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden pointer-events-auto border border-border">
+              <div className="bg-primary text-primary-foreground py-4 px-6 flex justify-between items-center">
+                <h3 className="font-bold text-lg flex items-center gap-2">
+                  <Wallet size={20} />
+                  إدارة رصيد ({selectedUser.firstName})
+                </h3>
+                <button 
+                  onClick={() => setIsWalletModalOpen(false)} 
+                  className="hover:opacity-80 p-1 bg-white/10 rounded-full transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <form onSubmit={handleWalletSubmit}>
+                  <div className="mb-6">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">نوع العملية</label>
+                    <div className="flex gap-4">
+                      <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${walletType === 'DEPOSIT' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                        <input type="radio" name="type" className="hidden" checked={walletType === 'DEPOSIT'} onChange={() => setWalletType('DEPOSIT')} />
+                        إيداع (+)
+                      </label>
+                      <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${walletType === 'WITHDRAW' ? 'border-rose-500 bg-rose-50 text-rose-600' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                        <input type="radio" name="type" className="hidden" checked={walletType === 'WITHDRAW'} onChange={() => setWalletType('WITHDRAW')} />
+                        سحب (-)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">المبلغ ($)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0.1"
+                      required
+                      value={walletAmount}
+                      onChange={(e) => setWalletAmount(e.target.value)}
+                      className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 font-bold text-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                      placeholder="0.00"
+                    />
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => setIsWalletModalOpen(false)}
+                    >
+                      إلغاء
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="flex-1"
+                      disabled={isWalletLoading || !walletAmount}
+                    >
+                      {isWalletLoading ? 'جاري التنفيذ...' : 'تأكيد العملية'}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

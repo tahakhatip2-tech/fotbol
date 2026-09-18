@@ -17,6 +17,8 @@ enum MatchStatus {
   DRAFT
   UPCOMING
   LIVE
+  EXTRA_TIME
+  PENALTIES
   FINISHED
   CANCELLED
 }
@@ -92,13 +94,27 @@ model Match {
   id          String      @id @default(uuid())
   team1Name   String
   team1Logo   String?
+  team1Score  Int         @default(0)
   team2Name   String
   team2Logo   String?
+  team2Score  Int         @default(0)
   league      String
   matchDate   DateTime
   status      MatchStatus @default(DRAFT)
   description String?
   result      BetSelection?
+
+  // Live Match Control Fields
+  matchPhase        String?       // FIRST_HALF | HALF_TIME | SECOND_HALF | EXTRA_TIME_FIRST | EXTRA_TIME_SECOND | PENALTIES
+  liveUpdate        String?       // Live text update shown to users
+  resultAt90        BetSelection? // Result at 90 mins for correct bet settlement
+  isKnockout        Boolean       @default(false) // Is this a knockout/elimination match?
+  extraTimeTeam1    Int           @default(0)     // Extra time goals team 1
+  extraTimeTeam2    Int           @default(0)     // Extra time goals team 2
+  penaltiesTeam1    Int           @default(0)     // Penalty shootout score team 1
+  penaltiesTeam2    Int           @default(0)     // Penalty shootout score team 2
+  startedAt         DateTime?     // Actual match start time
+  endedAt           DateTime?     // Actual match end time
 
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

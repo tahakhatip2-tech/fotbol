@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from './ui/Button';
 import { placeBet } from '../api/matches';
 import { getWallet } from '../api/wallet';
@@ -38,6 +39,17 @@ export const BetSlip: React.FC<BetSlipProps> = ({ selection, onClose, onConfirm 
     }
   }, [selection]);
 
+  useEffect(() => {
+    if (selection) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selection]);
+
   if (!selection) return null;
 
   const potentialReturn = (Number(stake) * selection.odds).toFixed(2);
@@ -62,14 +74,22 @@ export const BetSlip: React.FC<BetSlipProps> = ({ selection, onClose, onConfirm 
     }
   };
 
-  return (
-    <div className="fixed bottom-0 right-0 w-full md:w-96 bg-card border-t md:border-l border-border shadow-2xl rounded-t-2xl md:rounded-tr-none md:rounded-tl-2xl z-50 flex flex-col max-h-[80vh]">
-      <div className="bg-primary text-primary-foreground py-3 px-4 flex justify-between items-center shrink-0 rounded-t-2xl md:rounded-none">
+  const modalContent = (
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/40 z-[90] backdrop-blur-sm transition-opacity" 
+        onClick={onClose} 
+      />
+      
+      {/* Modal */}
+      <div className="fixed bottom-0 right-0 left-0 md:left-auto w-full md:w-96 bg-card border-t md:border-l border-border shadow-2xl rounded-t-2xl md:rounded-tr-none md:rounded-tl-2xl z-[100] flex flex-col max-h-[85vh]">
+        <div className="bg-primary text-primary-foreground py-3 px-4 flex justify-between items-center shrink-0 rounded-t-2xl md:rounded-none">
         <h3 className="font-bold text-base">قسيمة الرهان</h3>
         <button onClick={onClose} className="hover:opacity-80 font-bold px-2 py-1 bg-white/10 rounded-md text-xs">إغلاق ✕</button>
       </div>
 
-      <div className="p-4 md:p-5 overflow-y-auto flex-1 no-scrollbar">
+      <div className="p-4 md:p-5 overflow-y-auto flex-1 no-scrollbar min-h-0">
         <div className="mb-3">
           <div className="text-xs text-muted-foreground mb-1">{selection.team1} ضد {selection.team2}</div>
           <div className="flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100">
@@ -141,6 +161,10 @@ export const BetSlip: React.FC<BetSlipProps> = ({ selection, onClose, onConfirm 
           {isConfirming ? 'جاري التأكيد...' : 'تأكيد الرهان'}
         </Button>
       </div>
-    </div>
+      </div>
+    </>
   );
+
+  // Render modal directly into the body to escape any CSS transform/animation containing blocks
+  return createPortal(modalContent, document.body);
 };

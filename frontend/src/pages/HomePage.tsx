@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
-import { Zap, ShieldCheck, Trophy, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { getMatches } from '../api/matches';
-
 import { HeroSection } from '../components/ui/HeroSection';
+import { FeaturesSlider } from '../components/FeaturesSlider';
 
 export const HomePage: React.FC = () => {
   const { i18n } = useTranslation();
@@ -51,55 +51,20 @@ export const HomePage: React.FC = () => {
         </div>
       </HeroSection>
 
-      {/* Features Section */}
-      <section className="py-12 md:py-16 relative z-10 bg-white border-y border-slate-200 shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-slate-900">لماذا تختار Goolbet؟</h2>
-            <p className="text-slate-600 max-w-xl mx-auto text-sm md:text-base">صممنا منصتنا لتكون الأسرع، والأكثر أماناً، والأسهل استخداماً لعشاق كرة القدم والمراهنات.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-200 hover:border-primary/30 transition-all hover:-translate-y-1 hover:shadow-md group">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Zap className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-slate-900">احتمالات حية وديناميكية</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                تحديثات فورية للاحتمالات (Odds) لضمان حصولك على أفضل العوائد في كل ثانية من المباراة.
-              </p>
-            </div>
-            
-            <div className="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-200 hover:border-blue-500/30 transition-all hover:-translate-y-1 hover:shadow-md group relative overflow-hidden">
-              <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform relative z-10">
-                <ShieldCheck className="w-6 h-6 text-blue-500" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-slate-900 relative z-10">محفظة كريبتو آمنة</h3>
-              <p className="text-slate-600 text-sm leading-relaxed relative z-10">
-                إيداع وسحب فوري باستخدام العملات الرقمية (USDT TRC-20) مع أعلى معايير الأمان والتشفير.
-              </p>
-            </div>
-
-            <div className="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-200 hover:border-green-500/30 transition-all hover:-translate-y-1 hover:shadow-md group">
-              <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Trophy className="w-6 h-6 text-green-500" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-slate-900">دفع فوري وتلقائي</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                بمجرد انتهاء المباراة وتحديد النتيجة، يتم إضافة أرباحك إلى محفظتك بشكل تلقائي وفوري.
-              </p>
-            </div>
-          </div>
+      {/* Features Section - Professional Slider */}
+      <section className="py-1 relative z-10 bg-white border-y border-slate-200 shadow-sm overflow-hidden">
+        <div className="container mx-auto px-2">
+          <FeaturesSlider />
         </div>
       </section>
 
       {/* Featured Matches Teaser */}
-      <section className="py-12 md:py-16 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-3">
+      <section className="py-2 relative z-10">
+        <div className="container mx-auto px-2">
+          <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-2 gap-1">
             <div className="text-center md:text-right">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2 text-slate-900">أبرز المباريات القادمة</h2>
-              <p className="text-slate-600 text-sm md:text-base">لا تفوت فرصة الرهان على أقوى المواجهات الكروية.</p>
+              <h2 className="text-xl md:text-2xl font-bold mb-0.5 text-slate-900">أبرز المباريات القادمة</h2>
+              <p className="text-slate-600 text-xs md:text-sm">لا تفوت فرصة الرهان على أقوى المواجهات الكروية.</p>
             </div>
             <Link to="/matches" className="text-primary hover:text-primary/80 font-bold flex items-center justify-center gap-1 group transition-colors text-sm bg-primary/10 px-4 py-2 rounded-full md:bg-transparent md:px-0 md:py-0">
               عرض الكل

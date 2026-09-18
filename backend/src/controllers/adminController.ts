@@ -578,18 +578,49 @@ export const deleteLeague = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error deleting league' });
   }
 };
-e x p o r t   c o n s t   t o g g l e U s e r S t a t u s   =   a s y n c   ( r e q :   R e q u e s t ,   r e s :   R e s p o n s e )   = >   { 
-     t r y   { 
-         c o n s t   {   i d   }   =   r e q . p a r a m s   a s   {   i d :   s t r i n g   } ; 
-         c o n s t   u s e r   =   a w a i t   p r i s m a . u s e r . f i n d U n i q u e ( {   w h e r e :   {   i d   }   } ) ; 
-         i f   ( ! u s e r )   r e t u r n   r e s . s t a t u s ( 4 0 4 ) . j s o n ( {   e r r o r :   ' U s e r   n o t   f o u n d '   } ) ; 
-         c o n s t   u p d a t e d U s e r   =   a w a i t   p r i s m a . u s e r . u p d a t e ( { 
-             w h e r e :   {   i d   } , 
-             d a t a :   {   i s A c t i v e :   ! u s e r . i s A c t i v e   } 
-         } ) ; 
-         r e s . j s o n ( u p d a t e d U s e r ) ; 
-     }   c a t c h   ( e r r o r )   { 
-         r e s . s t a t u s ( 5 0 0 ) . j s o n ( {   e r r o r :   ' S e r v e r   e r r o r   t o g g l i n g   u s e r   s t a t u s '   } ) ; 
-     } 
- } ;  
- 
+export const toggleUserStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { isActive: !user.isActive }
+    });
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error toggling user status' });
+  }
+};
+
+export const manageWallet = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+    const { amount, type } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const wallet = await prisma.wallet.findUnique({ where: { userId: id } });
+    if (!wallet) {
+      return res.status(404).json({ error: 'Wallet not found for this user' });
+    }
+
+    if (type === 'WITHDRAW' && wallet.balance < amount) {
+      return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+    }
+
+    const updatedWallet = await prisma.wallet.update({
+      where: { userId: id },
+      data: {
+        balance: type === 'DEPOSIT' ? { increment: Number(amount) } : { decrement: Number(amount) }
+      }
+    });
+
+    res.json({ message: 'Wallet updated successfully', wallet: updatedWallet });
+  } catch (error) {
+    console.error('Error managing wallet:', error);
+    res.status(500).json({ error: 'Server error managing wallet' });
+  }
+};

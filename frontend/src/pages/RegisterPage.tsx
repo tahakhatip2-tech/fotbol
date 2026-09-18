@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import api from '../api/axios';
-import { Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
@@ -44,8 +44,6 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
     try {
       const formattedEmail = formData.email.trim().toLowerCase();
-      // Split full name into first and last name if user only typed one field, 
-      // but we have two separate logical fields. Here we just take firstName as typed.
       await api.post('/auth/register', {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -53,7 +51,6 @@ export const RegisterPage: React.FC = () => {
         password: formData.password
       });
       
-      // Attempt login immediately after registration
       const loginRes = await api.post('/auth/login', {
         email: formattedEmail,
         password: formData.password
@@ -79,138 +76,174 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center px-4 relative bg-cover bg-center bg-no-repeat py-8"
-      style={{ backgroundImage: 'url(/auth-bg.jpg)' }}
-    >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-0"></div>
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-[#0f172a] overflow-hidden">
       
-      <div className="glass w-full max-w-md p-8 md:p-10 rounded-3xl relative z-10 overflow-hidden border border-white/20 shadow-2xl bg-white/10 backdrop-blur-md my-auto">
+      {/* Left Side - Branding (Hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-primary/30 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[30rem] h-[30rem] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none"></div>
         
-        {/* App Logo & Name at the top */}
-        <div className="flex flex-col items-center justify-center mb-6 mt-2">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-blue-500 p-1 mb-3 shadow-[0_0_20px_rgba(34,197,94,0.4)]">
-            <img src="/logo.jpg" alt="Goolbet Logo" className="w-full h-full object-cover rounded-full border-2 border-white/80" />
-          </div>
-          <h1 className="text-3xl font-black text-center text-slate-900 drop-shadow-md">
-            Gool<span className="text-primary">bet</span>
-          </h1>
-          <p className="text-slate-900/80 text-sm mt-1">تسجيل حساب جديد</p>
-        </div>
-        
-        {error && <div className="bg-red-500/10 text-red-500 p-3 rounded-lg text-sm mb-6 text-center">{error}</div>}
+        {/* Decorative Grid */}
+        <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")'}}></div>
 
-        <form className="space-y-4 mb-6" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">الاسم الأول</label>
-              <input 
-                type="text" 
-                required
-                value={formData.firstName}
-                onChange={e => setFormData({...formData, firstName: e.target.value})}
-                className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors focus:bg-background"
-                placeholder="أحمد"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">اسم العائلة</label>
-              <input 
-                type="text" 
-                required
-                value={formData.lastName}
-                onChange={e => setFormData({...formData, lastName: e.target.value})}
-                className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors focus:bg-background"
-                placeholder="محمد"
-              />
-            </div>
+        <div className="relative z-10 flex items-center gap-3 animate-fade-in-down">
+          <div className="w-12 h-12 rounded-xl bg-white p-1 shadow-lg shadow-primary/20">
+            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-lg" />
           </div>
-          <div>
-            <label className="block text-sm text-muted-foreground mb-2">البريد الإلكتروني</label>
-            <input 
-              type="email" 
-              required
-              value={formData.email}
-              onChange={e => setFormData({...formData, email: e.target.value})}
-              className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors focus:bg-background"
-              placeholder="example@Goolbet.com"
-            />
+          <span className="text-2xl font-black text-white tracking-wide">Gool<span className="text-primary">bet</span></span>
+        </div>
+
+        <div className="relative z-10 my-auto animate-fade-in-up">
+          <h1 className="text-5xl font-bold text-white leading-tight mb-6">
+            انضم الآن إلى <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
+              مجتمع الفائزين
+            </span>
+          </h1>
+          <p className="text-slate-400 text-lg max-w-md leading-relaxed">
+            أنشئ حسابك في ثوانٍ معدودة وابدأ رحلتك في عالم المراهنات الرياضية بكل ثقة وأمان.
+          </p>
+        </div>
+
+        <div className="relative z-10 text-slate-500 text-sm animate-fade-in">
+          &copy; {new Date().getFullYear()} Goolbet. جميع الحقوق محفوظة.
+        </div>
+      </div>
+
+      {/* Right Side - Form */}
+      <div className="w-full min-h-screen lg:min-h-0 lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative bg-white lg:rounded-r-[2.5rem] shadow-[20px_0_40px_rgba(0,0,0,0.3)] z-10">
+        
+        {/* Mobile Logo */}
+        <div className="absolute top-8 right-8 lg:hidden flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-white p-0.5 shadow-sm border border-slate-100">
+            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-md" />
           </div>
-          <div>
-            <label className="block text-sm text-muted-foreground mb-2">كلمة المرور</label>
-            <div className="relative">
-              <input 
-                type={showPassword ? "text" : "password"} 
-                required
-                value={formData.password}
-                onChange={e => setFormData({...formData, password: e.target.value})}
-                className="w-full bg-background/50 border border-border/50 rounded-xl px-4 py-3 pl-12 outline-none focus:border-primary transition-colors focus:bg-background text-left"
-                dir="ltr"
-                placeholder="********"
-              />
-              <button 
-                type="button" 
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-slate-900 transition-colors"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="block text-sm text-muted-foreground">تأكيد كلمة المرور</label>
-              {isMatch && <span className="text-xs text-emerald-400 flex items-center gap-1"><CheckCircle2 size={12} /> متطابقة</span>}
-              {isMismatch && <span className="text-xs text-red-400 flex items-center gap-1"><XCircle size={12} /> غير متطابقة</span>}
-            </div>
-            <div className="relative">
-              <input 
-                type={showConfirmPassword ? "text" : "password"} 
-                required
-                value={formData.confirmPassword}
-                onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
-                className={`w-full bg-background/50 border rounded-xl px-4 py-3 pl-12 outline-none transition-colors focus:bg-background text-left ${isMatch ? 'border-emerald-500/50 focus:border-emerald-500' : isMismatch ? 'border-red-500/50 focus:border-red-500' : 'border-border/50 focus:border-primary'}`}
-                dir="ltr"
-                placeholder="********"
-              />
-              <button 
-                type="button" 
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-slate-900 transition-colors"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+          <span className="text-lg font-black text-slate-900">Gool<span className="text-primary">bet</span></span>
+        </div>
+
+        <div className="w-full max-w-[420px] animate-fade-in mx-auto mt-12 lg:mt-0">
+          <div className="text-center lg:text-left mb-8">
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">إنشاء حساب</h2>
+            <p className="text-slate-500 text-sm">أدخل بياناتك لإنشاء حساب جديد مجاناً</p>
           </div>
           
-          <Button disabled={isLoading} className="w-full mt-6 h-11 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]" type="submit">
-            {isLoading ? 'جاري الإنشاء...' : 'إنشاء الحساب'}
+          {error && (
+            <div className="bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-sm mb-6 flex items-start gap-2">
+              <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-700">الاسم الأول</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formData.firstName}
+                  onChange={e => setFormData({...formData, firstName: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900"
+                  placeholder="أحمد"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-700">اسم العائلة</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formData.lastName}
+                  onChange={e => setFormData({...formData, lastName: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900"
+                  placeholder="محمد"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-700">البريد الإلكتروني</label>
+              <input 
+                type="email" 
+                required
+                value={formData.email}
+                onChange={e => setFormData({...formData, email: e.target.value})}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900"
+                placeholder="name@example.com"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-700">كلمة المرور</label>
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  required
+                  value={formData.password}
+                  onChange={e => setFormData({...formData, password: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 pl-11 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900 text-left"
+                  dir="ltr"
+                  placeholder="••••••••"
+                />
+                <button 
+                  type="button" 
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition-colors rounded-lg hover:bg-slate-100"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-medium text-slate-700">تأكيد كلمة المرور</label>
+                {isMatch && <span className="text-[11px] font-medium text-emerald-600 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full"><CheckCircle2 size={10} /> متطابقة</span>}
+                {isMismatch && <span className="text-[11px] font-medium text-red-600 flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded-full"><XCircle size={10} /> غير متطابقة</span>}
+              </div>
+              <div className="relative">
+                <input 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  required
+                  value={formData.confirmPassword}
+                  onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
+                  className={`w-full bg-slate-50 border rounded-xl px-4 py-2.5 pl-11 outline-none transition-all text-slate-900 text-left ${isMatch ? 'border-emerald-500 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10' : isMismatch ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                  dir="ltr"
+                  placeholder="••••••••"
+                />
+                <button 
+                  type="button" 
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition-colors rounded-lg hover:bg-slate-100"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+            
+            <Button disabled={isLoading} className="w-full h-11 text-base font-semibold shadow-xl shadow-primary/20 hover:shadow-primary/30 mt-4 transition-all active:scale-[0.98]" type="submit">
+              {isLoading ? 'جاري الإنشاء...' : 'إنشاء الحساب'}
+              {!isLoading && <ArrowRight className="mr-2 rotate-180" size={18} />}
+            </Button>
+          </form>
+
+          <div className="relative flex items-center justify-center my-6">
+            <div className="border-t border-slate-200 w-full absolute"></div>
+            <div className="bg-white px-4 relative text-xs font-semibold text-slate-400 uppercase tracking-wider">أو الدخول بواسطة</div>
+          </div>
+
+          <Button 
+            variant="outline" 
+            className="w-full h-11 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all font-medium"
+            onClick={handleTelegramLogin}
+            type="button"
+          >
+            <svg className="w-5 h-5 mr-2 ml-2 text-[#0088cc]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.686c.223-.195-.054-.285-.346-.09l-6.4 4.024-2.76-.86c-.6-.185-.613-.6.125-.89l10.736-4.133c.5-.186.953.106.825.99z"/></svg>
+            التسجيل باستخدام تيليجرام
           </Button>
-        </form>
 
-        <div className="relative flex items-center justify-center my-6">
-          <div className="border-t border-border w-full absolute"></div>
-          <div className="bg-card px-4 relative text-sm text-muted-foreground">أو</div>
-        </div>
-
-        {/* Telegram Login Widget */}
-        <Button 
-          variant="outline" 
-          className="w-full h-11 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-slate-900 transition-colors"
-          onClick={handleTelegramLogin}
-          type="button"
-        >
-          <svg className="w-5 h-5 mr-2 ml-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.686c.223-.195-.054-.285-.346-.09l-6.4 4.024-2.76-.86c-.6-.185-.613-.6.125-.89l10.736-4.133c.5-.186.953.106.825.99z"/></svg>
-          التسجيل باستخدام تيليجرام
-        </Button>
-
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          لديك حساب بالفعل؟ <a href="/login" className="text-primary hover:underline">تسجيل الدخول</a>
-        </p>
-        {/* Footer with App Name and Version */}
-        <div className="mt-8 text-center border-t border-white/10 pt-4">
-          <p className="text-slate-900/60 text-xs font-bold tracking-widest">
-            Goolbet v1.0
+          <p className="text-center text-sm text-slate-600 mt-8">
+            لديك حساب بالفعل؟ <a href="/login" className="font-semibold text-primary hover:underline transition-all">تسجيل الدخول</a>
           </p>
         </div>
       </div>

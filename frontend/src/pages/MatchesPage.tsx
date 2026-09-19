@@ -12,16 +12,6 @@ export const MatchesPage: React.FC = () => {
   const [matches, setMatches] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'LIVE' | 'UPCOMING'>('ALL');
-  const [closedNotif, setClosedNotif] = useState(false);
-
-  const handleSelectBet = (match: any, selectionLabel: string, selectionValue: string, odds: number) => {
-    if (match.status !== 'UPCOMING') {
-      setClosedNotif(true);
-      setTimeout(() => setClosedNotif(false), 3000);
-      return;
-    }
-    setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel, selectionValue, odds });
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -240,65 +230,48 @@ export const MatchesPage: React.FC = () => {
 
               {/* Betting Odds Area */}
               <div className="p-2 border-t border-slate-200 bg-white/60 backdrop-blur-md">
-                <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium px-2 mb-1">
-                  <span>اختر رهانك (الاحتمالات):</span>
-                </div>
-                <div className="grid grid-cols-3 gap-1">
-                  <button 
-                    onClick={() => handleSelectBet(match, 'فوز ' + match.team1Name, 'TEAM_1_WIN', match.odds?.[0]?.team1Win || 1.5)}
-                    disabled={match.status !== 'UPCOMING'}
-                    className={`flex flex-col items-center py-1.5 px-1 rounded-lg border shadow-sm transition-all group/btn ${
-                      match.status !== 'UPCOMING'
-                        ? 'bg-slate-50 border-slate-100 opacity-50 cursor-not-allowed'
-                        : 'bg-white hover:bg-primary/10 border-slate-200 hover:border-primary/30'
-                    }`}
-                  >
-                    <span className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover/btn:text-slate-600 transition-colors">فوز 1</span>
-                    <span className="font-black text-primary text-xs">{match.odds?.[0]?.team1Win || '-'}</span>
-                  </button>
-                  <button 
-                    onClick={() => handleSelectBet(match, 'تعادل', 'DRAW', match.odds?.[0]?.draw || 3.0)}
-                    disabled={match.status !== 'UPCOMING'}
-                    className={`flex flex-col items-center py-1.5 px-1 rounded-lg border shadow-sm transition-all group/btn ${
-                      match.status !== 'UPCOMING'
-                        ? 'bg-slate-50 border-slate-100 opacity-50 cursor-not-allowed'
-                        : 'bg-white hover:bg-amber-500/10 border-slate-200 hover:border-amber-500/30'
-                    }`}
-                  >
-                    <span className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover/btn:text-slate-600 transition-colors">تعادل</span>
-                    <span className="font-black text-amber-500 text-xs">{match.odds?.[0]?.draw || '-'}</span>
-                  </button>
-                  <button 
-                    onClick={() => handleSelectBet(match, 'فوز ' + match.team2Name, 'TEAM_2_WIN', match.odds?.[0]?.team2Win || 2.5)}
-                    disabled={match.status !== 'UPCOMING'}
-                    className={`flex flex-col items-center py-1.5 px-1 rounded-lg border shadow-sm transition-all group/btn ${
-                      match.status !== 'UPCOMING'
-                        ? 'bg-slate-50 border-slate-100 opacity-50 cursor-not-allowed'
-                        : 'bg-white hover:bg-blue-500/10 border-slate-200 hover:border-blue-500/30'
-                    }`}
-                  >
-                    <span className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover/btn:text-slate-600 transition-colors">فوز 2</span>
-                    <span className="font-black text-blue-500 text-xs">{match.odds?.[0]?.team2Win || '-'}</span>
-                  </button>
-                </div>
+                {match.status !== 'UPCOMING' ? (
+                  // Betting closed banner for LIVE / FINISHED
+                  <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-100 border border-slate-200">
+                    <span className="text-base">🔒</span>
+                    <span className="text-xs font-bold text-slate-500">انتهى وقت الرهان</span>
+                  </div>
+                ) : (
+                  // Normal odds buttons for UPCOMING
+                  <>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium px-2 mb-1">
+                      <span>اختر رهانك (الاحتمالات):</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      <button 
+                        onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team1Name, selectionValue: 'TEAM_1_WIN', odds: match.odds?.[0]?.team1Win || 1.5 })}
+                        className="flex flex-col items-center py-1.5 px-1 rounded-lg bg-white hover:bg-primary/10 border border-slate-200 hover:border-primary/30 shadow-sm transition-all group/btn"
+                      >
+                        <span className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover/btn:text-slate-600 transition-colors">فوز 1</span>
+                        <span className="font-black text-primary text-xs">{match.odds?.[0]?.team1Win || '-'}</span>
+                      </button>
+                      <button 
+                        onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'تعادل', selectionValue: 'DRAW', odds: match.odds?.[0]?.draw || 3.0 })}
+                        className="flex flex-col items-center py-1.5 px-1 rounded-lg bg-white hover:bg-amber-500/10 border border-slate-200 hover:border-amber-500/30 shadow-sm transition-all group/btn"
+                      >
+                        <span className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover/btn:text-slate-600 transition-colors">تعادل</span>
+                        <span className="font-black text-amber-500 text-xs">{match.odds?.[0]?.draw || '-'}</span>
+                      </button>
+                      <button 
+                        onClick={() => setSelectedBet({ matchId: match.id, team1: match.team1Name, team2: match.team2Name, selectionLabel: 'فوز ' + match.team2Name, selectionValue: 'TEAM_2_WIN', odds: match.odds?.[0]?.team2Win || 2.5 })}
+                        className="flex flex-col items-center py-1.5 px-1 rounded-lg bg-white hover:bg-blue-500/10 border border-slate-200 hover:border-blue-500/30 shadow-sm transition-all group/btn"
+                      >
+                        <span className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover/btn:text-slate-600 transition-colors">فوز 2</span>
+                        <span className="font-black text-blue-500 text-xs">{match.odds?.[0]?.team2Win || '-'}</span>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
-
-      {/* Betting Closed Toast Notification */}
-      <div className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-[200] transition-all duration-300 ${
-        closedNotif ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
-      }`}>
-        <div className="flex items-center gap-2.5 bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl border border-white/10">
-          <span className="text-lg">🔒</span>
-          <div>
-            <p className="text-sm font-bold">تم إغلاق الرهان</p>
-            <p className="text-[10px] text-white/60">لا يمكن الرهان على مباراة جارية أو منتهية</p>
-          </div>
-        </div>
-      </div>
       
       <BetSlip 
         selection={selectedBet} 

@@ -106,8 +106,8 @@ export const RegisterPage: React.FC = () => {
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 p-1 backdrop-blur-xl border border-white/20 shadow-[0_0_20px_rgba(34,197,94,0.3)] mb-1">
             <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-lg sm:rounded-xl" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-wide drop-shadow-lg leading-none">
-            Gool<span className="text-primary">bet</span>
+          <h1 className="text-xl sm:text-2xl font-black tracking-wide leading-none bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,197,94,0.4)] pb-0.5">
+            Goolbet
           </h1>
           <p className="text-white/70 text-[9px] sm:text-[10px] mt-0.5 font-medium tracking-wide">تسجيل حساب جديد</p>
         </div>

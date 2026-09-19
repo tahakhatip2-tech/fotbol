@@ -68,7 +68,7 @@ export const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
   if (!botName || botName === 'your_bot_username_here') {
       return (
           <div className="text-sm text-center text-slate-500 bg-slate-100 p-3 rounded-xl border border-slate-200">
-             (Telegram Widget is hidden until Bot Username is provided)
+             في انتظار إعداد بوت تيليجرام
           </div>
       )
   }

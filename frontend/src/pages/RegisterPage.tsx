@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import api from '../api/axios';
+import { telegramLogin } from '../api/auth';
 import { Eye, EyeOff, CheckCircle2, XCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { TelegramLoginWidget } from '../components/TelegramLoginWidget';
+import type { TelegramUser } from '../components/TelegramLoginWidget';
 
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
@@ -67,12 +70,18 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  const handleTelegramLogin = () => {
-    alert('لإكمال التسجيل عبر تيليجرام، يجب أولاً ربط (Bot Token) من @BotFather في الإعدادات. سيتم محاكاة التسجيل الآن.');
-    setTimeout(() => {
-      localStorage.setItem('token', 'mock_telegram_jwt_token');
+  const handleTelegramAuth = async (user: TelegramUser) => {
+    setError('');
+    setIsLoading(true);
+    try {
+      await telegramLogin(user);
       navigate('/');
-    }, 1500);
+    } catch (err: any) {
+      console.error('Telegram login error:', err);
+      setError(err.response?.data?.error || 'حدث خطأ أثناء التسجيل عبر تيليجرام');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -209,15 +218,14 @@ export const RegisterPage: React.FC = () => {
             <div className="bg-[#1a2233] px-2 relative text-[10px] font-semibold text-white/40 uppercase tracking-wider rounded-full py-0.5 border border-white/5">أو</div>
           </div>
 
-          <Button 
-            variant="outline" 
-            className="w-full h-9 text-xs border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white transition-all font-medium backdrop-blur-sm"
-            onClick={handleTelegramLogin}
-            type="button"
-          >
-            <svg className="w-4 h-4 mr-1.5 ml-1.5 text-[#0088cc]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.686c.223-.195-.054-.285-.346-.09l-6.4 4.024-2.76-.86c-.6-.185-.613-.6.125-.89l10.736-4.133c.5-.186.953.106.825.99z"/></svg>
-            التسجيل باستخدام تيليجرام
-          </Button>
+          <div className="space-y-2">
+            <div className="[&>div]:w-full [&>div>iframe]:w-full flex justify-center scale-90 origin-top">
+              <TelegramLoginWidget 
+                botName="your_bot_username_here"
+                onAuth={handleTelegramAuth}
+              />
+            </div>
+          </div>
 
           <p className="text-center text-xs text-white/60 mt-4">
             لديك حساب بالفعل؟ <Link to="/login" className="font-bold text-primary hover:text-white transition-all">تسجيل الدخول</Link>

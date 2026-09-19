@@ -10,7 +10,7 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
     const { matchId, selection, stake, useBonus } = req.body;
 
     if (stake <= 0) {
-      return res.status(400).json({ error: 'Stake must be greater than 0' });
+      return res.status(400).json({ error: 'يجب أن يكون مبلغ الرهان أكبر من 0' });
     }
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -22,15 +22,15 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
     const result = await prisma.$transaction(async (tx) => {
       // 1. Validate user balance
       const wallet = await tx.wallet.findUnique({ where: { userId } });
-      if (!wallet) throw new Error('Wallet not found');
+      if (!wallet) throw new Error('لم يتم العثور على المحفظة');
 
       if (useBonus) {
         if (wallet.bonusBalance < stake) {
-          throw new Error('Insufficient bonus balance');
+          throw new Error('رصيد البونص غير كافٍ');
         }
       } else {
         if (wallet.balance < stake) {
-          throw new Error('Insufficient balance');
+          throw new Error('الرصيد غير كافٍ');
         }
       }
 
@@ -40,20 +40,21 @@ export const placeBet = async (req: AuthRequest, res: Response) => {
         include: { odds: { where: { isActive: true } } }
       });
 
-      if (!match) throw new Error('Match not found');
-      if (match.status !== 'UPCOMING') throw new Error('Betting is closed for this match');
-      if (new Date(match.matchDate) <= new Date()) throw new Error('Match has already started');
+      if (!match) throw new Error('المباراة غير موجودة');
+      // Uncomment or modify this if you want to allow live betting
+      if (match.status !== 'UPCOMING') throw new Error('تم إغلاق الرهان لهذه المباراة');
+      if (new Date(match.matchDate) <= new Date()) throw new Error('لقد بدأت المباراة بالفعل');
 
       // 3. Get odds
       const currentOdds = match.odds[0];
-      if (!currentOdds) throw new Error('Odds are currently unavailable');
+      if (!currentOdds) throw new Error('الاحتمالات غير متوفرة حالياً');
 
       let oddsAtBet = 0;
       if (selection === 'TEAM_1_WIN') oddsAtBet = currentOdds.team1Win;
       else if (selection === 'DRAW') oddsAtBet = currentOdds.draw;
       else if (selection === 'TEAM_2_WIN') oddsAtBet = currentOdds.team2Win;
 
-      if (oddsAtBet <= 1) throw new Error('Invalid odds');
+      if (oddsAtBet <= 1) throw new Error('احتمالات غير صالحة');
 
       const potentialPayout = stake * oddsAtBet;
 

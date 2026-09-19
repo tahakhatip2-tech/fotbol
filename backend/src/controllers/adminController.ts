@@ -3,6 +3,7 @@ import prisma from '../config/db';
 import { MatchStatus } from '@prisma/client';
 import { uploadFileToSupabase } from '../utils/supabaseStorage';
 import fs from 'fs';
+import { notifyUser } from '../utils/notificationUtils';
 
 // Get Dashboard Stats
 export const getStats = async (req: Request, res: Response) => {
@@ -336,6 +337,8 @@ export const settleMatch = async (req: Request, res: Response) => {
       return selection === finalResult;
     };
 
+    const winningBets: { userId: string, payout: number }[] = [];
+
     // Transaction for settlement
     await prisma.$transaction(async (tx) => {
       // 1. Update Match status and result
@@ -355,6 +358,7 @@ export const settleMatch = async (req: Request, res: Response) => {
         const isWin = getBetResult(bet.selection);
 
         if (isWin) {
+          winningBets.push({ userId: bet.userId, payout: bet.potentialPayout });
           await tx.bet.update({ where: { id: bet.id }, data: { status: 'WON' } });
           await tx.settlement.create({
             data: { matchId: match.id, betId: bet.id, amount: bet.potentialPayout, isWin: true }
@@ -379,6 +383,17 @@ export const settleMatch = async (req: Request, res: Response) => {
         }
       }
     });
+
+    // Send notifications outside transaction
+    for (const win of winningBets) {
+      await notifyUser(
+        win.userId,
+        'لقد فزت بالرهان! 🎉',
+        `تهانينا! لقد ربحت $${win.payout} من رهانك على مباراة ${match.team1Name} ضد ${match.team2Name}`,
+        'BET',
+        '/profile'
+      );
+    }
 
     res.json({ message: 'Match settled successfully', resultAt90, finalResult });
   } catch (error) {
@@ -460,6 +475,17 @@ export const processTransaction = async (req: Request, res: Response) => {
         }
       }
     });
+
+    const isDeposit = transaction.type === 'DEPOSIT';
+    const statusText = action === 'APPROVE' ? 'تمت الموافقة على' : 'تم رفض';
+    
+    await notifyUser(
+      transaction.userId,
+      `تحديث حالة ${isDeposit ? 'الإيداع' : 'السحب'}`,
+      `${statusText} طلب ${isDeposit ? 'إيداع' : 'سحب'} بمبلغ $${transaction.amount}`,
+      'TRANSACTION',
+      '/profile'
+    );
 
     res.json({ message: `Transaction ${action.toLowerCase()}ed successfully` });
   } catch (error) {

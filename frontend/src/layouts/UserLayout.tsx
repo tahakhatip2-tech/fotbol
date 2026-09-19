@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Footer } from '../components/ui/Footer';
 import { Trophy, Wallet, User, Menu, LogOut, LayoutDashboard, Home } from 'lucide-react';
+import { NotificationDropdown } from '../components/ui/NotificationDropdown';
 
 export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t, i18n } = useTranslation();
@@ -57,7 +58,9 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 {i18n.language === 'ar' ? 'English' : 'العربية'}
               </Button>
               {isLoggedIn ? (
-                <div className="relative" ref={dropdownRef}>
+                <>
+                  <NotificationDropdown />
+                  <div className="relative" ref={dropdownRef}>
                   <button 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-white shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -106,6 +109,7 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                     </div>
                   )}
                 </div>
+                </>
               ) : (
                 <>
                   <Link to="/login">

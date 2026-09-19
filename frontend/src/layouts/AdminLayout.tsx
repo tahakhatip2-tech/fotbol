@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Footer } from '../components/ui/Footer';
 import { LayoutDashboard, Trophy, Users, Receipt, Target, Menu, LogOut, Gift, MoreHorizontal, ArrowRight } from 'lucide-react';
 import api from '../api/axios';
+import { NotificationDropdown } from '../components/ui/NotificationDropdown';
 
 export const AdminLayout: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -100,6 +101,7 @@ export const AdminLayout: React.FC = () => {
           </nav>
 
             <div className="flex items-center gap-2 md:gap-4">
+              <NotificationDropdown />
               <Button variant="ghost" className="hidden md:inline-flex" onClick={toggleLanguage}>
                 {i18n.language === 'ar' ? 'English' : 'العربية'}
               </Button>

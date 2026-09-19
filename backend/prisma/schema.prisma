@@ -69,10 +69,24 @@ model User {
   wallet           Wallet?
   bets             Bet[]
   transactions     WalletTransaction[]
+  notifications    Notification[]
   auditLogs        AuditLog[]          @relation("UserAudit")
   adminLogs        AuditLog[]          @relation("AdminAudit")
   deposits         Deposit[]
   withdrawals      Withdrawal[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   // e.g., 'TRANSACTION', 'BET', 'SYSTEM'
+  link      String?  // Optional URL to redirect when clicked
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Wallet {

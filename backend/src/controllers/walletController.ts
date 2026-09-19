@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middlewares/authMiddleware';
 import prisma from '../config/db';
+import { notifyAdmins } from '../utils/notificationUtils';
 
 export const requestDeposit = async (req: AuthRequest, res: Response) => {
   try {
@@ -23,6 +24,14 @@ export const requestDeposit = async (req: AuthRequest, res: Response) => {
         details: JSON.stringify({ method, receiptImage })
       }
     });
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    await notifyAdmins(
+      'طلب إيداع جديد',
+      `قام ${user?.firstName} بطلب إيداع بمبلغ $${amount}`,
+      'TRANSACTION',
+      '/admin/transactions'
+    );
 
     res.status(201).json({ message: 'Deposit request submitted', transaction });
   } catch (error) {
@@ -73,6 +82,13 @@ export const requestWithdrawal = async (req: AuthRequest, res: Response) => {
         }
       });
     });
+
+    await notifyAdmins(
+      'طلب سحب جديد',
+      `قام ${user.firstName} بطلب سحب بمبلغ $${amount}`,
+      'TRANSACTION',
+      '/admin/transactions'
+    );
 
     res.status(201).json({ message: 'Withdrawal request submitted', transaction });
   } catch (error) {

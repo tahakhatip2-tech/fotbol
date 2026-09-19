@@ -596,31 +596,46 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
 export const manageWallet = async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
-    const { amount, type } = req.body;
+    const { amount, type, note } = req.body;
 
     if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Invalid amount' });
+      return res.status(400).json({ error: 'المبلغ يجب أن يكون أكبر من 0' });
     }
 
     const wallet = await prisma.wallet.findUnique({ where: { userId: id } });
     if (!wallet) {
-      return res.status(404).json({ error: 'Wallet not found for this user' });
+      return res.status(404).json({ error: 'لم يتم العثور على محفظة لهذا المستخدم' });
     }
 
     if (type === 'WITHDRAW' && wallet.balance < amount) {
-      return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+      return res.status(400).json({ error: 'الرصيد غير كافٍ للخصم' });
     }
 
-    const updatedWallet = await prisma.wallet.update({
-      where: { userId: id },
-      data: {
-        balance: type === 'DEPOSIT' ? { increment: Number(amount) } : { decrement: Number(amount) }
-      }
+    const updatedWallet = await prisma.$transaction(async (tx) => {
+      const updated = await tx.wallet.update({
+        where: { userId: id },
+        data: {
+          balance: type === 'DEPOSIT' ? { increment: Number(amount) } : { decrement: Number(amount) }
+        }
+      });
+
+      // Log the transaction in history
+      await tx.walletTransaction.create({
+        data: {
+          userId: id,
+          type: type === 'DEPOSIT' ? 'DEPOSIT' : 'WITHDRAWAL',
+          amount: type === 'DEPOSIT' ? Number(amount) : -Number(amount),
+          status: 'COMPLETED',
+          details: note ? `تعديل يدوي بواسطة الأدمن: ${note}` : 'تعديل يدوي بواسطة الأدمن'
+        }
+      });
+
+      return updated;
     });
 
-    res.json({ message: 'Wallet updated successfully', wallet: updatedWallet });
+    res.json({ message: 'تم تحديث الرصيد بنجاح', wallet: updatedWallet });
   } catch (error) {
     console.error('Error managing wallet:', error);
-    res.status(500).json({ error: 'Server error managing wallet' });
+    res.status(500).json({ error: 'خطأ في الخادم أثناء تعديل الرصيد' });
   }
 };

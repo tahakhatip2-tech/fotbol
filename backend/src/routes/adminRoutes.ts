@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getStats, createMatch, updateMatch, deleteMatch, settleMatch, startMatch, updateLiveMatch, getPendingTransactions, processTransaction, getMatchBets, getUsers, toggleUserStatus, manageWallet, getAllBets, manageBonus, getLeagues, createLeague, deleteLeague } from '../controllers/adminController';
+import { getStats, createMatch, updateMatch, deleteMatch, settleMatch, startMatch, updateLiveMatch, getPendingTransactions, getPendingTransactionsCount, processTransaction, getMatchBets, getUsers, toggleUserStatus, manageWallet, getAllBets, manageBonus, getLeagues, createLeague, deleteLeague } from '../controllers/adminController';
 import { authenticate, requireRole } from '../middlewares/authMiddleware';
 import { upload } from '../middlewares/uploadMiddleware';
 
@@ -19,6 +19,7 @@ router.put('/matches/:id/live-update', updateLiveMatch);
 router.get('/matches/:id/bets', getMatchBets);
 
 router.get('/transactions', getPendingTransactions);
+router.get('/transactions/pending-count', getPendingTransactionsCount);
 router.put('/transactions/:id/process', processTransaction);
 
 router.get('/users', getUsers);

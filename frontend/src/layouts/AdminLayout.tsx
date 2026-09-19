@@ -4,6 +4,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Footer } from '../components/ui/Footer';
 import { LayoutDashboard, Trophy, Users, Receipt, Target, Menu, LogOut, Gift, MoreHorizontal, ArrowRight } from 'lucide-react';
+import api from '../api/axios';
 
 export const AdminLayout: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -13,15 +14,33 @@ export const AdminLayout: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
+  const [pendingCount, setPendingCount] = useState(0);
+
+  const fetchPendingCount = async () => {
+    try {
+      const response = await api.get('/admin/transactions/pending-count');
+      setPendingCount(response.data.count);
+    } catch (error) {
+      console.error('Failed to fetch pending count', error);
+    }
+  };
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
-        setIsMoreMenuOpen(false);
-      }
-    };
+    fetchPendingCount();
+    const intervalId = setInterval(fetchPendingCount, 30000); // Poll every 30s
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+    if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+      setIsMoreMenuOpen(false);
+    }
+  };
+
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -67,10 +86,15 @@ export const AdminLayout: React.FC = () => {
                <Link 
                  key={item.path}
                  to={item.path} 
-                 className={`text-sm hover:text-primary transition-colors flex items-center gap-1.5 ${location.pathname === item.path ? 'text-primary font-bold' : 'text-muted-foreground'}`}
+                 className={`relative text-sm hover:text-primary transition-colors flex items-center gap-1.5 ${location.pathname === item.path ? 'text-primary font-bold' : 'text-muted-foreground'}`}
                >
                  <item.icon size={16} />
                  {item.name}
+                 {item.name === 'المعاملات' && pendingCount > 0 && (
+                   <span className="absolute -top-2 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+                     {pendingCount}
+                   </span>
+                 )}
                </Link>
              ))}
           </nav>
@@ -147,9 +171,14 @@ export const AdminLayout: React.FC = () => {
           <Users size={20} className={location.pathname === '/admin/users' ? 'stroke-blue-600 fill-blue-600/20' : ''} />
           <span className="text-[10px] font-medium">المستخدمين</span>
         </Link>
-        <Link to="/admin/transactions" className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/transactions' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}>
+        <Link to="/admin/transactions" className={`relative flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${location.pathname === '/admin/transactions' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}>
           <Receipt size={20} className={location.pathname === '/admin/transactions' ? 'stroke-blue-600 fill-blue-600/20' : ''} />
           <span className="text-[10px] font-medium">المعاملات</span>
+          {pendingCount > 0 && (
+            <span className="absolute top-2 right-1/4 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+              {pendingCount}
+            </span>
+          )}
         </Link>
         
         {/* Center Item (Home) */}

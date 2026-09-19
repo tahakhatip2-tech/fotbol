@@ -400,6 +400,18 @@ export const getPendingTransactions = async (req: Request, res: Response) => {
   }
 };
 
+// Get Pending Transactions Count
+export const getPendingTransactionsCount = async (req: Request, res: Response) => {
+  try {
+    const count = await prisma.walletTransaction.count({
+      where: { status: 'PENDING' }
+    });
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error fetching pending transactions count' });
+  }
+};
+
 // Process Transaction (Approve/Reject)
 export const processTransaction = async (req: Request, res: Response) => {
   try {

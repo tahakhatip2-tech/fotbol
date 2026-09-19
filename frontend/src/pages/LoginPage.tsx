@@ -212,6 +212,11 @@ export const LoginPage: React.FC = () => {
             ليس لديك حساب؟ <Link to="/register" className="font-bold text-primary hover:text-white transition-all">إنشاء حساب</Link>
           </p>
         </div>
+        
+        {/* Version Info */}
+        <div className="text-center mt-2 sm:mt-3 flex-shrink-0">
+          <p className="text-[9px] sm:text-[10px] text-white/30 font-bold tracking-widest uppercase font-sans">Goolbet v1.0</p>
+        </div>
       </div>
     </div>
   );

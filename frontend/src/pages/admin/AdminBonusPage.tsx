@@ -3,6 +3,7 @@ import { Gift, Plus, Minus, Search, X } from 'lucide-react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
 import { useToast } from '../../context/ToastContext';
+import { HeroSection } from '../../components/ui/HeroSection';
 
 export const AdminBonusPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -80,70 +81,70 @@ export const AdminBonusPage: React.FC = () => {
   };
 
   return (
-    <div className="animate-in fade-in duration-500 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-            <Gift className="text-primary" size={32} />
-            إدارة البونص
-          </h1>
-          <p className="text-muted-foreground mt-2">أضف أو اخصم رصيد بونص ترويجي للمستخدمين</p>
-        </div>
-        
-        <div className="relative w-full md:w-72">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+    <div className="animate-in fade-in duration-500 min-h-screen">
+      <HeroSection 
+        title="إدارة البونص"
+        subtitle="أضف أو اخصم رصيد بونص ترويجي للمستخدمين"
+        badge="لوحة التحكم ⚙️"
+        icon={<Gift size={24} className="text-primary" />}
+        minHeight="min-h-[25vh]"
+      >
+        <div className="mt-6 max-w-sm mx-auto relative">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
             type="text" 
             placeholder="ابحث بالاسم أو البريد..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-background border border-border rounded-xl py-2.5 pr-10 pl-4 outline-none focus:border-primary transition-colors text-sm"
+            className="w-full bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl py-2.5 pr-10 pl-4 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm shadow-sm text-slate-800"
           />
         </div>
-      </div>
+      </HeroSection>
 
-      <div className="glass rounded-2xl overflow-hidden border border-slate-200">
-        <table className="w-full text-right table-fixed">
-          <thead className="bg-background/40 backdrop-blur-md border-b border-border/40 text-muted-foreground text-[10px] sm:text-xs md:text-sm font-medium">
-            <tr>
-              <th className="px-2 py-3 md:p-4 w-[35%]">المستخدم</th>
-              <th className="px-1 py-3 md:p-4 w-[25%] text-center md:text-right">حقيقي</th>
-              <th className="px-1 py-3 md:p-4 w-[25%] text-center md:text-right text-blue-400">بونص 🎁</th>
-              <th className="px-2 py-3 md:p-4 w-[15%] text-center">إجراء</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
+      <div className="container mx-auto px-2 sm:px-4 max-w-5xl relative z-20 -mt-6 mb-8">
+        <div className="glass rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+          <table className="w-full text-right table-fixed">
+            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] sm:text-xs md:text-sm font-bold">
               <tr>
-                <td colSpan={4} className="p-4 md:p-8 text-center text-muted-foreground text-xs md:text-sm">جاري تحميل البيانات...</td>
+                <th className="px-2 py-3 md:p-4 w-[35%]">المستخدم</th>
+                <th className="px-1 py-3 md:p-4 w-[20%] text-center md:text-right">حقيقي</th>
+                <th className="px-1 py-3 md:p-4 w-[20%] text-center md:text-right text-blue-500">بونص 🎁</th>
+                <th className="px-1 py-3 md:p-4 w-[25%] text-center">إجراء</th>
               </tr>
-            ) : filteredUsers.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="p-4 md:p-8 text-center text-muted-foreground text-xs md:text-sm">لا يوجد مستخدمين.</td>
-              </tr>
-            ) : (
-              filteredUsers.map(user => (
-                <tr key={user.id} className="border-b border-border/20 hover:bg-white/5 transition-colors">
-                  <td className="px-2 py-3 md:p-4 overflow-hidden">
-                    <div className="font-bold text-slate-900 text-[11px] sm:text-xs md:text-sm truncate w-full">{user.firstName} {user.lastName}</div>
-                    <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 truncate w-full">{user.email}</div>
-                  </td>
-                  <td className="px-1 py-3 md:p-4 font-mono font-bold text-[10px] sm:text-xs md:text-sm text-center md:text-right">${user.wallet?.balance?.toFixed(2) || '0.00'}</td>
-                  <td className="px-1 py-3 md:p-4 font-mono font-bold text-[10px] sm:text-xs md:text-sm text-blue-400 text-center md:text-right">${user.wallet?.bonusBalance?.toFixed(2) || '0.00'}</td>
-                  <td className="px-2 py-3 md:p-4 text-center">
-                    <Button 
-                      size="sm" 
-                      onClick={() => openModal(user)} 
-                      className="bg-blue-600 hover:bg-blue-700 text-slate-900 shadow-[0_0_10px_rgba(37,99,235,0.3)] border-0 h-6 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-9 md:px-4 md:text-sm"
-                    >
-                      إدارة
-                    </Button>
-                  </td>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="p-4 md:p-8 text-center text-slate-400 text-xs md:text-sm">جاري تحميل البيانات...</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="p-4 md:p-8 text-center text-slate-400 text-xs md:text-sm">لا يوجد مستخدمين.</td>
+                </tr>
+              ) : (
+                filteredUsers.map(user => (
+                  <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                    <td className="px-2 py-3 md:p-4 overflow-hidden">
+                      <div className="font-bold text-slate-800 text-[11px] sm:text-xs md:text-sm truncate w-full">{user.firstName} {user.lastName}</div>
+                      <div className="text-[9px] sm:text-[10px] md:text-xs text-slate-400 mt-0.5 truncate w-full">{user.email}</div>
+                    </td>
+                    <td className="px-1 py-3 md:p-4 font-mono font-bold text-[10px] sm:text-xs md:text-sm text-slate-600 text-center md:text-right">${user.wallet?.balance?.toFixed(2) || '0.00'}</td>
+                    <td className="px-1 py-3 md:p-4 font-mono font-bold text-[10px] sm:text-xs md:text-sm text-blue-500 text-center md:text-right">${user.wallet?.bonusBalance?.toFixed(2) || '0.00'}</td>
+                    <td className="px-1 py-3 md:p-4 text-center">
+                      <Button 
+                        size="sm" 
+                        onClick={() => openModal(user)} 
+                        className="w-full sm:w-auto bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-9 md:px-4 md:text-sm shadow-sm transition-all"
+                      >
+                        إدارة
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Bonus Modal */}

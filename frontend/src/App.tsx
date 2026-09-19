@@ -39,6 +39,8 @@ function App() {
         <Route path="bonus" element={<AdminBonusPage />} />
         <Route path="leagues" element={<AdminLeaguesPage />} />
       </Route>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/*" element={
         <UserLayout>
           <Routes>
@@ -46,8 +48,6 @@ function App() {
             <Route path="/matches" element={<MatchesPage />} />
             <Route path="/wallet" element={<WalletPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </UserLayout>
       } />

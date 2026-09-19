@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import api from '../api/axios';
-import { Eye, EyeOff, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle2, XCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
@@ -76,60 +76,37 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-[#0f172a] overflow-hidden">
-      
-      {/* Left Side - Branding (Hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
-        {/* Background Gradients */}
-        <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-primary/30 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[30rem] h-[30rem] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div 
+      className="min-h-screen w-full flex items-center justify-center p-4 py-12 relative bg-cover bg-center bg-no-repeat overflow-hidden"
+      style={{ backgroundImage: 'url(/stadium-bg.jpg)' }}
+    >
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#0f172a]/90 z-0"></div>
+
+      {/* Back button */}
+      <Link to="/" className="absolute top-6 right-6 z-20 flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 hover:bg-white/10">
+        <ArrowRight size={18} />
+        <span className="text-sm font-medium">العودة للرئيسية</span>
+      </Link>
+
+      {/* Glassmorphic Card */}
+      <div className="w-full max-w-[460px] relative z-10 animate-fade-in-up">
         
-        {/* Decorative Grid */}
-        <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")'}}></div>
-
-        <div className="relative z-10 flex items-center gap-3 animate-fade-in-down">
-          <div className="w-12 h-12 rounded-xl bg-white p-1 shadow-lg shadow-primary/20">
-            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-lg" />
+        {/* Logo outside the card for floating effect */}
+        <div className="flex flex-col items-center justify-center mb-6 drop-shadow-2xl">
+          <div className="w-16 h-16 rounded-2xl bg-white/10 p-1 backdrop-blur-xl border border-white/20 shadow-[0_0_30px_rgba(34,197,94,0.3)] mb-3">
+            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-xl" />
           </div>
-          <span className="text-2xl font-black text-white tracking-wide">Gool<span className="text-primary">bet</span></span>
-        </div>
-
-        <div className="relative z-10 my-auto animate-fade-in-up">
-          <h1 className="text-5xl font-bold text-white leading-tight mb-6">
-            انضم الآن إلى <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
-              مجتمع الفائزين
-            </span>
+          <h1 className="text-3xl font-black text-white tracking-wide drop-shadow-lg">
+            Gool<span className="text-primary">bet</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-md leading-relaxed">
-            أنشئ حسابك في ثوانٍ معدودة وابدأ رحلتك في عالم المراهنات الرياضية بكل ثقة وأمان.
-          </p>
+          <p className="text-white/70 text-sm mt-1 font-medium tracking-wide">تسجيل حساب جديد</p>
         </div>
 
-        <div className="relative z-10 text-slate-500 text-sm animate-fade-in">
-          &copy; {new Date().getFullYear()} Goolbet. جميع الحقوق محفوظة.
-        </div>
-      </div>
-
-      {/* Right Side - Form */}
-      <div className="w-full min-h-screen lg:min-h-0 lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative bg-white lg:rounded-r-[2.5rem] shadow-[20px_0_40px_rgba(0,0,0,0.3)] z-10">
-        
-        {/* Mobile Logo */}
-        <div className="absolute top-8 right-8 lg:hidden flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-white p-0.5 shadow-sm border border-slate-100">
-            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-md" />
-          </div>
-          <span className="text-lg font-black text-slate-900">Gool<span className="text-primary">bet</span></span>
-        </div>
-
-        <div className="w-full max-w-[420px] animate-fade-in mx-auto mt-12 lg:mt-0">
-          <div className="text-center lg:text-left mb-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">إنشاء حساب</h2>
-            <p className="text-slate-500 text-sm">أدخل بياناتك لإنشاء حساب جديد مجاناً</p>
-          </div>
+        <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           
           {error && (
-            <div className="bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-sm mb-6 flex items-start gap-2">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-6 flex items-start gap-2">
               <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
               <span>{error}</span>
             </div>
@@ -138,56 +115,56 @@ export const RegisterPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-700">الاسم الأول</label>
+                <label className="block text-sm font-medium text-white/80">الاسم الأول</label>
                 <input 
                   type="text" 
                   required
                   value={formData.firstName}
                   onChange={e => setFormData({...formData, firstName: e.target.value})}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:bg-white/10 transition-all text-white placeholder-white/30"
                   placeholder="أحمد"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-700">اسم العائلة</label>
+                <label className="block text-sm font-medium text-white/80">اسم العائلة</label>
                 <input 
                   type="text" 
                   required
                   value={formData.lastName}
                   onChange={e => setFormData({...formData, lastName: e.target.value})}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:bg-white/10 transition-all text-white placeholder-white/30"
                   placeholder="محمد"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-700">البريد الإلكتروني</label>
+              <label className="block text-sm font-medium text-white/80">البريد الإلكتروني</label>
               <input 
                 type="email" 
                 required
                 value={formData.email}
                 onChange={e => setFormData({...formData, email: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:bg-white/10 transition-all text-white placeholder-white/30"
                 placeholder="name@example.com"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-700">كلمة المرور</label>
+              <label className="block text-sm font-medium text-white/80">كلمة المرور</label>
               <div className="relative">
                 <input 
                   type={showPassword ? "text" : "password"} 
                   required
                   value={formData.password}
                   onChange={e => setFormData({...formData, password: e.target.value})}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 pl-11 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-slate-900 text-left"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-11 outline-none focus:border-primary focus:bg-white/10 transition-all text-white placeholder-white/30 text-left"
                   dir="ltr"
                   placeholder="••••••••"
                 />
                 <button 
                   type="button" 
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition-colors rounded-lg hover:bg-slate-100"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-white transition-colors rounded-lg hover:bg-white/10"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -197,9 +174,9 @@ export const RegisterPage: React.FC = () => {
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="block text-sm font-medium text-slate-700">تأكيد كلمة المرور</label>
-                {isMatch && <span className="text-[11px] font-medium text-emerald-600 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full"><CheckCircle2 size={10} /> متطابقة</span>}
-                {isMismatch && <span className="text-[11px] font-medium text-red-600 flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded-full"><XCircle size={10} /> غير متطابقة</span>}
+                <label className="block text-sm font-medium text-white/80">تأكيد كلمة المرور</label>
+                {isMatch && <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full"><CheckCircle2 size={10} /> متطابقة</span>}
+                {isMismatch && <span className="text-[11px] font-medium text-red-400 flex items-center gap-1 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full"><XCircle size={10} /> غير متطابقة</span>}
               </div>
               <div className="relative">
                 <input 
@@ -207,13 +184,13 @@ export const RegisterPage: React.FC = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
-                  className={`w-full bg-slate-50 border rounded-xl px-4 py-2.5 pl-11 outline-none transition-all text-slate-900 text-left ${isMatch ? 'border-emerald-500 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10' : isMismatch ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                  className={`w-full bg-white/5 border rounded-xl px-4 py-3 pl-11 outline-none transition-all text-white placeholder-white/30 text-left ${isMatch ? 'border-emerald-500 focus:border-emerald-500 focus:bg-emerald-500/10' : isMismatch ? 'border-red-500 focus:border-red-500 focus:bg-red-500/10' : 'border-white/10 focus:border-primary focus:bg-white/10'}`}
                   dir="ltr"
                   placeholder="••••••••"
                 />
                 <button 
                   type="button" 
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition-colors rounded-lg hover:bg-slate-100"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-white transition-colors rounded-lg hover:bg-white/10"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -221,20 +198,20 @@ export const RegisterPage: React.FC = () => {
               </div>
             </div>
             
-            <Button disabled={isLoading} className="w-full h-11 text-base font-semibold shadow-xl shadow-primary/20 hover:shadow-primary/30 mt-4 transition-all active:scale-[0.98]" type="submit">
+            <Button disabled={isLoading} className="w-full h-12 text-base font-bold shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] mt-4 transition-all active:scale-[0.98]" type="submit">
               {isLoading ? 'جاري الإنشاء...' : 'إنشاء الحساب'}
-              {!isLoading && <ArrowRight className="mr-2 rotate-180" size={18} />}
+              {!isLoading && <ArrowLeft className="mr-2" size={18} />}
             </Button>
           </form>
 
           <div className="relative flex items-center justify-center my-6">
-            <div className="border-t border-slate-200 w-full absolute"></div>
-            <div className="bg-white px-4 relative text-xs font-semibold text-slate-400 uppercase tracking-wider">أو الدخول بواسطة</div>
+            <div className="border-t border-white/10 w-full absolute"></div>
+            <div className="bg-[#1a2233] px-3 relative text-xs font-semibold text-white/40 uppercase tracking-wider rounded-full py-1 border border-white/5">أو الدخول بواسطة</div>
           </div>
 
           <Button 
             variant="outline" 
-            className="w-full h-11 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all font-medium"
+            className="w-full h-11 border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white transition-all font-medium backdrop-blur-sm"
             onClick={handleTelegramLogin}
             type="button"
           >
@@ -242,8 +219,8 @@ export const RegisterPage: React.FC = () => {
             التسجيل باستخدام تيليجرام
           </Button>
 
-          <p className="text-center text-sm text-slate-600 mt-8">
-            لديك حساب بالفعل؟ <a href="/login" className="font-semibold text-primary hover:underline transition-all">تسجيل الدخول</a>
+          <p className="text-center text-sm text-white/60 mt-8">
+            لديك حساب بالفعل؟ <Link to="/login" className="font-bold text-primary hover:text-white transition-all">تسجيل الدخول</Link>
           </p>
         </div>
       </div>

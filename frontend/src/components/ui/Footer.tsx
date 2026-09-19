@@ -1,104 +1,86 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Mail, Shield, ShieldCheck, Gamepad2, Copyright } from 'lucide-react';
+import { Copyright } from 'lucide-react';
+
+const FacebookIcon = ({ size = 20, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+);
+
+const InstagramIcon = ({ size = 20, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+);
+
+const TwitterIcon = ({ size = 20, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+);
+
+const TelegramIcon = ({ size = 20, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+);
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="relative mt-20 border-t border-slate-200 bg-white/60 backdrop-blur-xl pb-24 md:pb-8 pt-12 overflow-hidden">
+    <footer className="relative mt-12 border-t border-slate-200 bg-white/60 backdrop-blur-xl pb-20 md:pb-6 pt-6 overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-30"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl opacity-30"></div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8 mb-12 text-center md:text-right">
+        <div className="flex flex-col items-center justify-center text-center space-y-4 mb-6">
           
           {/* Brand & Description */}
-          <div className="md:col-span-2 space-y-4">
-            <Link to="/" className="inline-flex items-center gap-2 group mx-auto md:mx-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary p-[2px] shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-                <img src="/logo.jpg" alt="Goolbet Logo" className="w-full h-full object-cover rounded-[10px]" />
+          <div className="space-y-2 max-w-sm mx-auto">
+            <Link to="/" className="inline-flex items-center gap-1.5 group">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary p-[2px] shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
+                <img src="/logo.jpg" alt="Goolbet Logo" className="w-full h-full object-cover rounded-[14px]" />
               </div>
-              <span className="text-2xl font-black tracking-tight text-slate-800">
-                Gool<span className="text-primary">bet</span>
+              <span className="font-black text-3xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.1)] pb-1">
+                Goolbet
               </span>
             </Link>
-            <p className="text-slate-500 text-sm max-w-sm mx-auto md:mx-0 leading-relaxed">
-              منصتك الأولى للمراهنات الرياضية. استمتع بأفضل الاحتمالات، وتجربة مستخدم لا مثيل لها مع ضمان الأمان والموثوقية التامة في كل خطوة.
+            <p className="text-slate-500 text-xs leading-relaxed">
+              منصتك الأولى للمراهنات الرياضية. استمتع بأفضل الاحتمالات، وتجربة مستخدم لا مثيل لها بضمان الأمان والموثوقية.
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="font-bold text-slate-900 text-lg">روابط سريعة</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/matches" className="text-slate-500 hover:text-primary transition-colors text-sm flex items-center justify-center md:justify-start gap-2">
-                  <Gamepad2 size={16} />
-                  المباريات
-                </Link>
-              </li>
-              <li>
-                <Link to="/wallet" className="text-slate-500 hover:text-primary transition-colors text-sm flex items-center justify-center md:justify-start gap-2">
-                  <WalletIcon size={16} />
-                  المحفظة
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="text-slate-500 hover:text-primary transition-colors text-sm flex items-center justify-center md:justify-start gap-2">
-                  <UserIcon size={16} />
-                  حسابي
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div className="space-y-4">
-            <h3 className="font-bold text-slate-900 text-lg">الدعم الفني</h3>
-            <ul className="space-y-3">
-              <li>
-                <a href="mailto:support@Goolbet.com" className="text-slate-500 hover:text-primary transition-colors text-sm flex items-center justify-center md:justify-start gap-2">
-                  <Mail size={16} />
-                  support@Goolbet.com
-                </a>
-              </li>
-              <li>
-                <div className="text-slate-500 text-sm flex items-center justify-center md:justify-start gap-2 cursor-default">
-                  <Shield size={16} />
-                  سياسة الخصوصية
-                </div>
-              </li>
-              <li>
-                <div className="text-slate-500 text-sm flex items-center justify-center md:justify-start gap-2 cursor-default">
-                  <ShieldCheck size={16} />
-                  شروط الاستخدام
-                </div>
-              </li>
-            </ul>
+          {/* Social Links */}
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <a href="#" className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-primary hover:text-white hover:bg-primary hover:border-primary hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
+              <FacebookIcon size={14} className="group-hover:rotate-[360deg] transition-transform duration-700 ease-in-out" />
+            </a>
+            <a href="#" className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-primary hover:text-white hover:bg-[#E4405F] hover:border-[#E4405F] hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
+              <InstagramIcon size={14} className="group-hover:rotate-[360deg] transition-transform duration-700 ease-in-out" />
+            </a>
+            <a href="#" className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-primary hover:text-white hover:bg-[#1DA1F2] hover:border-[#1DA1F2] hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
+              <TwitterIcon size={14} className="group-hover:rotate-[360deg] transition-transform duration-700 ease-in-out" />
+            </a>
+            <a href="#" className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-primary hover:text-white hover:bg-[#0088cc] hover:border-[#0088cc] hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
+              <TelegramIcon size={14} className="group-hover:rotate-[360deg] transition-transform duration-700 ease-in-out -ml-0.5 mt-0.5" />
+            </a>
           </div>
 
         </div>
 
         {/* Divider */}
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent mb-6"></div>
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent mb-4"></div>
 
         {/* Copyright & Developer Signature */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-[10px] md:text-xs">
           <div className="text-slate-400 flex items-center gap-1">
-            <Copyright size={14} />
+            <Copyright size={12} />
             <span>{new Date().getFullYear()} Goolbet. جميع الحقوق محفوظة.</span>
           </div>
           
           {/* Developer Signature */}
-          <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100 shadow-sm">
-            <span className="text-slate-500">تم التطوير بواسطة:</span>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-100 shadow-sm">
+            <span className="text-slate-500 text-[10px]">المطور:</span>
             <a 
               href="https://github.com/tahakhatip2-tech" 
               target="_blank" 
               rel="noreferrer"
-              className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-green-500 hover:opacity-80 transition-opacity flex items-center gap-1"
+              className="font-bold text-[10px] bg-clip-text text-transparent bg-gradient-to-r from-primary to-green-500 hover:opacity-80 transition-opacity flex items-center gap-1"
             >
               طه الخطيب
             </a>
@@ -109,11 +91,3 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
-
-// Helper icons
-const WalletIcon = ({size}: {size: number}) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-);
-const UserIcon = ({size}: {size: number}) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-);

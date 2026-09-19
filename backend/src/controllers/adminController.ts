@@ -358,24 +358,57 @@ export const settleMatch = async (req: Request, res: Response) => {
         const isWin = getBetResult(bet.selection);
 
         if (isWin) {
-          winningBets.push({ userId: bet.userId, payout: bet.potentialPayout });
+          let profit = bet.potentialPayout - bet.stake;
+          if (profit < 0) profit = 0;
+          
+          let payoutToReal = 0;
+          let updateWalletData: any = {};
+          
+          if (bet.isBonus) {
+            payoutToReal = profit; // convert bonus profit to real balance
+            updateWalletData = {
+              balance: { increment: payoutToReal },
+              lockedBonusBalance: { decrement: bet.stake }
+            };
+          } else {
+            payoutToReal = bet.potentialPayout;
+            updateWalletData = {
+              balance: { increment: payoutToReal },
+              lockedBalance: { decrement: bet.stake }
+            };
+          }
+
+          winningBets.push({ userId: bet.userId, payout: payoutToReal });
           await tx.bet.update({ where: { id: bet.id }, data: { status: 'WON' } });
           await tx.settlement.create({
-            data: { matchId: match.id, betId: bet.id, amount: bet.potentialPayout, isWin: true }
+            data: { matchId: match.id, betId: bet.id, amount: payoutToReal, isWin: true }
           });
           await tx.wallet.update({
             where: { userId: bet.userId },
-            data: { balance: { increment: bet.potentialPayout } }
+            data: updateWalletData
           });
           await tx.walletTransaction.create({
             data: {
               userId: bet.userId,
               type: 'BET_WON',
-              amount: bet.potentialPayout,
-              details: `Won bet on match ${match.team1Name} vs ${match.team2Name}`
+              amount: payoutToReal,
+              details: bet.isBonus ? `Won bonus bet on match ${match.team1Name} vs ${match.team2Name} (Profit)` : `Won bet on match ${match.team1Name} vs ${match.team2Name}`
             }
           });
         } else {
+          // Loss
+          let updateWalletData: any = {};
+          if (bet.isBonus) {
+            updateWalletData = { lockedBonusBalance: { decrement: bet.stake } };
+          } else {
+            updateWalletData = { lockedBalance: { decrement: bet.stake } };
+          }
+          
+          await tx.wallet.update({
+            where: { userId: bet.userId },
+            data: updateWalletData
+          });
+
           await tx.bet.update({ where: { id: bet.id }, data: { status: 'LOST' } });
           await tx.settlement.create({
             data: { matchId: match.id, betId: bet.id, amount: 0, isWin: false }
@@ -484,7 +517,7 @@ export const processTransaction = async (req: Request, res: Response) => {
       `تحديث حالة ${isDeposit ? 'الإيداع' : 'السحب'}`,
       `${statusText} طلب ${isDeposit ? 'إيداع' : 'سحب'} بمبلغ $${transaction.amount}`,
       'TRANSACTION',
-      '/profile'
+      '/wallet'
     );
 
     res.json({ message: `Transaction ${action.toLowerCase()}ed successfully` });

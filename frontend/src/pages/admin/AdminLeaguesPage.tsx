@@ -3,6 +3,7 @@ import { Trophy, Plus, Trash2, Flag } from 'lucide-react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
 import { HeroSection } from '../../components/ui/HeroSection';
+import { useToast } from '../../context/ToastContext';
 
 const LeagueCard: React.FC<{ league: any; onDelete: (id: string) => void }> = ({ league, onDelete }) => {
   return (
@@ -38,6 +39,7 @@ const LeagueCard: React.FC<{ league: any; onDelete: (id: string) => void }> = ({
 export const AdminLeaguesPage: React.FC = () => {
   const [leagues, setLeagues] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
   
   // Form State
   const [name, setName] = useState('');
@@ -81,9 +83,10 @@ export const AdminLeaguesPage: React.FC = () => {
       setCountry('');
       setLogoFile(null);
       setIsModalOpen(false);
+      toast.success('تم إضافة الدوري بنجاح');
       fetchLeagues();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'حدث خطأ أثناء الإضافة');
+      toast.error(error.response?.data?.error || 'حدث خطأ أثناء الإضافة');
     } finally {
       setIsSubmitting(false);
     }
@@ -93,9 +96,10 @@ export const AdminLeaguesPage: React.FC = () => {
     if (!window.confirm('هل أنت متأكد من حذف هذا الدوري؟ ستبقى المباريات المرتبطة به ولكن بدون دوري.')) return;
     try {
       await api.delete(`/admin/leagues/${id}`);
+      toast.success('تم الحذف بنجاح');
       fetchLeagues();
     } catch (error) {
-      alert('خطأ أثناء الحذف');
+      toast.error('خطأ أثناء الحذف');
     }
   };
 

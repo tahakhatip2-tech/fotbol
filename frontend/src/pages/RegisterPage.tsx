@@ -7,14 +7,17 @@ import { telegramLogin } from '../api/auth';
 import { Eye, EyeOff, CheckCircle2, XCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { TelegramLoginWidget } from '../components/TelegramLoginWidget';
 import type { TelegramUser } from '../components/TelegramLoginWidget';
+import { useToast } from '../context/ToastContext';
 
 export const RegisterPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -33,14 +36,17 @@ export const RegisterPage: React.FC = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
+      toast.warning('يرجى إدخال بريد إلكتروني صحيح.');
       return setError('يرجى إدخال بريد إلكتروني صحيح.');
     }
 
-    if (formData.password.length < 6) {
-      return setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
+    if (formData.password.length < 8) {
+      toast.warning('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      return setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
     }
 
     if (formData.password !== formData.confirmPassword) {
+      toast.warning('كلمتا المرور غير متطابقتين.');
       return setError('كلمتا المرور غير متطابقتين.');
     }
 
@@ -50,6 +56,7 @@ export const RegisterPage: React.FC = () => {
       await api.post('/auth/register', {
         firstName: formData.firstName,
         lastName: formData.lastName,
+        username: formData.username,
         email: formattedEmail,
         password: formData.password
       });
@@ -62,9 +69,12 @@ export const RegisterPage: React.FC = () => {
       localStorage.setItem('token', loginRes.data.token);
       localStorage.setItem('user', JSON.stringify(loginRes.data.user));
       
+      toast.success('تم إنشاء الحساب بنجاح');
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'حدث خطأ أثناء إنشاء الحساب');
+      const msg = err.response?.data?.error || 'حدث خطأ أثناء إنشاء الحساب';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +88,9 @@ export const RegisterPage: React.FC = () => {
       navigate('/');
     } catch (err: any) {
       console.error('Telegram login error:', err);
-      setError(err.response?.data?.error || 'حدث خطأ أثناء التسجيل عبر تيليجرام');
+      const msg = err.response?.data?.error || 'حدث خطأ أثناء التسجيل عبر تيليجرام';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -145,6 +157,19 @@ export const RegisterPage: React.FC = () => {
                   placeholder="محمد"
                 />
               </div>
+            </div>
+
+            <div className="space-y-0.5">
+              <label className="block text-[9px] sm:text-[11px] font-medium text-white/80">اسم المستخدم (Username)</label>
+              <input 
+                type="text" 
+                required
+                value={formData.username}
+                onChange={e => setFormData({...formData, username: e.target.value.replace(/\s+/g, '')})}
+                className="w-full bg-white/5 border border-white/10 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:py-2 text-[10px] sm:text-sm outline-none focus:border-primary focus:bg-white/10 transition-all text-white placeholder-white/30"
+                placeholder="user123"
+                dir="ltr"
+              />
             </div>
 
             <div className="space-y-0.5">

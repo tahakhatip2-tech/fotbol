@@ -58,67 +58,63 @@ export const UserLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 {i18n.language === 'ar' ? 'English' : 'العربية'}
               </Button>
               {isLoggedIn ? (
-                <>
+                <div className="flex items-center gap-2">
                   <NotificationDropdown />
                   <div className="relative" ref={dropdownRef}>
-                  <button 
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-white shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  >
-                    <span className="text-primary font-black text-lg">
-                      {user?.firstName?.[0]?.toUpperCase() || 'U'}
-                    </span>
-                    
-                    {/* Green Online Dot (Facebook style) */}
-                    <div className="absolute top-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                    
-                    {/* Small Hamburger Icon Badge */}
-                    <div className="absolute -bottom-1 -left-1 bg-slate-100 border border-white rounded-full p-0.5 shadow-sm">
-                      <Menu size={12} className="text-slate-700" />
-                    </div>
-                  </button>
-                  
-                  {/* Dropdown Menu */}
-                  {isDropdownOpen && (
-                    <div className="absolute end-0 top-full mt-3 w-56 bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 origin-top-end">
-                      <div className="p-3 border-b border-border/30 bg-secondary/20">
-                        <p className="font-semibold text-sm truncate">{user?.firstName} {user?.lastName}</p>
-                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                      </div>
+                    <button 
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-white shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    >
+                      <span className="text-primary font-black text-lg">
+                        {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'U'}
+                      </span>
                       
-                      <div className="p-2 flex flex-col gap-1">
-                        <Link to="/profile" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors">
-                          <User size={18} className="text-primary" />
-                          حسابي
-                        </Link>
+                      <div className="absolute top-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                      <div className="absolute -bottom-1 -left-1 bg-slate-100 border border-white rounded-full p-0.5 shadow-sm">
+                        <Menu size={12} className="text-slate-700" />
+                      </div>
+                    </button>
+                    
+                    {isDropdownOpen && (
+                      <div className="absolute end-0 top-full mt-3 w-56 bg-card border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 origin-top-end">
+                        <div className="p-3 border-b border-border/30 bg-secondary/20">
+                          <p className="font-semibold text-sm truncate">{user?.firstName} {user?.lastName}</p>
+                          <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                        </div>
                         
-                        {user?.role === 'ADMIN' && (
-                          <Link to="/admin" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors text-amber-500">
-                            <LayoutDashboard size={18} />
-                            لوحة الإدارة
+                        <div className="p-2 flex flex-col gap-1">
+                          <Link to="/profile" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors">
+                            <User size={18} className="text-primary" />
+                            حسابي
                           </Link>
-                        )}
+                          
+                          {user?.role === 'ADMIN' && (
+                            <Link to="/admin" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 text-sm font-medium transition-colors text-amber-500">
+                              <LayoutDashboard size={18} />
+                              لوحة الإدارة
+                            </Link>
+                          )}
+                        </div>
+                        
+                        <div className="p-2 border-t border-border/30">
+                          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 text-sm font-medium transition-colors text-red-500">
+                            <LogOut size={18} />
+                            تسجيل الخروج
+                          </button>
+                        </div>
                       </div>
-                      
-                      <div className="p-2 border-t border-border/30">
-                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 text-sm font-medium transition-colors text-red-500">
-                          <LogOut size={18} />
-                          تسجيل الخروج
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-                </>
               ) : (
-                <>
+                <div className="flex items-center gap-2">
                   <Link to="/login">
                     <Button variant="outline">{t('login')}</Button>
                   </Link>
                   <Link to="/register">
                     <Button>{t('register')}</Button>
                   </Link>
-                </>
+                </div>
               )}
             </div>
         </div>

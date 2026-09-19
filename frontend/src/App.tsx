@@ -16,6 +16,8 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { HomePage } from './pages/HomePage';
+import { ToastProvider } from './context/ToastContext';
+import { Toaster } from './components/ui/Toaster';
 
 function App() {
   const { i18n } = useTranslation();
@@ -29,30 +31,34 @@ function App() {
   }, [i18n.language]);
 
   return (
-    <Routes>
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<AdminHome />} />
-        <Route path="matches" element={<AdminMatchesPage />} />
-        <Route path="users" element={<AdminUsersPage />} />
-        <Route path="transactions" element={<AdminTransactionsPage />} />
-        <Route path="bets" element={<AdminBetsPage />} />
-        <Route path="bonus" element={<AdminBonusPage />} />
-        <Route path="leagues" element={<AdminLeaguesPage />} />
-      </Route>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/*" element={
-        <UserLayout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/matches" element={<MatchesPage />} />
-            <Route path="/wallet" element={<WalletPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-          </Routes>
-        </UserLayout>
-      } />
-    </Routes>
+    <ToastProvider>
+      <Routes>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminHome />} />
+          <Route path="matches" element={<AdminMatchesPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="transactions" element={<AdminTransactionsPage />} />
+          <Route path="bets" element={<AdminBetsPage />} />
+          <Route path="bonus" element={<AdminBonusPage />} />
+          <Route path="leagues" element={<AdminLeaguesPage />} />
+        </Route>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/*" element={
+          <UserLayout>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/matches" element={<MatchesPage />} />
+              <Route path="/wallet" element={<WalletPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Routes>
+          </UserLayout>
+        } />
+      </Routes>
+      <Toaster />
+    </ToastProvider>
   );
 }
 
 export default App;
+

@@ -5,6 +5,7 @@ import { BackendImage } from '../../components/BackendImage';
 import { HeroSection } from '../../components/ui/HeroSection';
 import { Plus, X, Edit, CheckCircle, Clock, CalendarDays, Activity, Trophy, ShieldHalf, Trash2, Loader2, PlayCircle, Settings } from 'lucide-react';
 import { LiveControlPanel } from '../../components/LiveControlPanel';
+import { useToast } from '../../context/ToastContext';
 
 export const AdminMatchesPage: React.FC = () => {
   const [matches, setMatches] = useState<any[]>([]);
@@ -23,6 +24,7 @@ export const AdminMatchesPage: React.FC = () => {
   const [team2LogoFile, setTeam2LogoFile] = useState<File | null>(null);
   const [team1LogoPreview, setTeam1LogoPreview] = useState<string | null>(null);
   const [team2LogoPreview, setTeam2LogoPreview] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const fetchMatches = async () => {
     try {
@@ -79,9 +81,9 @@ export const AdminMatchesPage: React.FC = () => {
       setTeam1LogoPreview(null);
       setTeam2LogoPreview(null);
       fetchMatches();
-      alert('✅ ' + (editingMatchId ? 'تم تعديل المباراة بنجاح!' : 'تم إضافة المباراة بنجاح!'));
+      toast.success(editingMatchId ? 'تم تعديل المباراة بنجاح!' : 'تم إضافة المباراة بنجاح!');
     } catch (error) {
-      alert('حدث خطأ أثناء حفظ المباراة (CORS Issue was bypassed but check network logs if it persists)');
+      toast.error('حدث خطأ أثناء حفظ المباراة');
     } finally {
       setIsSubmitting(false);
     }
@@ -135,9 +137,9 @@ export const AdminMatchesPage: React.FC = () => {
     try {
       await api.put(`/admin/matches/${matchId}/settle`, { result });
       fetchMatches();
-      alert('✅ تم تسوية المباراة وتوزيع الأرباح!');
+      toast.success('تم تسوية المباراة وتوزيع الأرباح!');
     } catch (error) {
-      alert('❌ حدث خطأ أثناء التسوية');
+      toast.error('حدث خطأ أثناء التسوية');
     }
   };
 
@@ -148,10 +150,10 @@ export const AdminMatchesPage: React.FC = () => {
     api.put(`/admin/matches/${match.id}/settle`, {})
       .then(() => {
         fetchMatches();
-        alert('✅ تم إنهاء المباراة وتسويتها بنجاح!');
+        toast.success('تم إنهاء المباراة وتسويتها بنجاح!');
       })
       .catch(() => {
-        alert('❌ حدث خطأ أثناء التسوية');
+        toast.error('حدث خطأ أثناء التسوية');
       });
   };
 
@@ -160,9 +162,9 @@ export const AdminMatchesPage: React.FC = () => {
     try {
       await api.put(`/admin/matches/${matchId}/start`);
       fetchMatches();
-      alert('✅ بدأت المباراة بنجاح.');
+      toast.success('بدأت المباراة بنجاح.');
     } catch (error) {
-      alert('حدث خطأ أثناء بدء المباراة');
+      toast.error('حدث خطأ أثناء بدء المباراة');
     }
   };
 
@@ -171,9 +173,9 @@ export const AdminMatchesPage: React.FC = () => {
     try {
       await api.delete(`/admin/matches/${matchId}`);
       fetchMatches();
-      alert('✅ تم حذف المباراة بنجاح.');
+      toast.success('تم حذف المباراة بنجاح.');
     } catch (error) {
-      alert('حدث خطأ أثناء الحذف');
+      toast.error('حدث خطأ أثناء الحذف');
     }
   };
 

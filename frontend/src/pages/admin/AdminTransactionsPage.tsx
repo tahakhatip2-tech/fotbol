@@ -125,11 +125,14 @@ const TransactionCard: React.FC<{ tx: any; onProcess: (id: string, action: 'APPR
   );
 };
 
+import { useToast } from '../../context/ToastContext';
+
 export const AdminTransactionsPage: React.FC = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'ALL' | 'DEPOSIT' | 'WITHDRAWAL'>('ALL');
+  const { toast } = useToast();
 
   const fetchTransactions = async () => {
     try {
@@ -137,6 +140,7 @@ export const AdminTransactionsPage: React.FC = () => {
       setTransactions(res.data);
     } catch (error) {
       console.error('Error fetching transactions', error);
+      toast.error('حدث خطأ أثناء جلب المعاملات');
     } finally {
       setLoading(false);
     }
@@ -152,8 +156,9 @@ export const AdminTransactionsPage: React.FC = () => {
     try {
       await api.put(`/admin/transactions/${id}/process`, { action });
       fetchTransactions();
+      toast.success(action === 'APPROVE' ? 'تمت الموافقة على المعاملة بنجاح' : 'تم رفض المعاملة بنجاح');
     } catch (error) {
-      alert('حدث خطأ أثناء معالجة المعاملة');
+      toast.error('حدث خطأ أثناء معالجة المعاملة');
     } finally {
       setProcessingId(null);
     }

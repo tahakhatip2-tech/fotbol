@@ -94,11 +94,29 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { password, firstName, lastName } = req.body;
     const email = req.body.email?.trim().toLowerCase();
+    const username = req.body.username?.trim().toLowerCase();
     
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Check if user exists by email or username
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { username }
+        ]
+      }
+    });
+    
     if (existingUser) {
-      return res.status(400).json({ error: 'Email already in use' });
+      if (existingUser.email === email) {
+        return res.status(400).json({ error: 'البريد الإلكتروني مستخدم بالفعل' });
+      }
+      if (existingUser.username === username) {
+        return res.status(400).json({ error: 'اسم المستخدم مستخدم بالفعل' });
+      }
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -106,6 +124,7 @@ export const register = async (req: Request, res: Response) => {
     const user = await prisma.user.create({
       data: {
         email,
+        username,
         passwordHash,
         firstName,
         lastName,
@@ -124,9 +143,16 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { password } = req.body;
-    const email = req.body.email?.trim().toLowerCase();
+    const identifier = req.body.email?.trim().toLowerCase();
     
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { username: identifier }
+        ]
+      }
+    });
     if (!user || !user.passwordHash) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -143,6 +169,7 @@ export const login = async (req: Request, res: Response) => {
       user: {
         id: user.id,
         email: user.email,
+        username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role
@@ -165,6 +192,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       select: {
         id: true,
         email: true,
+        username: true,
         firstName: true,
         lastName: true,
         role: true,

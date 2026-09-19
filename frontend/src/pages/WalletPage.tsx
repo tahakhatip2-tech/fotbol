@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import api from '../api/axios';
 import { HeroSection } from '../components/ui/HeroSection';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const TransactionCard = ({ tx }: { tx: any }) => {
   const [expanded, setExpanded] = useState(false);
@@ -59,6 +60,7 @@ export const WalletPage: React.FC = () => {
   const [lockedBonusBalance, setLockedBonusBalance] = useState(0.00);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   // Modals state
   const [showDeposit, setShowDeposit] = useState(false);
@@ -68,10 +70,12 @@ export const WalletPage: React.FC = () => {
   const [depositAmount, setDepositAmount] = useState('');
   const [depositMethod] = useState('USDT TRC-20');
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [isSubmittingDeposit, setIsSubmittingDeposit] = useState(false);
 
   // Withdraw state
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawAddress, setWithdrawAddress] = useState('');
+  const [isSubmittingWithdraw, setIsSubmittingWithdraw] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -96,8 +100,10 @@ export const WalletPage: React.FC = () => {
 
   const handleDepositSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!receiptFile || !depositAmount) return alert('الرجاء إدخال المبلغ ورفع صورة الإيصال');
+    if (isSubmittingDeposit) return;
+    if (!receiptFile || !depositAmount) return toast.warning('الرجاء إدخال المبلغ ورفع صورة الإيصال');
     
+    setIsSubmittingDeposit(true);
     const formData = new FormData();
     formData.append('amount', depositAmount);
     formData.append('method', depositMethod);
@@ -107,34 +113,40 @@ export const WalletPage: React.FC = () => {
       await api.post('/wallet/deposit', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      alert('تم إرسال طلب الإيداع بنجاح. سيتم مراجعته من قبل الإدارة.');
+      toast.success('تم إرسال طلب الإيداع بنجاح. سيتم مراجعته من قبل الإدارة.');
       setShowDeposit(false);
       setDepositAmount('');
       setReceiptFile(null);
       fetchData();
     } catch (err) {
-      alert('حدث خطأ أثناء رفع الطلب');
+      toast.error('حدث خطأ أثناء رفع الطلب');
+    } finally {
+      setIsSubmittingDeposit(false);
     }
   };
 
   const handleWithdrawSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!withdrawAmount || !withdrawAddress) return alert('الرجاء إدخال المبلغ وعنوان المحفظة');
-    if (Number(withdrawAmount) > balance) return alert('الرصيد غير كافٍ');
+    if (isSubmittingWithdraw) return;
+    if (!withdrawAmount || !withdrawAddress) return toast.warning('الرجاء إدخال المبلغ وعنوان المحفظة');
+    if (Number(withdrawAmount) > balance) return toast.error('الرصيد غير كافٍ');
 
+    setIsSubmittingWithdraw(true);
     try {
       await api.post('/wallet/withdraw', {
         amount: withdrawAmount,
         address: withdrawAddress,
         method: 'USDT TRC-20'
       });
-      alert('تم إرسال طلب السحب بنجاح. سيتم تحويل المبلغ قريباً.');
+      toast.success('تم إرسال طلب السحب بنجاح. سيتم تحويل المبلغ قريباً.');
       setShowWithdraw(false);
       setWithdrawAmount('');
       setWithdrawAddress('');
       fetchData();
     } catch (err) {
-      alert('حدث خطأ أثناء إرسال الطلب');
+      toast.error('حدث خطأ أثناء إرسال الطلب');
+    } finally {
+      setIsSubmittingWithdraw(false);
     }
   };
 
@@ -182,50 +194,84 @@ export const WalletPage: React.FC = () => {
         </div>
 
       {showDeposit && (
-        <div className="glass p-8 rounded-2xl mb-12 border border-border/20">
-          <h3 className="text-2xl font-bold mb-6 text-primary">طلب إيداع</h3>
-          <div className="bg-background/50 p-4 rounded-xl mb-6 font-mono text-sm border border-border/50">
-            <p className="text-muted-foreground mb-2">عنوان الإيداع (USDT TRC-20):</p>
-            <div className="flex justify-between items-center bg-card p-3 rounded-lg">
-              <span className="truncate break-all">T9yD14Nj9j7xAB4dbGeiX9h8iVvK9jxyz1</span>
-              <Button variant="outline" className="h-8 px-3 ml-4" onClick={() => navigator.clipboard.writeText('T9yD14Nj9j7xAB4dbGeiX9h8iVvK9jxyz1')}>نسخ</Button>
+        <div className="fixed top-20 bottom-16 md:bottom-0 left-0 right-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-full animate-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+              <h3 className="text-xl font-bold text-primary">طلب إيداع</h3>
+              <button onClick={() => setShowDeposit(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 transition-colors">
+                ✕
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto custom-scrollbar">
+              <div className="bg-blue-50/50 p-4 rounded-xl mb-6 font-mono text-sm border border-blue-100">
+                <p className="text-slate-500 mb-2 font-sans font-medium text-xs">عنوان الإيداع (USDT TRC-20):</p>
+                <div className="flex justify-between items-center bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                  <span className="truncate break-all text-slate-700 font-bold">T9yD14Nj9j7xAB4dbGeiX9h8iVvK9jxyz1</span>
+                  <Button variant="outline" className="h-8 px-3 ml-4 bg-slate-50 hover:bg-slate-100 text-xs" onClick={() => navigator.clipboard.writeText('T9yD14Nj9j7xAB4dbGeiX9h8iVvK9jxyz1')}>نسخ</Button>
+                </div>
+              </div>
+              <form onSubmit={handleDepositSubmit} className="space-y-5">
+                <div>
+                  <label className="block mb-2 text-sm font-bold text-slate-700">المبلغ (USD)</label>
+                  <input type="number" required value={depositAmount} onChange={e => setDepositAmount(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono text-lg" placeholder="0.00" />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-bold text-slate-700">صورة إثبات التحويل (Screenshot)</label>
+                  <input type="file" accept="image/*" required onChange={e => setReceiptFile(e.target.files?.[0] || null)} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 outline-none focus:border-primary file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all text-sm" />
+                </div>
+                <div className="pt-2">
+                  <Button type="submit" disabled={isSubmittingDeposit} className="w-full h-12 text-lg font-bold shadow-lg shadow-primary/30 disabled:opacity-50 flex items-center justify-center gap-2">
+                    {isSubmittingDeposit ? (
+                      <>
+                        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        جاري الإرسال...
+                      </>
+                    ) : (
+                      'إرسال الطلب'
+                    )}
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
-          <form onSubmit={handleDepositSubmit} className="space-y-4">
-            <div>
-              <label className="block mb-2 text-sm">المبلغ (USD)</label>
-              <input type="number" required value={depositAmount} onChange={e => setDepositAmount(e.target.value)} className="w-full bg-background border border-border rounded-lg p-3 outline-none focus:border-primary" />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm">صورة إثبات التحويل (Screenshot)</label>
-              <input type="file" accept="image/*" required onChange={e => setReceiptFile(e.target.files?.[0] || null)} className="w-full bg-background border border-border rounded-lg p-2 outline-none focus:border-primary file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30" />
-            </div>
-            <div className="flex gap-4 pt-4">
-              <Button type="submit" className="flex-1">إرسال الطلب</Button>
-              <Button variant="outline" onClick={() => setShowDeposit(false)}>إلغاء</Button>
-            </div>
-          </form>
         </div>
       )}
 
       {showWithdraw && (
-        <div className="glass p-8 rounded-2xl mb-12 border border-border/20">
-          <h3 className="text-2xl font-bold mb-6 text-primary">طلب سحب</h3>
-          <form onSubmit={handleWithdrawSubmit} className="space-y-4">
-            <div>
-              <label className="block mb-2 text-sm">المبلغ (USD)</label>
-              <input type="number" max={balance} required value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)} className="w-full bg-background border border-border rounded-lg p-3 outline-none focus:border-primary" />
-              <span className="text-xs text-muted-foreground mt-1">الحد الأقصى: ${balance.toFixed(2)}</span>
+        <div className="fixed top-20 bottom-16 md:bottom-0 left-0 right-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-full animate-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+              <h3 className="text-xl font-bold text-primary">طلب سحب</h3>
+              <button onClick={() => setShowWithdraw(false)} disabled={isSubmittingWithdraw} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 transition-colors disabled:opacity-50">
+                ✕
+              </button>
             </div>
-            <div>
-              <label className="block mb-2 text-sm">عنوان محفظتك (USDT TRC-20)</label>
-              <input type="text" required value={withdrawAddress} onChange={e => setWithdrawAddress(e.target.value)} className="w-full bg-background border border-border rounded-lg p-3 outline-none focus:border-primary font-mono" placeholder="T..." />
+            <div className="p-6 overflow-y-auto custom-scrollbar">
+              <form onSubmit={handleWithdrawSubmit} className="space-y-5">
+                <div>
+                  <label className="block mb-2 text-sm font-bold text-slate-700">المبلغ (USD)</label>
+                  <input type="number" max={balance} required value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)} disabled={isSubmittingWithdraw} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono text-lg disabled:opacity-50" placeholder="0.00" />
+                  <span className="text-xs text-slate-500 mt-1.5 font-medium block">الحد الأقصى المتاح: <span className="font-bold text-slate-800">${balance.toFixed(2)}</span></span>
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-bold text-slate-700">عنوان محفظتك (USDT TRC-20)</label>
+                  <input type="text" required value={withdrawAddress} onChange={e => setWithdrawAddress(e.target.value)} disabled={isSubmittingWithdraw} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono disabled:opacity-50" placeholder="T..." />
+                </div>
+                <div className="pt-2">
+                  <Button type="submit" disabled={isSubmittingWithdraw} className="w-full h-12 text-lg font-bold shadow-lg shadow-primary/30 disabled:opacity-50 flex items-center justify-center gap-2">
+                    {isSubmittingWithdraw ? (
+                      <>
+                        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        جاري الإرسال...
+                      </>
+                    ) : (
+                      'تأكيد السحب'
+                    )}
+                  </Button>
+                </div>
+              </form>
             </div>
-            <div className="flex gap-4 pt-4">
-              <Button type="submit" className="flex-1">إرسال الطلب</Button>
-              <Button variant="outline" onClick={() => setShowWithdraw(false)}>إلغاء</Button>
-            </div>
-          </form>
+          </div>
         </div>
       )}
 

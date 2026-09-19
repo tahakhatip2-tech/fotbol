@@ -7,11 +7,14 @@ import { BackendImage } from '../components/BackendImage';
 import { HeroSection } from '../components/ui/HeroSection';
 import { Trophy, ShieldHalf, CalendarDays, Clock, Activity, MessageCircle, Zap, Shield, Star, LockKeyhole } from 'lucide-react';
 
+import { useToast } from '../context/ToastContext';
+
 export const MatchesPage: React.FC = () => {
   const [selectedBet, setSelectedBet] = useState<any | null>(null);
   const [matches, setMatches] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'LIVE' | 'UPCOMING'>('ALL');
+  const { toast } = useToast();
 
   useEffect(() => {
     let isMounted = true;
@@ -151,7 +154,7 @@ export const MatchesPage: React.FC = () => {
                     className="flex flex-col items-center justify-center px-2 cursor-pointer"
                     onClick={() => {
                       if (match.status === 'UPCOMING') {
-                        alert('المباراة لم تبدأ بعد');
+                        toast.warning('المباراة لم تبدأ بعد');
                       }
                     }}
                   >

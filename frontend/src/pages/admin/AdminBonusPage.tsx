@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Gift, Plus, Minus, Search, X } from 'lucide-react';
 import api from '../../api/axios';
 import { Button } from '../../components/ui/Button';
+import { useToast } from '../../context/ToastContext';
 
 export const AdminBonusPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -14,6 +15,7 @@ export const AdminBonusPage: React.FC = () => {
   const [amount, setAmount] = useState<number | ''>('');
   const [actionType, setActionType] = useState<'ADD' | 'DEDUCT'>('ADD');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -23,6 +25,7 @@ export const AdminBonusPage: React.FC = () => {
       setFilteredUsers(res.data);
     } catch (error) {
       console.error('Failed to fetch users:', error);
+      toast.error('حدث خطأ أثناء جلب بيانات المستخدمين');
     } finally {
       setIsLoading(false);
     }
@@ -55,11 +58,11 @@ export const AdminBonusPage: React.FC = () => {
         action: actionType,
         amount: Number(amount)
       });
-      alert(`تم ${actionType === 'ADD' ? 'إضافة' : 'خصم'} البونص بنجاح`);
+      toast.success(`تم ${actionType === 'ADD' ? 'إضافة' : 'خصم'} البونص بنجاح`);
       closeModal();
       fetchUsers();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'حدث خطأ أثناء معالجة الطلب');
+      toast.error(error.response?.data?.error || 'حدث خطأ أثناء معالجة الطلب');
     } finally {
       setIsSubmitting(false);
     }

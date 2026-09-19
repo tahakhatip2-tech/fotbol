@@ -4,12 +4,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { login, telegramLogin } from '../api/auth';
 import { Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 import { TelegramLoginWidget } from '../components/TelegramLoginWidget';
 import type { TelegramUser } from '../components/TelegramLoginWidget';
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [email, setEmail] = useState(localStorage.getItem('rememberedEmail') || '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +27,9 @@ export const LoginPage: React.FC = () => {
       navigate('/');
     } catch (err: any) {
       console.error('Telegram login error:', err);
-      setError(err.response?.data?.error || 'حدث خطأ أثناء تسجيل الدخول عبر تيليجرام');
+      const msg = err.response?.data?.error || 'حدث خطأ أثناء تسجيل الدخول عبر تيليجرام';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +49,9 @@ export const LoginPage: React.FC = () => {
       });
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Error in mock login');
+      const msg = err.response?.data?.error || 'Error in mock login';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -55,9 +61,10 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setError('');
     
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('يرجى إدخال بريد إلكتروني صحيح.');
+    if (!email.trim()) {
+      const msg = 'يرجى إدخال البريد الإلكتروني أو اسم المستخدم.';
+      setError(msg);
+      toast.warning(msg);
       return;
     }
     
@@ -77,6 +84,7 @@ export const LoginPage: React.FC = () => {
         localStorage.removeItem('rememberedEmail');
       }
 
+      toast.success('تم تسجيل الدخول بنجاح');
       navigate('/');
     } catch (err: any) {
       console.error('Login error:', err);
@@ -91,6 +99,7 @@ export const LoginPage: React.FC = () => {
         errorMessage = err.message;
       }
       setError(`خطأ: ${errorMessage}`);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -140,14 +149,14 @@ export const LoginPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-2">
             <div className="space-y-0.5">
-              <label className="block text-[10px] sm:text-xs font-medium text-white/80">البريد الإلكتروني</label>
+              <label className="block text-[10px] sm:text-xs font-medium text-white/80">البريد الإلكتروني أو اسم المستخدم</label>
               <div className="relative">
                 <input 
-                  type="email" 
+                  type="text" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:py-2 text-[11px] sm:text-sm outline-none focus:border-primary focus:bg-white/10 transition-all text-white placeholder-white/30"
-                  placeholder="name@example.com"
+                  placeholder="name@example.com أو username"
                   required
                 />
               </div>

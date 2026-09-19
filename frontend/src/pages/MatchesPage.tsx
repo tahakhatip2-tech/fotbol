@@ -5,7 +5,7 @@ import { BetSlip } from '../components/BetSlip';
 import { getMatches } from '../api/matches';
 import { BackendImage } from '../components/BackendImage';
 import { HeroSection } from '../components/ui/HeroSection';
-import { Trophy, ShieldHalf, CalendarDays, Clock, Activity, MessageCircle, Zap, Shield, Star } from 'lucide-react';
+import { Trophy, ShieldHalf, CalendarDays, Clock, Activity, MessageCircle, Zap, Shield, Star, LockKeyhole } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
   const [selectedBet, setSelectedBet] = useState<any | null>(null);
@@ -232,9 +232,9 @@ export const MatchesPage: React.FC = () => {
               <div className="p-2 border-t border-slate-200 bg-white/60 backdrop-blur-md">
                 {match.status !== 'UPCOMING' ? (
                   // Betting closed banner for LIVE / FINISHED
-                  <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-100 border border-slate-200">
-                    <span className="text-base">🔒</span>
-                    <span className="text-xs font-bold text-slate-500">انتهى وقت الرهان</span>
+                  <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-50 border border-red-200">
+                    <LockKeyhole size={14} className="text-red-500 shrink-0" />
+                    <span className="text-xs font-bold text-red-500">انتهى وقت الرهان</span>
                   </div>
                 ) : (
                   // Normal odds buttons for UPCOMING
